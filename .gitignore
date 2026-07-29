@@ -1,0 +1,20 @@
+node_modules/
+backups/
+
+# Local Obsidian and plugin state. May contain API keys.
+.obsidian/
+data.json
+
+# Local environment and logs.
+.env
+.env.*
+*.log
+*.tsbuildinfo
+
+# Editor and operating-system files.
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+PUBLISHING.md
+

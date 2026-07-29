@@ -1,0 +1,9 @@
+{
+  "id": "naitflow",
+  "name": "NaitFlow",
+  "version": "0.1.69",
+  "minAppVersion": "1.8.0",
+  "description": "A calm, Notion-style page workflow with visual icons, covers, and nested pages.",
+  "author": "NaitSide",
+  "isDesktopOnly": false
+}
