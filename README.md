@@ -2,7 +2,11 @@
 
 **English** | [Русский](README_RU.md)
 
-NaitFlow brings a calm, visual page workflow to Obsidian with emoji and Lucide icons, wide covers, nested pages, and a dedicated page tree. Metadata stays in Markdown frontmatter, while uploaded images remain inside your Obsidian vault.
+NaitFlow — Notion UI for Obsidian
+
+An Obsidian plugin that adds a Notion-style page sidebar, emoji/icons, and page covers.
+
+![NaitFlow emoji picker over a page cover](docs/images/naitflow-interface.png)
 
 ## Features
 
