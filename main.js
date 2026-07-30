@@ -52,6 +52,29 @@ var EN = {
   collapse: "Collapse",
   expand: "Expand",
   pageMenu: "Page menu",
+  openInNewTab: "Open in new tab",
+  openInRightPane: "Open in right pane",
+  openInNewWindow: "Open in new window",
+  renamePage: "Rename",
+  renamePagePrompt: "Page name",
+  renamePageFailed: "NaitFlow: could not rename page \u2014 {error}",
+  movePage: "Move to\u2026",
+  movePageSearch: "Move page to\u2026",
+  movePagePlaceholder: "Choose destination folder\u2026",
+  movePageFailed: "NaitFlow: could not move page \u2014 {error}",
+  movePageInvalid: "A page cannot be moved into its own folder.",
+  copyPath: "Copy path",
+  showInExplorer: "Show in File Explorer",
+  showInExplorerFailed: "NaitFlow: could not open File Explorer.",
+  duplicatePage: "Create copy",
+  duplicatePageFailed: "NaitFlow: could not create copy \u2014 {error}",
+  copySuffix: "copy",
+  addBookmark: "Add to bookmarks",
+  bookmarkUnavailable: "NaitFlow: enable the core Bookmarks plugin to use this action.",
+  movePageSuggested: "Pages",
+  movePageVaultRoot: "Vault root",
+  copied: "Copied",
+  copyFailed: "NaitFlow: could not copy to clipboard.",
   nestedPage: "Nested page",
   addSubpage: "Add subpage",
   noFreeFilename: "could not find an available file name",
@@ -69,6 +92,7 @@ var EN = {
   link: "Link",
   gallery: "Gallery",
   clear: "Remove",
+  cancel: "Cancel",
   searchEmoji: "Search emoji \u2014 smile, server, rocket\u2026",
   searchIcons: "Search icons \u2014 server, code, docker\u2026",
   recent: "Recent",
@@ -196,7 +220,31 @@ var RU = {
   saturn: "\u0421\u0430\u0442\u0443\u0440\u043D",
   earthrise: "\u0412\u043E\u0441\u0445\u043E\u0434 \u0417\u0435\u043C\u043B\u0438 \u2014 Apollo 8",
   nightSlsLaunch: "\u041D\u043E\u0447\u043D\u043E\u0439 \u0437\u0430\u043F\u0443\u0441\u043A SLS",
-  artemisSlsLaunch: "Artemis II \u2014 \u0441\u0442\u0430\u0440\u0442 SLS"
+  artemisSlsLaunch: "Artemis II \u2014 \u0441\u0442\u0430\u0440\u0442 SLS",
+  openInNewTab: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0432 \u043D\u043E\u0432\u043E\u0439 \u0432\u043A\u043B\u0430\u0434\u043A\u0435",
+  openInRightPane: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0432 \u043E\u0431\u043B\u0430\u0441\u0442\u0438 \u0441\u043F\u0440\u0430\u0432\u0430",
+  openInNewWindow: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0432 \u043D\u043E\u0432\u043E\u043C \u043E\u043A\u043D\u0435",
+  renamePage: "\u041F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C",
+  renamePagePrompt: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
+  renamePageFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u2014 {error}",
+  movePage: "\u041F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0432\u2026",
+  movePageSearch: "\u041F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0432\u2026",
+  movePagePlaceholder: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0430\u043F\u043A\u0443 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F\u2026",
+  movePageFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u2014 {error}",
+  movePageInvalid: "\u041D\u0435\u043B\u044C\u0437\u044F \u043F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0432 \u0435\u0451 \u0441\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u0443\u044E \u043F\u0430\u043F\u043A\u0443.",
+  copyPath: "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u043F\u0443\u0442\u044C",
+  showInExplorer: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0432 \u041F\u0440\u043E\u0432\u043E\u0434\u043D\u0438\u043A\u0435",
+  showInExplorerFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u041F\u0440\u043E\u0432\u043E\u0434\u043D\u0438\u043A.",
+  duplicatePage: "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043A\u043E\u043F\u0438\u044E",
+  duplicatePageFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0437\u0434\u0430\u0442\u044C \u043A\u043E\u043F\u0438\u044E \u2014 {error}",
+  copySuffix: "\u043A\u043E\u043F\u0438\u044F",
+  addBookmark: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0432 \u0437\u0430\u043A\u043B\u0430\u0434\u043A\u0438",
+  bookmarkUnavailable: "NaitFlow: \u0432\u043A\u043B\u044E\u0447\u0438\u0442\u0435 \u0432\u0441\u0442\u0440\u043E\u0435\u043D\u043D\u044B\u0439 \u043F\u043B\u0430\u0433\u0438\u043D \xAB\u0417\u0430\u043A\u043B\u0430\u0434\u043A\u0438\xBB, \u0447\u0442\u043E\u0431\u044B \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C \u044D\u0442\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435.",
+  movePageSuggested: "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
+  movePageVaultRoot: "\u041A\u043E\u0440\u0435\u043D\u044C Vault",
+  copied: "\u0421\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u043E",
+  copyFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0432 \u0431\u0443\u0444\u0435\u0440 \u043E\u0431\u043C\u0435\u043D\u0430.",
+  cancel: "\u041E\u0442\u043C\u0435\u043D\u0430"
 };
 function localeCode() {
   return (0, import_obsidian.getLanguage)().toLocaleLowerCase().startsWith("ru") ? "ru" : "en";
@@ -267,6 +315,9 @@ function assetUrl(app, path) {
 }
 function displayName(file) {
   return file.basename || t("untitled");
+}
+function pageFolderPath(filePath) {
+  return (0, import_obsidian2.normalizePath)(filePath.replace(/\.md$/i, ""));
 }
 
 // node_modules/@emoji-mart/data/sets/15/native.json
@@ -1139,8 +1190,37 @@ var PageHeaderManager = class {
 // src/page-tree.ts
 var import_obsidian7 = require("obsidian");
 var VIEW_TYPE_NAITFLOW = "naitflow-pages";
+function buildPageTree(app) {
+  const files = app.vault.getMarkdownFiles();
+  const byPath = new Map(files.map((file) => [file.path, { file, children: [] }]));
+  const roots = [];
+  for (const node of byPath.values()) {
+    const parent = getPhysicalParent(app, node.file, byPath) ?? getLegacyParent(app, node.file, byPath);
+    if (parent && parent !== node) parent.children.push(node);
+    else roots.push(node);
+  }
+  const sort = (items) => {
+    items.sort((a, b) => displayName(a.file).localeCompare(displayName(b.file), localeCode()));
+    items.forEach((item) => sort(item.children));
+  };
+  sort(roots);
+  return roots;
+}
+function getPhysicalParent(app, file, nodes) {
+  const folderPath = file.parent?.path;
+  if (!folderPath) return void 0;
+  const parentFile = app.vault.getAbstractFileByPath(`${folderPath}.md`);
+  return parentFile instanceof import_obsidian7.TFile ? nodes.get(parentFile.path) : void 0;
+}
+function getLegacyParent(app, file, nodes) {
+  const parentRef = readPageMeta(app, file).parent;
+  if (!parentRef) return void 0;
+  const parentFile = app.metadataCache.getFirstLinkpathDest(parentRef, file.path);
+  return parentFile ? nodes.get(parentFile.path) : void 0;
+}
 var NaitFlowTreeView = class extends import_obsidian7.ItemView {
   expanded = /* @__PURE__ */ new Set();
+  treeResizeObserver;
   constructor(leaf) {
     super(leaf);
   }
@@ -1154,7 +1234,12 @@ var NaitFlowTreeView = class extends import_obsidian7.ItemView {
     return "panels-top-left";
   }
   async onOpen() {
+    this.treeResizeObserver = new ResizeObserver(() => this.syncScrollbarState());
+    this.treeResizeObserver.observe(this.contentEl);
     this.render();
+  }
+  async onClose() {
+    this.treeResizeObserver?.disconnect();
   }
   render() {
     const root = this.contentEl;
@@ -1169,31 +1254,29 @@ var NaitFlowTreeView = class extends import_obsidian7.ItemView {
     const list = root.createDiv("naitflow-tree-list");
     for (const node of nodes) this.renderNode(list, node, 0);
     if (!nodes.length) list.createDiv({ cls: "naitflow-empty", text: t("createFirstPage") });
+    this.syncScrollbarState();
+  }
+  syncScrollbarState() {
+    const viewport = this.contentEl.closest(".view-content") ?? this.contentEl;
+    const hasVerticalScrollbar = viewport.scrollHeight > viewport.clientHeight && viewport.offsetWidth > viewport.clientWidth;
+    this.contentEl.toggleClass("naitflow-tree--scrollable", hasVerticalScrollbar);
+  }
+  syncActiveFile() {
+    const activePath = this.app.workspace.getActiveFile()?.path;
+    this.contentEl.querySelectorAll(".naitflow-tree-row").forEach((row) => {
+      row.classList.toggle("is-active", row.dataset.path === activePath);
+    });
   }
   buildTree() {
-    const files = this.app.vault.getMarkdownFiles();
-    const byPath = new Map(files.map((file) => [file.path, { file, children: [] }]));
-    const roots = [];
-    for (const node of byPath.values()) {
-      const parentRef = readPageMeta(this.app, node.file).parent;
-      const parentFile = parentRef ? this.app.metadataCache.getFirstLinkpathDest(parentRef, node.file.path) : null;
-      const parent = parentFile ? byPath.get(parentFile.path) : void 0;
-      if (parent && parent !== node) parent.children.push(node);
-      else roots.push(node);
-    }
-    const sort = (items) => {
-      items.sort((a, b) => displayName(a.file).localeCompare(displayName(b.file), localeCode()));
-      items.forEach((item) => sort(item.children));
-    };
-    sort(roots);
-    return roots;
+    return buildPageTree(this.app);
   }
   renderNode(parent, node, depth) {
     const row = parent.createDiv("naitflow-tree-row");
+    row.dataset.path = node.file.path;
     row.style.setProperty("--naitflow-depth", String(depth));
     if (this.app.workspace.getActiveFile()?.path === node.file.path) row.addClass("is-active");
     const isExpanded = this.expanded.has(node.file.path);
-    const icon = row.createEl("button", { cls: "naitflow-tree-icon", attr: { "aria-label": isExpanded ? t("collapse") : t("expand") } });
+    const icon = row.createEl("button", { cls: "naitflow-tree-icon" });
     const visual = icon.createSpan("naitflow-tree-icon-visual");
     renderPageIcon(this.app, visual, readPageMeta(this.app, node.file).icon);
     const chevron = icon.createSpan("naitflow-tree-icon-chevron");
@@ -1210,7 +1293,7 @@ var NaitFlowTreeView = class extends import_obsidian7.ItemView {
     (0, import_obsidian7.setIcon)(more, "ellipsis");
     more.onclick = (event) => {
       event.stopPropagation();
-      void this.openStandardFileMenu(event, node.file);
+      this.openPageMenu(event, node.file);
     };
     const add = row.createEl("button", { cls: "naitflow-tree-add", attr: { "aria-label": t("nestedPage") } });
     (0, import_obsidian7.setIcon)(add, "plus");
@@ -1218,7 +1301,7 @@ var NaitFlowTreeView = class extends import_obsidian7.ItemView {
       event.stopPropagation();
       void this.createPage(node.file);
     };
-    row.oncontextmenu = (event) => void this.openStandardFileMenu(event, node.file);
+    row.oncontextmenu = (event) => this.openPageMenu(event, node.file);
     if (isExpanded) {
       const children = parent.createDiv("naitflow-tree-children");
       for (const child of node.children) this.renderNode(children, child, depth + 1);
@@ -1231,8 +1314,11 @@ var NaitFlowTreeView = class extends import_obsidian7.ItemView {
   }
   async createPage(parent) {
     try {
-      const rawFolder = parent?.parent?.path ?? "";
+      const rawFolder = parent ? pageFolderPath(parent.path) : "";
       const folder = rawFolder === "/" ? "" : (0, import_obsidian7.normalizePath)(rawFolder);
+      if (folder) await this.app.vault.createFolder(folder).catch((error) => {
+        if (!String(error).toLocaleLowerCase().includes("already exists")) throw error;
+      });
       const prefix = folder ? `${folder}/` : "";
       let file = null;
       for (let index = 1; index < 1e4; index++) {
@@ -1248,7 +1334,6 @@ var NaitFlowTreeView = class extends import_obsidian7.ItemView {
       }
       if (!file) throw new Error(t("noFreeFilename"));
       if (parent) {
-        await setField(this.app, file, FIELDS.parent, parent.path);
         this.expanded.add(parent.path);
       }
       await this.app.workspace.getLeaf(false).openFile(file);
@@ -1257,22 +1342,259 @@ var NaitFlowTreeView = class extends import_obsidian7.ItemView {
       new import_obsidian7.Notice(t("createPageFailed", { error: String(error) }));
     }
   }
-  async openStandardFileMenu(event, file) {
+  openPageMenu(event, file) {
     event.preventDefault();
     event.stopPropagation();
-    const explorerLeaf = this.app.workspace.getLeavesOfType("file-explorer")[0];
-    if (!explorerLeaf) return;
-    await explorerLeaf.loadIfDeferred();
-    const explorer = explorerLeaf?.view;
-    if (!explorer?.onFileContextMenu) return;
-    const fileItems = explorer.fileItems;
-    const nativeItem = fileItems?.[file.path];
-    if (fileItems && nativeItem) delete fileItems[file.path];
-    try {
-      explorer.onFileContextMenu(event, file);
-    } finally {
-      if (fileItems && nativeItem) fileItems[file.path] = nativeItem;
+    const menu = new import_obsidian7.Menu();
+    menu.addItem((item) => item.setTitle(t("openInNewTab")).setIcon("file-plus").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("tab"))));
+    menu.addItem((item) => item.setTitle(t("openInRightPane")).setIcon("panel-right").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("split", "vertical"))));
+    menu.addItem((item) => item.setTitle(t("openInNewWindow")).setIcon("external-link").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("window"))));
+    menu.addSeparator();
+    menu.addItem((item) => item.setTitle(t("renamePage")).setIcon("pencil").onClick(() => new RenamePagePopover(this.app, file).open(event)));
+    menu.addItem((item) => item.setTitle(t("movePage")).setIcon("folder-input").onClick(() => new MovePagePopover(this.app, file).open(event)));
+    menu.addItem((item) => item.setTitle(t("duplicatePage")).setIcon("copy").onClick(() => void this.duplicatePage(file)));
+    menu.addItem((item) => item.setTitle(t("addBookmark")).setIcon("bookmark-plus").onClick(() => void this.addBookmark(file)));
+    menu.addSeparator();
+    menu.addItem((item) => item.setTitle(t("copyPath")).setIcon("clipboard-copy").onClick(() => void this.copyText(this.getAbsolutePath(file))));
+    if (import_obsidian7.Platform.isDesktopApp && this.app.vault.adapter instanceof import_obsidian7.FileSystemAdapter) {
+      menu.addItem((item) => item.setTitle(t("showInExplorer")).setIcon("folder-open").onClick(() => this.showInExplorer(file)));
     }
+    menu.showAtMouseEvent(event);
+  }
+  async openInLeaf(file, leaf) {
+    try {
+      await leaf.openFile(file);
+    } catch (error) {
+      new import_obsidian7.Notice(String(error));
+    }
+  }
+  async copyText(value) {
+    try {
+      await navigator.clipboard.writeText(value);
+      new import_obsidian7.Notice(t("copied"));
+    } catch (error) {
+      console.error("NaitFlow: failed to copy to clipboard", error);
+      new import_obsidian7.Notice(t("copyFailed"));
+    }
+  }
+  getAbsolutePath(file) {
+    const adapter = this.app.vault.adapter;
+    if (!(adapter instanceof import_obsidian7.FileSystemAdapter)) return file.path;
+    const separator = adapter.getBasePath().includes("\\") ? "\\" : "/";
+    return `${adapter.getBasePath()}${separator}${file.path.split("/").join(separator)}`;
+  }
+  showInExplorer(file) {
+    try {
+      const electron = require("electron");
+      if (!electron.shell) throw new Error("Electron shell is unavailable");
+      electron.shell.showItemInFolder(this.getAbsolutePath(file));
+    } catch (error) {
+      console.error("NaitFlow: failed to show file in Explorer", error);
+      new import_obsidian7.Notice(t("showInExplorerFailed"));
+    }
+  }
+  async duplicatePage(file) {
+    const parentPath = file.parent?.path ?? "";
+    const sourceFolder = this.app.vault.getAbstractFileByPath(pageFolderPath(file.path));
+    let targetFilePath = "";
+    for (let index = 1; index < 1e4; index++) {
+      const suffix = index === 1 ? t("copySuffix") : `${t("copySuffix")} ${index}`;
+      const name = `${file.basename} ${suffix}`;
+      const candidate = (0, import_obsidian7.normalizePath)(parentPath ? `${parentPath}/${name}.${file.extension}` : `${name}.${file.extension}`);
+      if (!this.app.vault.getAbstractFileByPath(candidate) && !this.app.vault.getAbstractFileByPath(pageFolderPath(candidate))) {
+        targetFilePath = candidate;
+        break;
+      }
+    }
+    if (!targetFilePath) {
+      new import_obsidian7.Notice(t("duplicatePageFailed", { error: t("noFreeFilename") }));
+      return;
+    }
+    try {
+      await this.app.vault.copy(file, targetFilePath);
+      if (sourceFolder instanceof import_obsidian7.TFolder) await this.copyFolder(sourceFolder, pageFolderPath(targetFilePath));
+      const copy = this.app.vault.getAbstractFileByPath(targetFilePath);
+      if (copy instanceof import_obsidian7.TFile) await this.app.workspace.getLeaf(false).openFile(copy);
+    } catch (error) {
+      new import_obsidian7.Notice(t("duplicatePageFailed", { error: String(error) }));
+    }
+  }
+  async copyFolder(source, targetPath) {
+    await ensureFolder(this.app, targetPath);
+    for (const child of source.children) {
+      const childTargetPath = (0, import_obsidian7.normalizePath)(`${targetPath}/${child.name}`);
+      if (child instanceof import_obsidian7.TFolder) await this.copyFolder(child, childTargetPath);
+      else await this.app.vault.copy(child, childTargetPath);
+    }
+  }
+  async addBookmark(file) {
+    const commands = this.app.commands;
+    const commandId = commands?.commands && "bookmarks:bookmark" in commands.commands ? "bookmarks:bookmark" : void 0;
+    if (!commandId || !commands?.executeCommandById) {
+      new import_obsidian7.Notice(t("bookmarkUnavailable"));
+      return;
+    }
+    if (this.app.workspace.getActiveFile()?.path !== file.path) await this.app.workspace.getLeaf(false).openFile(file);
+    if (!commands.executeCommandById(commandId)) new import_obsidian7.Notice(t("bookmarkUnavailable"));
+  }
+};
+var RenamePagePopover = class {
+  constructor(app, file) {
+    this.app = app;
+    this.file = file;
+  }
+  popover = null;
+  outsideHandler = null;
+  open(anchor) {
+    this.close();
+    const popover = document.body.createDiv("naitflow-rename-popover");
+    popover.style.left = `${Math.max(12, Math.min(anchor.clientX, window.innerWidth - 356))}px`;
+    popover.style.top = `${Math.max(12, Math.min(anchor.clientY, window.innerHeight - 58))}px`;
+    const form = popover.createEl("form", { cls: "naitflow-rename-popover-form" });
+    const input = form.createEl("input", { attr: { type: "text", value: this.file.basename, "aria-label": t("renamePagePrompt") } });
+    form.onsubmit = (event) => {
+      event.preventDefault();
+      void this.rename(input.value);
+    };
+    input.onkeydown = (event) => {
+      if (event.key === "Escape") this.close();
+    };
+    this.popover = popover;
+    this.outsideHandler = (event) => {
+      if (this.popover && !this.popover.contains(event.target)) this.close();
+    };
+    window.setTimeout(() => {
+      input.focus();
+      input.select();
+      if (this.outsideHandler) document.addEventListener("pointerdown", this.outsideHandler, true);
+    }, 0);
+  }
+  async rename(value) {
+    const name = value.trim();
+    if (!name) return;
+    const parentPath = this.file.parent?.path ?? "";
+    const nextPath = (0, import_obsidian7.normalizePath)(parentPath ? `${parentPath}/${name}.${this.file.extension}` : `${name}.${this.file.extension}`);
+    if (nextPath === this.file.path) {
+      this.close();
+      return;
+    }
+    try {
+      await this.app.fileManager.renameFile(this.file, nextPath);
+      this.close();
+    } catch (error) {
+      new import_obsidian7.Notice(t("renamePageFailed", { error: String(error) }));
+    }
+  }
+  close() {
+    if (this.outsideHandler) document.removeEventListener("pointerdown", this.outsideHandler, true);
+    this.outsideHandler = null;
+    this.popover?.remove();
+    this.popover = null;
+  }
+};
+var MovePagePopover = class {
+  constructor(app, file) {
+    this.app = app;
+    this.file = file;
+  }
+  expanded = /* @__PURE__ */ new Set();
+  popover = null;
+  outsideHandler = null;
+  open(anchor) {
+    this.close();
+    const popover = document.body.createDiv("naitflow-move-popover");
+    popover.style.left = `${Math.max(12, Math.min(anchor.clientX, window.innerWidth - 344))}px`;
+    popover.style.top = `${Math.max(12, Math.min(anchor.clientY, window.innerHeight - 454))}px`;
+    const searchWrap = popover.createDiv("naitflow-search-wrap naitflow-move-search-wrap");
+    const searchIcon = searchWrap.createSpan("naitflow-search-icon");
+    (0, import_obsidian7.setIcon)(searchIcon, "search");
+    const search = searchWrap.createEl("input", {
+      cls: "naitflow-search",
+      attr: { type: "search", placeholder: t("movePageSearch") }
+    });
+    const list = popover.createDiv("naitflow-move-list");
+    const render = () => this.renderList(list, search.value);
+    search.oninput = render;
+    search.onkeydown = (event) => {
+      if (event.key === "Escape") this.close();
+    };
+    render();
+    this.popover = popover;
+    this.outsideHandler = (event) => {
+      if (this.popover && !this.popover.contains(event.target)) this.close();
+    };
+    window.setTimeout(() => search.focus(), 0);
+    window.setTimeout(() => {
+      if (this.outsideHandler) document.addEventListener("pointerdown", this.outsideHandler, true);
+    }, 0);
+  }
+  renderList(list, query) {
+    list.empty();
+    const normalizedQuery = query.trim().toLocaleLowerCase(localeCode());
+    if (!normalizedQuery) list.createDiv({ cls: "naitflow-move-heading", text: t("movePageSuggested") });
+    const nodes = this.filterNodes(buildPageTree(this.app), normalizedQuery);
+    if (!nodes.length) {
+      list.createDiv({ cls: "naitflow-move-empty", text: t("nothingFound") });
+      return;
+    }
+    this.renderNodes(list, nodes, 0, Boolean(normalizedQuery), query);
+  }
+  renderNodes(parent, nodes, depth, forceExpanded, query) {
+    for (const node of nodes) {
+      const row = parent.createDiv("naitflow-move-tree-row");
+      row.style.setProperty("--naitflow-depth", String(depth));
+      const expanded = forceExpanded || this.expanded.has(node.file.path);
+      if (node.children.length) {
+        const toggle = row.createEl("button", { cls: "naitflow-move-toggle", attr: { type: "button", "aria-expanded": String(expanded) } });
+        (0, import_obsidian7.setIcon)(toggle, expanded ? "chevron-down" : "chevron-right");
+        toggle.onclick = (event) => {
+          event.stopPropagation();
+          if (this.expanded.has(node.file.path)) this.expanded.delete(node.file.path);
+          else this.expanded.add(node.file.path);
+          const list = this.popover?.querySelector(".naitflow-move-list");
+          if (list) this.renderList(list, query);
+        };
+      } else {
+        row.createSpan("naitflow-move-toggle naitflow-move-toggle--empty");
+      }
+      const page = row.createEl("button", { cls: "naitflow-move-row", attr: { type: "button" } });
+      const icon = page.createSpan("naitflow-move-icon");
+      renderPageIcon(this.app, icon, readPageMeta(this.app, node.file).icon);
+      page.createDiv({ cls: "naitflow-move-label", text: displayName(node.file) });
+      page.onclick = () => void this.moveToPage(node.file);
+      if (expanded && node.children.length) this.renderNodes(parent, node.children, depth + 1, forceExpanded, query);
+    }
+  }
+  filterNodes(nodes, query) {
+    const pageFolder = pageFolderPath(this.file.path);
+    const filter = (items) => items.flatMap((node) => {
+      const folderPath = pageFolderPath(node.file.path);
+      if (node.file.path === this.file.path || folderPath === pageFolder || folderPath.startsWith(`${pageFolder}/`)) return [];
+      const children = filter(node.children);
+      const matches = !query || displayName(node.file).toLocaleLowerCase(localeCode()).includes(query);
+      return matches || children.length ? [{ file: node.file, children }] : [];
+    });
+    return filter(nodes);
+  }
+  async moveToPage(destination) {
+    await this.moveToFolder(pageFolderPath(destination.path));
+  }
+  async moveToFolder(folderPath) {
+    try {
+      if (folderPath) await ensureFolder(this.app, folderPath);
+      const nextPath = (0, import_obsidian7.normalizePath)(folderPath ? `${folderPath}/${this.file.name}` : this.file.name);
+      if (nextPath === this.file.path) return;
+      await this.app.fileManager.renameFile(this.file, nextPath);
+      this.close();
+    } catch (error) {
+      new import_obsidian7.Notice(t("movePageFailed", { error: String(error) }));
+    }
+  }
+  close() {
+    if (this.outsideHandler) document.removeEventListener("pointerdown", this.outsideHandler, true);
+    this.outsideHandler = null;
+    this.popover?.remove();
+    this.popover = null;
   }
 };
 
@@ -1338,11 +1660,14 @@ var NaitFlowPlugin = class extends import_obsidian9.Plugin {
       return true;
     } });
     this.registerEvent(this.app.workspace.on("layout-change", () => this.headers.schedule()));
-    this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshUi()));
+    this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshActiveTreeState()));
     this.registerEvent(this.app.metadataCache.on("changed", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("create", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("delete", () => this.refreshUi()));
-    this.registerEvent(this.app.vault.on("rename", () => this.refreshUi()));
+    this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
+      this.refreshUi();
+      void this.renamePairedFolder(file, oldPath);
+    }));
     this.registerInterval(window.setInterval(() => this.headers.schedule(), 1500));
     this.app.workspace.onLayoutReady(() => {
       this.headers.schedule();
@@ -1375,6 +1700,13 @@ var NaitFlowPlugin = class extends import_obsidian9.Plugin {
       if (view instanceof NaitFlowTreeView) view.render();
     }
   }
+  refreshActiveTreeState() {
+    this.headers.schedule();
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_NAITFLOW)) {
+      const view = leaf.view;
+      if (view instanceof NaitFlowTreeView) view.syncActiveFile();
+    }
+  }
   async activateTree() {
     let leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_NAITFLOW)[0];
     if (!leaf) {
@@ -1393,6 +1725,24 @@ var NaitFlowPlugin = class extends import_obsidian9.Plugin {
   }
   async saveSettings() {
     await this.saveData(this.settings);
+  }
+  /** Keeps `Page.md` and its sibling `Page/` together after a native rename or move. */
+  async renamePairedFolder(file, oldPath) {
+    if (!(file instanceof import_obsidian9.TFile) || file.extension.toLowerCase() !== "md") return;
+    const oldFolder = this.app.vault.getAbstractFileByPath(pageFolderPath(oldPath));
+    if (!(oldFolder instanceof import_obsidian9.TFolder)) return;
+    const nextPath = pageFolderPath(file.path);
+    const existing = this.app.vault.getAbstractFileByPath(nextPath);
+    if (existing && existing !== oldFolder) {
+      new import_obsidian9.Notice("NaitFlow: the matching page folder was not renamed because the destination already exists.", 8e3);
+      return;
+    }
+    try {
+      await this.app.vault.rename(oldFolder, nextPath);
+    } catch (error) {
+      console.error("NaitFlow: failed to rename matching page folder", error);
+      new import_obsidian9.Notice("NaitFlow: could not rename the matching page folder.", 8e3);
+    }
   }
   loadEmojiFont() {
     if (!this.manifest.dir) return;

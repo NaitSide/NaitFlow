@@ -89,13 +89,15 @@
 .naitflow-icon--large { width: 68px; height: 68px; }
 .naitflow-icon--large svg { width: 54px; height: 54px; stroke-width: 1.6; }
 .naitflow-icon--large .naitflow-emoji { font-size: 60px; line-height: 1; }
-.naitflow-tree { padding: 8px 7px; font-size: var(--nav-item-size); }
+.naitflow-tree { padding: 8px 3px 8px 3px; font-size: var(--nav-item-size); }
 .naitflow-tree button { appearance: none; border: 0 !important; background: transparent !important; box-shadow: none !important; }
 .naitflow-tree-header { display: flex; align-items: center; justify-content: space-between; min-height: 34px; padding: 2px 7px 8px; color: var(--text-muted); }
 .naitflow-tree-header strong { color: var(--text-normal); font-size: var(--font-ui-small); font-weight: 600; }
 .naitflow-tree-header button { width: 26px; height: 26px; padding: 4px !important; color: var(--text-muted); opacity: .72; }
 .naitflow-tree-header button:hover { opacity: 1; background: var(--background-modifier-hover) !important; }
-.naitflow-tree-row { display: flex; align-items: center; min-height: 30px; margin: 0; padding: 0 4px 0 calc(4px + var(--naitflow-depth) * 18px); border-radius: 6px; color: var(--nav-item-color); }
+.naitflow-tree-list, .naitflow-tree-children { display: flex; flex-direction: column; gap: 1px; }
+.naitflow-tree-row { display: flex; align-items: center; box-sizing: border-box; width: calc(100% + 8px); min-height: 30px; margin: 0 0 0 -4px; padding: 0 4px 0 calc(8px + var(--naitflow-depth) * 18px); border-radius: 6px; color: var(--nav-item-color); }
+.naitflow-tree--scrollable .naitflow-tree-row { width: calc(100% + 7px); }
 .naitflow-tree-row:hover { color: var(--nav-item-color-hover); }
 .naitflow-tree-row.is-active { color: var(--nav-item-color-active, var(--text-normal)); }
 .naitflow-tree-icon { flex: 0 0 22px; width: 22px; height: 22px; margin-right: 6px; padding: 1px !important; color: var(--text-muted); }
@@ -128,6 +130,29 @@
 .naitflow-tree-add-child { display: flex; align-items: center; gap: 4px; width: calc(100% - 6px - var(--naitflow-depth) * 18px); min-height: 28px; margin: 2px 3px 2px calc(3px + var(--naitflow-depth) * 18px); padding: 3px 7px !important; justify-content: flex-start; border-radius: var(--nav-item-radius, 5px); color: var(--text-muted); opacity: .58; font-size: var(--nav-item-size); font-weight: 400; text-align: left; }
 .naitflow-tree-add-child:hover { opacity: .86; background: var(--background-modifier-hover) !important; color: var(--nav-item-color-hover); }
 .naitflow-tree-add-child svg { width: 15px; height: 15px; }
+.naitflow-rename-popover { position: fixed; z-index: var(--layer-popover, 1000); width: min(312px, calc(100vw - 24px)); padding: 5px; border: 1px solid var(--background-modifier-border); border-radius: var(--radius-m); background: var(--background-primary); box-shadow: var(--shadow-s); }
+.naitflow-rename-popover-form { display: block; }
+.naitflow-rename-popover input { display: block; width: 100%; box-sizing: border-box; height: 30px; padding: 3px 7px; border: 1px solid var(--background-modifier-border); border-radius: 6px; outline: 0 !important; box-shadow: none !important; }
+.naitflow-rename-popover input:focus { border-color: var(--interactive-accent); outline: 0 !important; box-shadow: none !important; }
+.naitflow-move-popover { position: fixed; z-index: var(--layer-popover, 1000); width: min(332px, calc(100vw - 24px)); padding: 11px 0 4px; border: 1px solid var(--background-modifier-border); border-radius: var(--radius-m); background: var(--background-primary); box-shadow: var(--shadow-s); }
+.naitflow-move-search-wrap { width: auto; margin: 0 11px 9px; }
+.naitflow-move-search-wrap > input.naitflow-search { height: 30px; min-height: 30px; border: 1px solid var(--background-modifier-border); border-radius: 6px; outline: 0 !important; box-shadow: none !important; }
+.naitflow-move-search-wrap > input.naitflow-search:focus { border-color: var(--interactive-accent) !important; outline: 0 !important; box-shadow: none !important; }
+.naitflow-move-list { max-height: min(48vh, 390px); overflow-y: auto; padding: 0 0 1px; }
+.naitflow-move-heading { display: flex; align-items: center; box-sizing: border-box; height: 30px; padding: 0 13px; color: var(--text-muted); font-size: var(--font-ui-smaller); font-weight: 600; transform: translateY(3px); }
+.naitflow-move-tree-row { display: flex; align-items: center; box-sizing: border-box; width: calc(100% - 17px); height: 28px; min-height: 28px; margin: 0 9px 0 8px; padding-left: calc(14px + var(--naitflow-depth) * 16px); border-radius: 6px; }
+.naitflow-move-tree-row:hover { background: var(--background-modifier-hover); }
+.naitflow-move-toggle { display: grid; place-items: center; flex: 0 0 20px; width: 20px; height: 20px; margin-right: 2px; padding: 0 !important; border: 0 !important; border-radius: 4px; color: var(--text-muted); background: transparent !important; box-shadow: none !important; }
+.naitflow-move-toggle:hover { background: var(--background-modifier-hover) !important; color: var(--text-normal); }
+.naitflow-move-toggle--empty { pointer-events: none; }
+.naitflow-move-toggle svg { width: 12px; height: 12px; }
+.naitflow-move-row { display: flex; align-items: center; justify-content: flex-start !important; flex: 1; min-width: 0; box-sizing: border-box; height: 28px; min-height: 28px; padding: 0 5px; border: 0 !important; border-radius: 0; background: transparent !important; color: var(--text-normal); text-align: left; box-shadow: none !important; }
+.naitflow-move-row:hover { background: transparent !important; }
+.naitflow-move-icon { display: grid; place-items: center; flex: 0 0 20px; width: 20px; height: 20px; margin-right: 6px; color: var(--text-muted); }
+.naitflow-move-icon svg { width: 15px; height: 15px; }
+.naitflow-move-icon .naitflow-emoji { font-size: 16px; line-height: 1; }
+.naitflow-move-label { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.naitflow-move-empty { padding: 12px 5px; color: var(--text-muted); font-size: var(--font-ui-small); }
 .naitflow-fluid-cover-host { container-type: inline-size; }
 .naitflow-page-header { position: relative; width: 100%; margin-top: calc(-1 * var(--naitflow-cover-gutter-top, 0px)); margin-bottom: 4px; overflow: visible; user-select: none; }
 .naitflow-page-header-inner { max-width: var(--file-line-width); margin: 0 auto; padding: 22px 0 0; }

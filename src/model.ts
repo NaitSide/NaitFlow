@@ -84,3 +84,7 @@ export function assetUrl(app: App, path: string): string {
 export function displayName(file: TFile): string {
   return file.basename || t("untitled");
 }
+
+export function pageFolderPath(filePath: string): string {
+  return normalizePath(filePath.replace(/\.md$/i, ""));
+}

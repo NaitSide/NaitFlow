@@ -1,7 +1,8 @@
-import { Notice, Plugin, TFile } from "obsidian";
+import { Notice, Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
 import { CoverPickerModal } from "./cover-picker";
 import { IconPickerModal } from "./icon-picker";
 import { t } from "./i18n";
+import { pageFolderPath } from "./model";
 import { PageHeaderManager } from "./page-header";
 import { NaitFlowTreeView, VIEW_TYPE_NAITFLOW } from "./page-tree";
 import { DEFAULT_SETTINGS, NaitFlowSettings, NaitFlowSettingTab } from "./settings";
@@ -34,11 +35,14 @@ export default class NaitFlowPlugin extends Plugin {
     }});
 
     this.registerEvent(this.app.workspace.on("layout-change", () => this.headers.schedule()));
-    this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshUi()));
+    this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshActiveTreeState()));
     this.registerEvent(this.app.metadataCache.on("changed", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("create", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("delete", () => this.refreshUi()));
-    this.registerEvent(this.app.vault.on("rename", () => this.refreshUi()));
+    this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
+      this.refreshUi();
+      void this.renamePairedFolder(file, oldPath);
+    }));
     this.registerInterval(window.setInterval(() => this.headers.schedule(), 1500));
 
     this.app.workspace.onLayoutReady(() => {
@@ -72,6 +76,14 @@ export default class NaitFlowPlugin extends Plugin {
     }
   }
 
+  private refreshActiveTreeState(): void {
+    this.headers.schedule();
+    for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE_NAITFLOW)) {
+      const view = leaf.view;
+      if (view instanceof NaitFlowTreeView) view.syncActiveFile();
+    }
+  }
+
   async activateTree(): Promise<void> {
     let leaf = this.app.workspace.getLeavesOfType(VIEW_TYPE_NAITFLOW)[0];
     if (!leaf) {
@@ -92,6 +104,27 @@ export default class NaitFlowPlugin extends Plugin {
   }
 
   async saveSettings(): Promise<void> { await this.saveData(this.settings); }
+
+  /** Keeps `Page.md` and its sibling `Page/` together after a native rename or move. */
+  private async renamePairedFolder(file: TAbstractFile, oldPath: string): Promise<void> {
+    if (!(file instanceof TFile) || file.extension.toLowerCase() !== "md") return;
+    const oldFolder = this.app.vault.getAbstractFileByPath(pageFolderPath(oldPath));
+    if (!(oldFolder instanceof TFolder)) return;
+
+    const nextPath = pageFolderPath(file.path);
+    const existing = this.app.vault.getAbstractFileByPath(nextPath);
+    if (existing && existing !== oldFolder) {
+      new Notice("NaitFlow: the matching page folder was not renamed because the destination already exists.", 8000);
+      return;
+    }
+
+    try {
+      await this.app.vault.rename(oldFolder, nextPath);
+    } catch (error) {
+      console.error("NaitFlow: failed to rename matching page folder", error);
+      new Notice("NaitFlow: could not rename the matching page folder.", 8000);
+    }
+  }
 
   private loadEmojiFont(): void {
     if (!this.manifest.dir) return;
