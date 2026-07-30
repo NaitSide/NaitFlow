@@ -8,6 +8,17 @@ export interface NaitFlowSettings {
   recentEmoji: string[];
   recentIcons: string[];
   openTreeOnStartup: boolean;
+  trashRecords: NaitFlowTrashRecord[];
+}
+
+export interface NaitFlowTrashRecord {
+  id: string;
+  title: string;
+  originalFilePath: string;
+  originalFolderPath?: string;
+  trashedFilePath: string;
+  trashedFolderPath?: string;
+  deletedAt: number;
 }
 
 export const DEFAULT_SETTINGS: NaitFlowSettings = {
@@ -15,7 +26,8 @@ export const DEFAULT_SETTINGS: NaitFlowSettings = {
   unsplashAccessKey: "",
   recentEmoji: [],
   recentIcons: [],
-  openTreeOnStartup: true
+  openTreeOnStartup: true,
+  trashRecords: []
 };
 
 export class NaitFlowSettingTab extends PluginSettingTab {
@@ -27,6 +39,15 @@ export class NaitFlowSettingTab extends PluginSettingTab {
     this.containerEl.empty();
     this.containerEl.createEl("h2", { text: "NaitFlow" });
     this.containerEl.createEl("p", { text: t("settingsIntro") });
+
+    this.containerEl.createEl("h3", { text: t("importData") });
+    new Setting(this.containerEl)
+      .setName(t("importFormats"))
+      .setDesc(t("importFormatsDesc"))
+      .addButton((button) => button
+        .setButtonText(t("importZip"))
+        .setCta()
+        .onClick(() => this.plugin.openImporter()));
 
     new Setting(this.containerEl)
       .setName(t("mediaFolder"))

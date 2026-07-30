@@ -1,14 +1,15 @@
 import { Notice, Plugin, TAbstractFile, TFile, TFolder } from "obsidian";
 import { CoverPickerModal } from "./cover-picker";
 import { IconPickerModal } from "./icon-picker";
+import { chooseImportArchive } from "./import-modal";
 import { t } from "./i18n";
 import { pageFolderPath } from "./model";
 import { PageHeaderManager } from "./page-header";
 import { NaitFlowTreeView, VIEW_TYPE_NAITFLOW } from "./page-tree";
-import { DEFAULT_SETTINGS, NaitFlowSettings, NaitFlowSettingTab } from "./settings";
+import { DEFAULT_SETTINGS, NaitFlowSettings, NaitFlowSettingTab, NaitFlowTrashRecord } from "./settings";
 
 export default class NaitFlowPlugin extends Plugin {
-  override settings: NaitFlowSettings = { ...DEFAULT_SETTINGS, recentEmoji: [], recentIcons: [] };
+  override settings: NaitFlowSettings = { ...DEFAULT_SETTINGS, recentEmoji: [], recentIcons: [], trashRecords: [] };
   private headers!: PageHeaderManager;
   private emojiFont?: FontFace;
 
@@ -16,7 +17,7 @@ export default class NaitFlowPlugin extends Plugin {
     await this.loadSettings();
     this.loadEmojiFont();
     this.headers = new PageHeaderManager(this);
-    this.registerView(VIEW_TYPE_NAITFLOW, (leaf) => new NaitFlowTreeView(leaf));
+    this.registerView(VIEW_TYPE_NAITFLOW, (leaf) => new NaitFlowTreeView(leaf, this));
     this.addRibbonIcon("panels-top-left", t("openPagesRibbon"), () => void this.activateTree());
     this.addSettingTab(new NaitFlowSettingTab(this.app, this));
 
@@ -67,6 +68,7 @@ export default class NaitFlowPlugin extends Plugin {
 
   openIconPicker(file: TFile): void { new IconPickerModal(this.app, this, file).open(); }
   openCoverPicker(file: TFile): void { new CoverPickerModal(this.app, this, file).open(); }
+  openImporter(): void { chooseImportArchive(this); }
 
   refreshUi(): void {
     this.headers.schedule();
@@ -104,6 +106,16 @@ export default class NaitFlowPlugin extends Plugin {
   }
 
   async saveSettings(): Promise<void> { await this.saveData(this.settings); }
+
+  async addTrashRecord(record: NaitFlowTrashRecord): Promise<void> {
+    this.settings.trashRecords = [record, ...this.settings.trashRecords.filter((item) => item.id !== record.id)].slice(0, 500);
+    await this.saveSettings();
+  }
+
+  async removeTrashRecord(id: string): Promise<void> {
+    this.settings.trashRecords = this.settings.trashRecords.filter((item) => item.id !== id);
+    await this.saveSettings();
+  }
 
   /** Keeps `Page.md` and its sibling `Page/` together after a native rename or move. */
   private async renamePairedFolder(file: TAbstractFile, oldPath: string): Promise<void> {

@@ -3,6 +3,9 @@
   "version": "0.1.70",
   "private": true,
   "description": "NaitFlow Obsidian plugin",
+  "dependencies": {
+    "@zip.js/zip.js": "2.7.60"
+  },
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production"

@@ -2,6 +2,8 @@ import { App, FileSystemAdapter, ItemView, Menu, Notice, normalizePath, Platform
 import { displayName, ensureFolder, pageFolderPath, readPageMeta } from "./model";
 import { renderPageIcon } from "./icon-renderer";
 import { localeCode, t } from "./i18n";
+import type NaitFlowPlugin from "./main";
+import { NaitFlowTrashPopover } from "./trash-modal";
 
 export const VIEW_TYPE_NAITFLOW = "naitflow-pages";
 
@@ -44,8 +46,9 @@ function getLegacyParent(app: App, file: TFile, nodes: Map<string, PageNode>): P
 export class NaitFlowTreeView extends ItemView {
   private readonly expanded = new Set<string>();
   private treeResizeObserver?: ResizeObserver;
+  private treeFooter?: HTMLElement;
 
-  constructor(leaf: WorkspaceLeaf) {
+  constructor(leaf: WorkspaceLeaf, private readonly plugin: NaitFlowPlugin) {
     super(leaf);
   }
 
@@ -61,6 +64,8 @@ export class NaitFlowTreeView extends ItemView {
 
   override async onClose(): Promise<void> {
     this.treeResizeObserver?.disconnect();
+    this.treeFooter?.remove();
+    this.containerEl.removeClass("naitflow-tree-host");
   }
 
   render(): void {
@@ -77,11 +82,27 @@ export class NaitFlowTreeView extends ItemView {
     const list = root.createDiv("naitflow-tree-list");
     for (const node of nodes) this.renderNode(list, node, 0);
     if (!nodes.length) list.createDiv({ cls: "naitflow-empty", text: t("createFirstPage") });
+    this.renderTrashFooter();
     this.syncScrollbarState();
   }
 
+  private renderTrashFooter(): void {
+    this.treeFooter?.remove();
+    this.containerEl.addClass("naitflow-tree-host");
+    const footer = this.containerEl.createDiv("naitflow-tree-footer");
+    const trash = footer.createEl("button", { cls: "naitflow-tree-trash" });
+    const icon = trash.createSpan("naitflow-tree-trash-icon");
+    setIcon(icon, "trash-2");
+    trash.createSpan({ cls: "naitflow-tree-trash-label", text: t("trash") });
+    trash.onclick = (event) => {
+      this.containerEl.addClass("naitflow-trash-open");
+      new NaitFlowTrashPopover(this.app, this.plugin, () => this.containerEl.removeClass("naitflow-trash-open")).open(event);
+    };
+    this.treeFooter = footer;
+  }
+
   private syncScrollbarState(): void {
-    const viewport = this.contentEl.closest<HTMLElement>(".view-content") ?? this.contentEl;
+    const viewport = this.contentEl;
     const hasVerticalScrollbar = viewport.scrollHeight > viewport.clientHeight && viewport.offsetWidth > viewport.clientWidth;
     this.contentEl.toggleClass("naitflow-tree--scrollable", hasVerticalScrollbar);
   }
@@ -115,7 +136,8 @@ export class NaitFlowTreeView extends ItemView {
       this.render();
     };
 
-    const title = row.createEl("button", { cls: "naitflow-tree-title", text: displayName(node.file) });
+    const title = row.createEl("button", { cls: "naitflow-tree-title" });
+    title.createSpan({ cls: "naitflow-tree-title-label", text: displayName(node.file) });
     title.onclick = () => void this.app.workspace.getLeaf(false).openFile(node.file);
 
     const more = row.createEl("button", { cls: "naitflow-tree-more", attr: { "aria-label": t("pageMenu") } });
@@ -192,7 +214,18 @@ export class NaitFlowTreeView extends ItemView {
     if (Platform.isDesktopApp && this.app.vault.adapter instanceof FileSystemAdapter) {
       menu.addItem((item) => item.setTitle(t("showInExplorer")).setIcon("folder-open").onClick(() => this.showInExplorer(file)));
     }
+    menu.addSeparator();
+    const trashTitle = document.createDocumentFragment();
+    const trashLabel = document.createElement("span");
+    trashLabel.addClass("naitflow-delete-menu-label");
+    trashLabel.setText(t("deletePage"));
+    trashTitle.appendChild(trashLabel);
+    menu.addItem((item) => item.setTitle(trashTitle).setIcon("trash-2").onClick(() => void this.trashPage(file)));
     menu.showAtMouseEvent(event);
+    window.setTimeout(() => {
+      const menus = document.querySelectorAll<HTMLElement>(".menu");
+      menus.item(menus.length - 1)?.addClass("naitflow-page-menu");
+    }, 0);
   }
 
   private async openInLeaf(file: TFile, leaf: WorkspaceLeaf): Promise<void> {
@@ -257,6 +290,54 @@ export class NaitFlowTreeView extends ItemView {
     } catch (error) {
       new Notice(t("duplicatePageFailed", { error: String(error) }));
     }
+  }
+
+  private async trashPage(file: TFile): Promise<void> {
+    const beforeFileTrash = await this.listTrashEntries();
+    const title = displayName(file);
+    const originalFilePath = file.path;
+    const originalFolderPath = pageFolderPath(file.path);
+    if (!await this.app.fileManager.promptForDeletion(file)) return;
+    const folder = this.app.vault.getAbstractFileByPath(pageFolderPath(file.path));
+    try {
+      const afterFileTrash = await this.listTrashEntries();
+      const trashedFilePath = this.findNewTrashEntry(beforeFileTrash, afterFileTrash, file.name);
+      if (folder instanceof TFolder) await this.app.fileManager.trashFile(folder);
+      const afterFolderTrash = await this.listTrashEntries();
+      const trashedFolderPath = folder instanceof TFolder
+        ? this.findNewTrashEntry(afterFileTrash, afterFolderTrash, folder.name)
+        : undefined;
+      if (!trashedFilePath) {
+        new Notice(t("trashLocalUnavailable"));
+        return;
+      }
+      await this.plugin.addTrashRecord({
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        title,
+        originalFilePath,
+        originalFolderPath: folder instanceof TFolder ? originalFolderPath : undefined,
+        trashedFilePath,
+        trashedFolderPath,
+        deletedAt: Date.now()
+      });
+    } catch (error) {
+      console.error("NaitFlow: failed to move page to trash", error);
+      new Notice(t("deletePageFailed", { error: String(error) }));
+    }
+  }
+
+  private async listTrashEntries(): Promise<Set<string>> {
+    try {
+      const listed = await this.app.vault.adapter.list(".trash");
+      return new Set([...listed.files, ...listed.folders]);
+    } catch {
+      return new Set();
+    }
+  }
+
+  private findNewTrashEntry(before: Set<string>, after: Set<string>, name: string): string | undefined {
+    const candidates = [...after].filter((path) => !before.has(path));
+    return candidates.find((path) => path.endsWith(`/${name}`)) ?? (candidates.length === 1 ? candidates[0] : undefined);
   }
 
   private async copyFolder(source: TFolder, targetPath: string): Promise<void> {
