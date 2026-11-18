@@ -8,49 +8,135 @@ import { t } from "./i18n";
 const MET_COVER_FILE = /(?:^|\/)(?:woodcuts_(?:\d+|sekka_\d+)|hudson-river-scene-kensett|river-scene-durand|landscape-lagoon-new-rochelle|on-hudson-near-idlewild|hackensack-meadows|the-oxbow|heart-of-the-andes|the-parthenon)\.(?:jpe?g|png|webp)$/i;
 
 export class PageHeaderManager {
-  private scheduled = 0;
+  private scheduled = false;
+  private destroyed = false;
+  private readonly views = new Map<HTMLElement, { structure: MutationObserver; size: ResizeObserver }>();
+  private readonly documents = new Set<Document>();
 
   constructor(private readonly plugin: NaitFlowPlugin) {}
 
   schedule(): void {
-    window.clearTimeout(this.scheduled);
-    this.scheduled = window.setTimeout(() => this.refresh(), 80);
+    if (this.scheduled || this.destroyed) return;
+    this.scheduled = true;
+    // Coalesce synchronous Obsidian updates before the browser paints a frame.
+    queueMicrotask(() => {
+      this.scheduled = false;
+      if (!this.destroyed) this.refresh();
+    });
   }
 
   refresh(): void {
+    for (const [container, observers] of this.views) {
+      if (container.isConnected) continue;
+      observers.structure.disconnect();
+      observers.size.disconnect();
+      this.views.delete(container);
+    }
     for (const leaf of this.plugin.app.workspace.getLeavesOfType("markdown")) {
       const view = leaf.view;
       if (!(view instanceof MarkdownView) || !view.file) continue;
       this.decorate(view, view.file);
+      this.decorateBreadcrumbs(view, view.file);
       this.decorateTab(leaf as unknown as { tabHeaderEl?: HTMLElement }, view.file);
     }
   }
 
+  destroy(): void {
+    this.destroyed = true;
+    for (const observers of this.views.values()) {
+      observers.structure.disconnect();
+      observers.size.disconnect();
+    }
+    this.views.clear();
+    for (const doc of this.documents) {
+      doc.querySelectorAll(".naitflow-page-header, .naitflow-tab-icon, .naitflow-breadcrumb-icon").forEach((element) => element.remove());
+      doc.querySelectorAll(".naitflow-note, .naitflow-tab-icon-host").forEach((element) => {
+        element.removeClass("naitflow-note", "naitflow-tab-icon-host");
+      });
+      doc.querySelectorAll<HTMLElement>(".naitflow-fluid-cover-host").forEach((element) => {
+        element.removeClass("naitflow-fluid-cover-host");
+        for (const side of ["left", "right"]) element.style.removeProperty(`--naitflow-cover-gutter-${side}`);
+      });
+    }
+    this.documents.clear();
+  }
+
   private decorate(view: MarkdownView, file: TFile): void {
+    view.containerEl.addClass("naitflow-note");
+    this.documents.add(view.containerEl.ownerDocument);
+    if (!this.views.has(view.containerEl)) {
+      const structure = new MutationObserver((records) => {
+        const selector = ".cm-sizer, .markdown-preview-view, .markdown-preview-sizer, .naitflow-page-header, .view-header-title, .view-header-breadcrumb";
+        const changed = records.some((record) => [...record.addedNodes, ...record.removedNodes].some((node) =>
+          node.nodeType === 1 && ((node as Element).matches(selector) || (node as Element).querySelector(selector))
+        ));
+        if (changed) this.schedule();
+      });
+      structure.observe(view.containerEl, { childList: true, subtree: true });
+      const size = new ResizeObserver(() => this.schedule());
+      size.observe(view.containerEl);
+      this.views.set(view.containerEl, { structure, size });
+    }
     const targets = [
       view.containerEl.querySelector<HTMLElement>(".markdown-source-view .cm-sizer"),
-      view.containerEl.querySelector<HTMLElement>(".markdown-preview-view .markdown-preview-sizer")
+      view.containerEl.querySelector<HTMLElement>(".markdown-preview-view")
     ].filter((item): item is HTMLElement => Boolean(item));
     for (const target of targets) {
       const fluidHost = target.closest<HTMLElement>(".cm-scroller, .markdown-preview-view");
       if (fluidHost) {
+        const hostWindow = fluidHost.ownerDocument.defaultView;
+        if (!hostWindow) continue;
         fluidHost.addClass("naitflow-fluid-cover-host");
-        const hostStyle = window.getComputedStyle(fluidHost);
+        const hostStyle = hostWindow.getComputedStyle(fluidHost);
         fluidHost.style.setProperty("--naitflow-cover-gutter-left", hostStyle.paddingLeft);
         fluidHost.style.setProperty("--naitflow-cover-gutter-right", hostStyle.paddingRight);
-        if (!fluidHost.style.getPropertyValue("--naitflow-cover-gutter-top")) {
-          const hostRect = fluidHost.getBoundingClientRect();
-          const targetRect = target.getBoundingClientRect();
-          const topGutter = Math.max(0, targetRect.top - hostRect.top + fluidHost.scrollTop);
-          fluidHost.style.setProperty("--naitflow-cover-gutter-top", `${topGutter}px`);
-        }
       }
       let header = target.querySelector<HTMLElement>(":scope > .naitflow-page-header");
       if (!header) {
-        header = createDiv({ cls: "naitflow-page-header" });
-        target.prepend(header);
+        header = target.ownerDocument.createElement("div");
+        header.addClass("naitflow-page-header");
+        if (target.hasClass("cm-sizer")) {
+          // The editor sizer is a native flex column; CSS owns the visual order.
+          target.append(header);
+        } else {
+          // Keep our header outside the preview renderer's managed content.
+          target.prepend(header);
+        }
       }
       this.renderHeader(header, file);
+    }
+  }
+
+  private decorateBreadcrumbs(view: MarkdownView, file: TFile): void {
+    const header = view.containerEl.querySelector<HTMLElement>(":scope > .view-header .view-header-title-container");
+    const title = header?.querySelector<HTMLElement>(":scope > .view-header-title");
+    if (!header || !title) return;
+    const app = this.plugin.app;
+    const crumbs = header.querySelectorAll<HTMLElement>(":scope > .view-header-title-parent > .view-header-breadcrumb");
+    const folders = file.parent?.path.split("/").filter(Boolean) ?? [];
+    let folderPath = "";
+    crumbs.forEach((crumb, index) => {
+      const folder = folders[index];
+      if (folder) folderPath = folderPath ? `${folderPath}/${folder}` : folder;
+      const page = folder && crumbs.length === folders.length ? app.vault.getFileByPath(`${folderPath}.md`) : null;
+      this.updateBreadcrumbIcon(crumb, page ? readPageMeta(app, page).icon : undefined);
+    });
+    // The native title may be editable. Keep its text and caret in Obsidian's element.
+    this.updateBreadcrumbIcon(header, readPageMeta(app, file).icon, title);
+  }
+
+  private updateBreadcrumbIcon(host: HTMLElement, raw: string | undefined, before = host.firstChild): void {
+    const existing = host.querySelector<HTMLElement>(":scope > .naitflow-breadcrumb-icon");
+    if (!raw) { existing?.remove(); return; }
+    const icon = existing ?? host.ownerDocument.createElement("span");
+    if (!existing) {
+      icon.className = "naitflow-breadcrumb-icon";
+      icon.setAttribute("aria-hidden", "true");
+      host.insertBefore(icon, before);
+    }
+    if (icon.dataset.naitflowSignature !== raw) {
+      icon.dataset.naitflowSignature = raw;
+      renderPageIcon(this.plugin.app, icon, raw);
     }
   }
 

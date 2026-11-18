@@ -10,6 +10,7 @@ const options = {
   absWorkingDir: projectDir,
   entryPoints: [join(projectDir, "src", "main.ts")],
   bundle: true,
+  loader: { ".svg": "text" },
   external: ["obsidian", "electron", "@codemirror/autocomplete", "@codemirror/collab", "@codemirror/commands", "@codemirror/language", "@codemirror/lint", "@codemirror/search", "@codemirror/state", "@codemirror/view", "@lezer/common", "@lezer/highlight", "@lezer/lr", ...builtins],
   format: "cjs",
   target: "es2022",

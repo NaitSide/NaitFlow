@@ -2,6 +2,7 @@ import { App, Modal, Notice, setIcon } from "obsidian";
 import type NaitFlowPlugin from "./main";
 import type { NaitFlowTrashRecord } from "./settings";
 import { localeCode, t } from "./i18n";
+import { renderPageIcon } from "./icon-renderer";
 
 function parentPath(path: string): string {
   const index = path.lastIndexOf("/");
@@ -9,10 +10,11 @@ function parentPath(path: string): string {
 }
 
 function formatDeletedAt(value: number): string {
-  return new Intl.DateTimeFormat(localeCode() === "ru" ? "ru-RU" : "en-US", {
+  const formatted = new Intl.DateTimeFormat(localeCode() === "ru" ? "ru-RU" : "en-US", {
     dateStyle: "short",
     timeStyle: "short"
   }).format(new Date(value));
+  return localeCode() === "ru" ? formatted.replace(",", "") : formatted;
 }
 
 async function ensureParentFolders(app: App, path: string): Promise<void> {
@@ -48,6 +50,7 @@ export class NaitFlowTrashPopover {
     this.popover = popover;
     void this.reload();
     this.outsideHandler = (event) => {
+      if (event.target instanceof Element && event.target.closest(".naitflow-trash-confirm-modal")) return;
       if (this.popover && !this.popover.contains(event.target as Node)) this.close();
     };
     this.keydownHandler = (event) => {
@@ -98,7 +101,9 @@ export class NaitFlowTrashPopover {
 
     content.createDiv("naitflow-trash-list");
     this.renderRows();
-    content.createEl("button", { cls: "naitflow-trash-clear", text: t("trashClearAll"), attr: { type: "button", disabled: "true" } });
+    const footer = content.createDiv("naitflow-trash-footer");
+    const clear = footer.createEl("button", { cls: "naitflow-trash-clear", text: t("trashClearAll"), attr: { type: "button" } });
+    clear.onclick = () => new ConfirmTrashActionModal(this.app, t("trashClearAllTitle"), () => void this.clearAll()).open();
     window.setTimeout(() => search.focus(), 0);
   }
 
@@ -118,7 +123,7 @@ export class NaitFlowTrashPopover {
   private renderRow(parent: HTMLElement, record: NaitFlowTrashRecord): void {
     const row = parent.createDiv("naitflow-trash-row");
     const fileIcon = row.createSpan("naitflow-trash-icon");
-    setIcon(fileIcon, "file-text");
+    renderPageIcon(this.app, fileIcon, record.icon);
     const details = row.createDiv("naitflow-trash-details");
     details.createDiv({ cls: "naitflow-trash-title", text: record.title });
     details.createDiv({ cls: "naitflow-trash-path", text: parentPath(record.originalFilePath) || "/" });
@@ -130,7 +135,7 @@ export class NaitFlowTrashPopover {
 
     const remove = row.createEl("button", { cls: "naitflow-trash-action naitflow-trash-action--danger", attr: { type: "button", "aria-label": t("trashDeleteForever") } });
     setIcon(remove, "trash-2");
-    remove.onclick = () => new ConfirmPermanentDeleteModal(this.app, record, () => void this.deleteForever(record)).open();
+    remove.onclick = () => new ConfirmTrashActionModal(this.app, t("trashDeleteForeverTitle", { title: record.title }), () => void this.deleteForever(record)).open();
   }
 
   private async restore(record: NaitFlowTrashRecord): Promise<void> {
@@ -146,6 +151,7 @@ export class NaitFlowTrashPopover {
       if (record.trashedFolderPath && record.originalFolderPath && await adapter.exists(record.trashedFolderPath)) {
         await adapter.rename(record.trashedFolderPath, record.originalFolderPath);
       }
+      if (record.cacheRootPath && await adapter.exists(record.cacheRootPath)) await adapter.rmdir(record.cacheRootPath, true);
       await this.plugin.removeTrashRecord(record.id);
       this.plugin.refreshUi();
       await this.reload();
@@ -160,6 +166,7 @@ export class NaitFlowTrashPopover {
       const adapter = this.app.vault.adapter;
       if (await adapter.exists(record.trashedFilePath)) await adapter.remove(record.trashedFilePath);
       if (record.trashedFolderPath && await adapter.exists(record.trashedFolderPath)) await adapter.rmdir(record.trashedFolderPath, true);
+      if (record.cacheRootPath && await adapter.exists(record.cacheRootPath)) await adapter.rmdir(record.cacheRootPath, true);
       await this.plugin.removeTrashRecord(record.id);
       await this.reload();
     } catch (error) {
@@ -167,16 +174,31 @@ export class NaitFlowTrashPopover {
       new Notice(t("trashDeleteFailed", { error: String(error) }));
     }
   }
+
+  private async clearAll(): Promise<void> {
+    try {
+      const adapter = this.app.vault.adapter;
+      await Promise.all(this.plugin.settings.trashRecords.map(async (record) => {
+        if (record.cacheRootPath && await adapter.exists(record.cacheRootPath)) await adapter.rmdir(record.cacheRootPath, true);
+      }));
+      await this.plugin.clearTrashRecords();
+      await this.reload();
+    } catch (error) {
+      console.error("NaitFlow: failed to clear trash", error);
+      new Notice(t("trashDeleteFailed", { error: String(error) }));
+    }
+  }
 }
 
-class ConfirmPermanentDeleteModal extends Modal {
-  constructor(app: App, private readonly record: NaitFlowTrashRecord, private readonly onConfirm: () => void) {
+class ConfirmTrashActionModal extends Modal {
+  constructor(app: App, private readonly title: string, private readonly onConfirm: () => void) {
     super(app);
   }
 
   override onOpen(): void {
     this.modalEl.addClass("naitflow-modal", "naitflow-trash-confirm-modal");
-    this.contentEl.createEl("div", { cls: "naitflow-trash-confirm-title", text: t("trashDeleteForeverTitle", { title: this.record.title }) });
+    (this as Modal & { closeButtonEl?: HTMLElement }).closeButtonEl?.remove();
+    this.contentEl.createEl("div", { cls: "naitflow-trash-confirm-title", text: this.title });
     const actions = this.contentEl.createDiv("naitflow-modal-actions");
     const remove = actions.createEl("button", { cls: "naitflow-danger-button", text: t("ok") });
     remove.onclick = () => {

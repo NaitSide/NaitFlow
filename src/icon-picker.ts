@@ -39,6 +39,7 @@ export class IconPickerModal extends Modal {
 
   override onOpen(): void {
     this.modalEl.addClass("naitflow-modal", "naitflow-icon-modal");
+    (this as Modal & { closeButtonEl?: HTMLElement }).closeButtonEl?.remove();
     this.render();
   }
 

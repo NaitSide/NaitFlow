@@ -1,10 +1,26 @@
-import { App, htmlToMarkdown, normalizePath, TFile } from "obsidian";
+import { App, getFrontMatterInfo, htmlToMarkdown, normalizePath, parseYaml, TFile, TFolder } from "obsidian";
 import { BlobReader, BlobWriter, configure, Entry, TextWriter, ZipReader } from "@zip.js/zip.js";
 import { ensureFolder, FIELDS } from "./model";
 
 configure({ useWebWorkers: false });
 
-export type ImportFormat = "buildin-md" | "notion-md" | "notion-html";
+export type ImportFormat = "buildin-md" | "notion-md" | "notion-html" | "notion-api";
+
+export interface ImportSource {
+  readonly path: string;
+  readonly name: string;
+  readonly extension: string;
+  readText(): Promise<string>;
+  readBinary(): Promise<ArrayBuffer>;
+}
+
+export interface NotionPageMetadata {
+  title: string;
+  icon?: string;
+  cover?: string;
+  created?: string;
+  edited?: string;
+}
 
 interface ReadableZipEntry extends Entry {
   directory: false;
@@ -69,7 +85,7 @@ class LoadedArchive {
 }
 
 interface ImportPage {
-  readonly source: ArchiveFile;
+  readonly source: ImportSource;
   readonly sourcePath: string;
   readonly sourceId: string;
   readonly sourceFolderPath: string;
@@ -82,10 +98,11 @@ interface ImportPage {
   icon?: string;
   cover?: string;
   coverY?: number;
+  notionMeta?: NotionPageMetadata;
 }
 
 interface ImportAttachment {
-  readonly source: ArchiveFile;
+  readonly source: ImportSource;
   readonly sourcePath: string;
   readonly targetPath: string;
 }
@@ -106,6 +123,13 @@ export interface ImportResult {
   readonly destination: string;
   readonly pages: number;
   readonly attachments: number;
+  readonly attachmentFailures?: ReadonlyArray<{ path: string; error: ImportDownloadError }>;
+}
+
+export class ImportDownloadError extends Error {
+  constructor(readonly reason: "http" | "network" | "url" | "size" | "html" | "source", readonly status?: number) {
+    super(`notion-media-${reason}`);
+  }
 }
 
 export class NaitFlowImportPlan {
@@ -125,13 +149,14 @@ export class NaitFlowImportPlan {
 
   constructor(
     private readonly app: App,
-    private readonly archive: LoadedArchive,
+    private readonly archive: { close(): Promise<void> },
     format: ImportFormat,
     sourceName: string,
     private readonly pages: ImportPage[],
     private readonly attachments: ImportAttachment[],
     renamedCount: number,
-    unresolvedLinksCount: number
+    unresolvedLinksCount: number,
+    private readonly checkActive: () => void = () => {}
   ) {
     this.format = format;
     this.sourceName = sourceName;
@@ -156,8 +181,10 @@ export class NaitFlowImportPlan {
   }
 
   async execute(destinationInput: string, onProgress: (progress: ImportProgress) => void): Promise<ImportResult> {
+    this.checkActive();
     const requestedName = normalizeImportName(destinationInput);
     if (!requestedName) throw new Error("destination-empty");
+    if (this.format === "notion-api") return this.executeNotion(requestedName, onProgress);
     const destination = uniqueImportName(this.app, requestedName);
 
     const folders = new Set<string>([destination]);
@@ -199,6 +226,90 @@ export class NaitFlowImportPlan {
     }
 
     return { destination, pages: this.pages.length, attachments: this.attachments.length };
+  }
+
+  private async executeNotion(destination: string, onProgress: (progress: ImportProgress) => void): Promise<ImportResult> {
+    const rootId = this.pages[0]?.sourceId;
+    const marker = this.app.vault.getAbstractFileByPath(`${destination}.md`);
+    const folder = this.app.vault.getAbstractFileByPath(destination);
+    // Only resume a destination created for this exact page set. Never overwrite user notes.
+    const signature = this.pages.map((page) => `${page.sourceId}:${page.targetPath}`).sort().join("\n");
+    if (marker || folder) {
+      if (!(marker instanceof TFile)) throw new Error("destination-exists");
+      if (folder && !(folder instanceof TFolder)) throw new Error("destination-exists");
+      const data = await this.readImportProperties(marker);
+      if (data?.["naitflow-notion-root"] !== rootId || data?.["naitflow-notion-plan"] !== signature) throw new Error("destination-exists");
+    }
+    const existing = new Set<string>();
+    for (const page of this.pages) {
+      const path = normalizePath(`${destination}/${page.targetPath}`);
+      const file = this.app.vault.getAbstractFileByPath(path);
+      if (!file) continue;
+      if (!(file instanceof TFile) || (await this.readImportProperties(file))?.["naitflow-notion-id"] !== page.sourceId) throw new Error("destination-exists");
+      existing.add(path);
+    }
+    this.checkActive();
+    if (!marker) {
+      const file = await this.app.vault.create(`${destination}.md`, "");
+      try {
+        await this.app.fileManager.processFrontMatter(file, (fm) => {
+          fm["naitflow-notion-root"] = rootId;
+          fm["naitflow-notion-plan"] = signature;
+        });
+      } catch (error) { await this.app.vault.delete(file); throw error; }
+    }
+    this.checkActive();
+    await ensureFolder(this.app, destination);
+    const total = this.pages.length + this.attachments.length;
+    let current = 0;
+    const attachmentFailures: NonNullable<ImportResult["attachmentFailures"]>[number][] = [];
+    // Media go first, but unavailable files should not block the notes. Keep local
+    // link targets stable so a retry can fill the gaps without rewriting notes.
+    for (const attachment of this.attachments) {
+      this.checkActive();
+      const path = normalizePath(`${destination}/${attachment.targetPath}`);
+      onProgress({ current, total, label: attachment.source.name });
+      const existingAttachment = this.app.vault.getAbstractFileByPath(path);
+      if (existingAttachment && !(existingAttachment instanceof TFile)) throw new Error("destination-exists");
+      if (!existingAttachment) {
+        let bytes: ArrayBuffer;
+        try {
+          bytes = await attachment.source.readBinary();
+        } catch (error) {
+          this.checkActive();
+          if (!(error instanceof ImportDownloadError)) throw error;
+          attachmentFailures.push({ path, error });
+          onProgress({ current: ++current, total, label: attachment.source.name });
+          continue;
+        }
+        this.checkActive();
+        await ensureFolder(this.app, dirname(path));
+        this.checkActive();
+        await this.app.vault.createBinary(path, bytes);
+      }
+      onProgress({ current: ++current, total, label: attachment.source.name });
+    }
+    for (const page of this.pages) {
+      this.checkActive();
+      const path = normalizePath(`${destination}/${page.targetPath}`);
+      if (!existing.has(path)) {
+        await ensureFolder(this.app, dirname(path));
+        this.checkActive();
+        const file = await this.app.vault.create(path, this.convertMarkdown(page, destination));
+        try { await this.applyPageMeta(file, page, destination); }
+        catch (error) { await this.app.vault.delete(file); throw error; }
+      }
+      onProgress({ current: ++current, total, label: page.title });
+    }
+    return { destination, pages: this.pages.length, attachments: this.attachments.length - attachmentFailures.length, attachmentFailures };
+  }
+
+  private async readImportProperties(file: TFile): Promise<Record<string, unknown> | undefined> {
+    // The metadata cache can lag behind an import that has just written a file.
+    const info = getFrontMatterInfo(await this.app.vault.read(file));
+    if (!info.exists) return undefined;
+    try { return parseYaml(info.frontmatter) as Record<string, unknown> | undefined; }
+    catch { return undefined; }
   }
 
   private convertMarkdown(page: ImportPage, destination: string): string {
@@ -251,7 +362,7 @@ export class NaitFlowImportPlan {
 
   private resolveTarget(page: ImportPage, rawTarget: string): ResolvedTarget | null {
     const target = stripQueryAndHash(decodeSourcePath(rawTarget));
-    const id = knownIdInTarget(target, this.pageById);
+    const id = knownIdInTarget(this.format === "notion-api" ? target.replace(/-/g, "") : target, this.pageById);
     if (isExternalTarget(target)) {
       const linkedPage = id ? this.pageById.get(id) : undefined;
       return linkedPage ? { kind: "page", targetPath: linkedPage.targetPath, page: linkedPage } : null;
@@ -275,13 +386,46 @@ export class NaitFlowImportPlan {
       const resolved = this.resolveTarget(page, cover);
       if (resolved?.kind === "attachment") cover = normalizePath(`${destination}/${resolved.targetPath}`);
     }
-    if (!page.icon && !cover) return;
+    let icon = page.icon;
+    if (page.notionMeta?.icon) {
+      icon = page.notionMeta.icon;
+      if (icon.startsWith("image:")) {
+        const resolved = this.resolveTarget(page, icon.slice(6));
+        icon = resolved ? `image:${normalizePath(`${destination}/${resolved.targetPath}`)}` : undefined;
+      }
+    }
+    if (!icon && !cover && !page.notionMeta) return;
     await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-      if (page.icon) frontmatter[FIELDS.icon] = `emoji:${page.icon}`;
+      if (icon) frontmatter[FIELDS.icon] = page.notionMeta ? icon : `emoji:${icon}`;
       if (cover) frontmatter[FIELDS.cover] = cover;
       if (cover && page.coverY !== undefined) frontmatter[FIELDS.coverY] = page.coverY;
+      if (page.notionMeta) {
+        frontmatter["naitflow-notion-id"] = page.sourceId;
+        if (page.notionMeta.created) frontmatter["naitflow-notion-created"] = page.notionMeta.created;
+        if (page.notionMeta.edited) frontmatter["naitflow-notion-edited"] = page.notionMeta.edited;
+      }
     });
   }
+}
+
+export async function prepareNotionSources(
+  app: App, files: ImportSource[], metadata: Map<string, NotionPageMetadata>,
+  close: () => Promise<void>, checkActive: () => void
+): Promise<NaitFlowImportPlan> {
+  const pages = await readPages(files, "notion-api");
+  for (const page of pages) {
+    const meta = metadata.get(page.sourceId);
+    if (!meta) throw new Error("pages-not-found");
+    page.title = sanitizePageName(meta.title);
+    page.notionMeta = meta;
+    page.cover = meta.cover;
+    page.icon = meta.icon;
+  }
+  if (!pages.length) throw new Error("pages-not-found");
+  const renamed = assignTargets(pages, "notion-api");
+  const attachments = assignAttachments(files, pages, "notion-api");
+  return new NaitFlowImportPlan(app, { close }, "notion-api", pages[0]!.title, pages, attachments, renamed,
+    countUnresolvedLinks(pages, attachments, "notion-api"), checkActive);
 }
 
 export async function prepareImport(app: App, file: File): Promise<NaitFlowImportPlan> {
@@ -308,7 +452,7 @@ function detectFormat(files: ArchiveFile[]): ImportFormat {
   throw new Error("format-unknown");
 }
 
-async function readPages(files: ArchiveFile[], format: ImportFormat): Promise<ImportPage[]> {
+async function readPages(files: ImportSource[], format: ImportFormat): Promise<ImportPage[]> {
   const pageExtension = format === "notion-html" ? "html" : "md";
   const candidates = files.filter((file) => file.extension === pageExtension && (format === "buildin-md" ? buildinId(file.name) : notionId(file.name)));
   const pages: ImportPage[] = [];
@@ -389,7 +533,7 @@ function assignTargets(pages: ImportPage[], format: ImportFormat): number {
   return renamedCount;
 }
 
-function assignAttachments(files: ArchiveFile[], pages: ImportPage[], format: ImportFormat): ImportAttachment[] {
+function assignAttachments(files: ImportSource[], pages: ImportPage[], format: ImportFormat): ImportAttachment[] {
   const pageExtensions = new Set(["md", "html"]);
   const pageSources = new Set(pages.map((page) => sourceKey(page.sourcePath)));
   const owners = [...pages].sort((a, b) => b.sourceFolderPath.length - a.sourceFolderPath.length);
@@ -484,12 +628,12 @@ function renderResolvedLink(target: ResolvedTarget, destination: string, rawLabe
 
 function rewriteOutsideFences(markdown: string, rewrite: (chunk: string) => string): string {
   const lines = markdown.split(/(?<=\n)/);
-  let fence: string | null = null;
+  let fence: { character: string; length: number } | null = null;
   let plain = "";
   let result = "";
   const flush = (): void => {
     if (!plain) return;
-    result += rewrite(plain);
+    result += rewriteOutsideInlineCode(plain, rewrite);
     plain = "";
   };
   for (const line of lines) {
@@ -497,8 +641,8 @@ function rewriteOutsideFences(markdown: string, rewrite: (chunk: string) => stri
     if (marker) {
       flush();
       result += line;
-      if (!fence) fence = marker[0] ?? null;
-      else if (marker[0] === fence) fence = null;
+      if (!fence) fence = { character: marker[0]!, length: marker.length };
+      else if (marker[0] === fence.character && marker.length >= fence.length && /^\s*(?:`+|~+)\s*$/.test(line)) fence = null;
     } else if (fence) {
       result += line;
     } else {
@@ -507,6 +651,22 @@ function rewriteOutsideFences(markdown: string, rewrite: (chunk: string) => stri
   }
   flush();
   return result;
+}
+
+function rewriteOutsideInlineCode(text: string, rewrite: (chunk: string) => string): string {
+  let result = "";
+  let copied = 0;
+  const markers = Array.from(text.matchAll(/`+/g));
+  for (let i = 0; i < markers.length; i++) {
+    const opening = markers[i]!;
+    const end = markers.findIndex((marker, j) => j > i && marker[0].length === opening[0].length);
+    if (end < 0) continue;
+    const closing = markers[end]!;
+    result += rewrite(text.slice(copied, opening.index)) + text.slice(opening.index, closing.index + closing[0].length);
+    copied = closing.index + closing[0].length;
+    i = end;
+  }
+  return result + rewrite(text.slice(copied));
 }
 
 function removeMatchingTitle(markdown: string, title: string): string {

@@ -22,7 +22,7 @@ __export(main_exports, {
   default: () => NaitFlowPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian12 = require("obsidian");
+var import_obsidian19 = require("obsidian");
 
 // src/cover-picker.ts
 var import_obsidian4 = require("obsidian");
@@ -33,6 +33,94 @@ var import_obsidian2 = require("obsidian");
 // src/i18n.ts
 var import_obsidian = require("obsidian");
 var EN = {
+  notionImport: "From Notion (API)",
+  notionLimitations: "Import details",
+  notionImportDesc: "Transfer a page and its subpages directly, with icons, covers, and attachments.",
+  notionConnect: "Connect",
+  notionSetup: "Create an internal integration with Read content access, then add it to the source page using Connections. The token is kept in memory only and cleared when you close this window.",
+  notionCreateIntegration: "Create integration \u2197",
+  notionToken: "Integration token",
+  notionTokenHint: "Paste token",
+  notionSourcePage: "Source page link or ID",
+  notionPreview: "Check pages",
+  notionReading: "Reading Notion\u2026",
+  notionReadingPage: "Pages found: {count} \xB7 {title}",
+  notionPreviewReady: "Check complete. Ready to transfer {pages} page(s) and {attachments} attachment(s).",
+  notionIssues: "Transfer notes \xB7 {count}",
+  notionMissingAttachments: "Attachments unavailable: {count}.",
+  notionFailedAttachmentDetails: "Files that could not be downloaded \xB7 {count}",
+  notionRetryAttachments: "Retry downloads",
+  notionRetryAttachmentsHint: "Retry in the same folder to fill in missing files and keep imported notes and local edits.",
+  notionScope: "Basic import: pages and their subpages. Databases, comments, and page history are not transferred. Some formatting is simplified. Limits: 1,000 pages, 50,000 blocks, 20 MB of converted text and 100 MB per attachment. No changes are made in Notion.",
+  notionLinkedPage: "Page in Notion",
+  notionUnsupported: "Unsupported element: {type} (link to original retained)",
+  notionIssueToggle: "Toggle saved expanded",
+  notionIssueColumns: "Columns saved in sequence",
+  notionIssueSynced: "Synced block saved as independent content",
+  notionIssueStyle: "Color or underline omitted",
+  notionIssueTable: "Row header styling omitted",
+  notionIssueLink: "Preview or embed saved as a link",
+  notionIssueIcon: "This icon type could not be transferred",
+  notionIssueCover: "This cover type cannot be transferred",
+  notionIssueDatabase: "Database retained as a link; its contents were not imported",
+  notionIssueContents: "Table of contents retained as a link to Notion",
+  notionResultFolder: "Folder: {folder}.",
+  notionRetry: "Partial results may remain. Retry with the same source and destination to continue; existing imported notes are skipped.",
+  notionCancelling: "Stopping after the current request\u2026",
+  notionCancelled: "Import cancelled. Completed files remain in the vault.",
+  notionPageInvalid: "Paste a Notion page link or its 32-character ID.",
+  notionAuthError: "Token is missing, invalid, or expired.",
+  notionAccessError: "The page is unavailable to this integration. Check its Read content capability and the page's Connections. API access may also be restricted.",
+  notionNetworkError: "Could not reach Notion or download a file. Check your connection and retry.",
+  notionRateError: "Notion is limiting requests. Please retry later.",
+  notionLimitError: "The source exceeds the basic import limits. Choose a smaller branch of pages.",
+  notionMediaError: "Could not download an attachment. The import stopped so missing files are not silently ignored.",
+  notionMediaSizeError: "File exceeds the 100 MB limit.",
+  notionMediaHtml: "The server returned a web page instead of a file.",
+  notionMediaUrl: "Notion did not provide a valid HTTPS download link.",
+  notionMediaSource: "Notion could not provide access to this file.",
+  notionRequestError: "The transfer could not finish. No changes were made in Notion.",
+  notionDestinationConflict: "This folder contains other data or a different import plan. Choose another name, or resume with the original source and unchanged page structure.",
+  blockDragHint: "Drag the block\nClick to open menu",
+  blockCopy: "Copy block",
+  blockCopyFailed: "NaitFlow: could not copy the block.",
+  blockMoveUp: "Move block up",
+  blockMoveDown: "Move block down",
+  blockAddLabel: "Add a block",
+  blockAddHint: "Click to add below\nAlt-click to add above",
+  blockDragChanged: "NaitFlow: the note changed during dragging. The block was not moved.",
+  selectionFormat: "Format selection",
+  selectionBlockType: "Block type",
+  selectionBold: "Bold",
+  selectionItalic: "Italic",
+  selectionStrike: "Strikethrough",
+  selectionCode: "Inline code",
+  selectionLink: "Insert link",
+  slashMenu: "Insert block",
+  slashBasic: "Basic blocks",
+  slashMedia: "Media",
+  slashFiltered: "Filtered results",
+  slashClose: "Close menu",
+  slashNoResults: "No matching blocks",
+  slashText: "Text",
+  slashHeading1: "Heading 1",
+  slashHeading2: "Heading 2",
+  slashHeading3: "Heading 3",
+  slashBullet: "Bulleted list",
+  slashNumbered: "Numbered list",
+  slashTodo: "To-do list",
+  slashPage: "Page",
+  slashQuote: "Quote",
+  slashDivider: "Divider",
+  slashImage: "Image",
+  slashVideo: "Video",
+  slashAudio: "Audio",
+  slashCode: "Code",
+  slashFile: "File",
+  slashChoosePage: "Choose a page to link\u2026",
+  slashChooseAttachment: "Choose an attachment from the vault\u2026",
+  slashNoFiles: "No matching files in the vault. Add an attachment to the vault first.",
+  slashContextChanged: "NaitFlow: the insertion point changed. Open the block menu again.",
   openPagesRibbon: "Open NaitFlow pages",
   openPagesCommand: "Open page tree",
   chooseIconCommand: "Choose icon for current page",
@@ -83,6 +171,7 @@ var EN = {
   renamePage: "Rename",
   renamePagePrompt: "Page name",
   renamePageFailed: "NaitFlow: could not rename page \u2014 {error}",
+  renameMediaFailed: "NaitFlow: some cover or icon paths could not be updated after the move.",
   movePage: "Move to\u2026",
   movePageSearch: "Move page to\u2026",
   movePagePlaceholder: "Choose destination folder\u2026",
@@ -101,11 +190,12 @@ var EN = {
   trashDeletedAt: "Deleted at",
   trashEmpty: "No deleted pages",
   trashClearAll: "Clear list completely",
+  trashClearAllTitle: "Delete everything forever?",
   trashRestore: "Restore",
   trashRestoreExists: "NaitFlow: the original page location is already occupied.",
   trashRestoreFailed: "NaitFlow: could not restore page \u2014 {error}",
   trashDeleteForever: "Delete forever",
-  trashDeleteForeverTitle: "Delete {title} forever?",
+  trashDeleteForeverTitle: "Delete file forever?",
   ok: "OK",
   trashDeleteForeverPrompt: 'Delete "{title}" permanently? This cannot be undone.',
   trashDeleteFailed: "NaitFlow: could not permanently delete page \u2014 {error}",
@@ -182,6 +272,94 @@ var EN = {
   artemisSlsLaunch: "Artemis II \u2014 SLS launch"
 };
 var RU = {
+  notionImport: "\u0418\u0437 Notion (API)",
+  notionLimitations: "\u041F\u043E\u0434\u0440\u043E\u0431\u043D\u043E\u0441\u0442\u0438 \u0438\u043C\u043F\u043E\u0440\u0442\u0430",
+  notionImportDesc: "\u041F\u0435\u0440\u0435\u043D\u043E\u0441 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0438 \u043F\u043E\u0434\u0441\u0442\u0440\u0430\u043D\u0438\u0446 \u043D\u0430\u043F\u0440\u044F\u043C\u0443\u044E: \u0441 \u0438\u043A\u043E\u043D\u043A\u0430\u043C\u0438, \u043E\u0431\u043B\u043E\u0436\u043A\u0430\u043C\u0438 \u0438 \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u044F\u043C\u0438.",
+  notionConnect: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C",
+  notionSetup: "\u0421\u043E\u0437\u0434\u0430\u0439\u0442\u0435 \u0432\u043D\u0443\u0442\u0440\u0435\u043D\u043D\u044E\u044E \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044E \u0441 \u043F\u0440\u0430\u0432\u043E\u043C Read content \u0438 \u0434\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u0435\u0451 \u043A \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0435 \u0447\u0435\u0440\u0435\u0437 Connections. \u0422\u043E\u043A\u0435\u043D \u043E\u0441\u0442\u0430\u0451\u0442\u0441\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u0432 \u043F\u0430\u043C\u044F\u0442\u0438 \u0438 \u043E\u0447\u0438\u0449\u0430\u0435\u0442\u0441\u044F \u043F\u0440\u0438 \u0437\u0430\u043A\u0440\u044B\u0442\u0438\u0438 \u044D\u0442\u043E\u0433\u043E \u043E\u043A\u043D\u0430.",
+  notionCreateIntegration: "\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044E \u2197",
+  notionToken: "\u0422\u043E\u043A\u0435\u043D \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438",
+  notionTokenHint: "\u0412\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u0442\u043E\u043A\u0435\u043D",
+  notionSourcePage: "\u0421\u0441\u044B\u043B\u043A\u0430 \u0438\u043B\u0438 ID \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
+  notionPreview: "\u041F\u0440\u043E\u0432\u0435\u0440\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
+  notionReading: "\u0427\u0442\u0435\u043D\u0438\u0435 Notion\u2026",
+  notionReadingPage: "\u041D\u0430\u0439\u0434\u0435\u043D\u043E \u0441\u0442\u0440\u0430\u043D\u0438\u0446: {count} \xB7 {title}",
+  notionPreviewReady: "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430. \u0413\u043E\u0442\u043E\u0432\u043E \u043A \u043F\u0435\u0440\u0435\u043D\u043E\u0441\u0443 \u2014 \u0441\u0442\u0440\u0430\u043D\u0438\u0446: {pages}, \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0439: {attachments}.",
+  notionIssues: "\u041E\u0441\u043E\u0431\u0435\u043D\u043D\u043E\u0441\u0442\u0438 \u043F\u0435\u0440\u0435\u043D\u043E\u0441\u0430 \xB7 {count}",
+  notionMissingAttachments: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u0430\u0447\u0430\u0442\u044C \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0439: {count}.",
+  notionFailedAttachmentDetails: "\u041A\u0430\u043A\u0438\u0435 \u0444\u0430\u0439\u043B\u044B \u043D\u0435 \u0441\u043A\u0430\u0447\u0430\u043B\u0438\u0441\u044C \xB7 {count}",
+  notionRetryAttachments: "\u041F\u043E\u0432\u0442\u043E\u0440\u0438\u0442\u044C \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u0435",
+  notionRetryAttachmentsHint: "\u041F\u043E\u0432\u0442\u043E\u0440\u0438 \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u0435 \u0432 \u0442\u0443 \u0436\u0435 \u043F\u0430\u043F\u043A\u0443: \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u044E\u0449\u0438\u0435 \u0444\u0430\u0439\u043B\u044B \u0437\u0430\u0433\u0440\u0443\u0437\u044F\u0442\u0441\u044F, \u0430 \u0433\u043E\u0442\u043E\u0432\u044B\u0435 \u0437\u0430\u043C\u0435\u0442\u043A\u0438 \u0438 \u043F\u0440\u0430\u0432\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u044F\u0442\u0441\u044F.",
+  notionScope: "\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u0438\u043C\u043F\u043E\u0440\u0442: \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0438 \u0438\u0445 \u043F\u043E\u0434\u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B. \u0411\u0430\u0437\u044B \u0434\u0430\u043D\u043D\u044B\u0445, \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u0438 \u0438 \u0438\u0441\u0442\u043E\u0440\u0438\u044F \u043D\u0435 \u043F\u0435\u0440\u0435\u043D\u043E\u0441\u044F\u0442\u0441\u044F. \u0427\u0430\u0441\u0442\u044C \u043E\u0444\u043E\u0440\u043C\u043B\u0435\u043D\u0438\u044F \u0443\u043F\u0440\u043E\u0449\u0430\u0435\u0442\u0441\u044F. \u041E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u0438\u044F: 1000 \u0441\u0442\u0440\u0430\u043D\u0438\u0446, 50 000 \u0431\u043B\u043E\u043A\u043E\u0432, 20 \u041C\u0411 \u043F\u0440\u0435\u043E\u0431\u0440\u0430\u0437\u043E\u0432\u0430\u043D\u043D\u043E\u0433\u043E \u0442\u0435\u043A\u0441\u0442\u0430 \u0438 100 \u041C\u0411 \u043D\u0430 \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0435. \u0414\u0430\u043D\u043D\u044B\u0435 \u0432 Notion \u043D\u0435 \u043C\u0435\u043D\u044F\u044E\u0442\u0441\u044F.",
+  notionLinkedPage: "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u0432 Notion",
+  notionUnsupported: "\u041D\u0435\u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0430\u043D\u043D\u044B\u0439 \u044D\u043B\u0435\u043C\u0435\u043D\u0442: {type} (\u0441\u0441\u044B\u043B\u043A\u0430 \u043D\u0430 \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u0430)",
+  notionIssueToggle: "\u0420\u0430\u0441\u043A\u0440\u044B\u0432\u0430\u044E\u0449\u0438\u0439\u0441\u044F \u0431\u043B\u043E\u043A \u0441\u043E\u0445\u0440\u0430\u043D\u0451\u043D \u0440\u0430\u0441\u043A\u0440\u044B\u0442\u044B\u043C",
+  notionIssueColumns: "\u041A\u043E\u043B\u043E\u043D\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B \u043F\u043E\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u043D\u043E",
+  notionIssueSynced: "\u0421\u0438\u043D\u0445\u0440\u043E\u043D\u0438\u0437\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0431\u043B\u043E\u043A \u0441\u043E\u0445\u0440\u0430\u043D\u0451\u043D \u043A\u0430\u043A \u043D\u0435\u0437\u0430\u0432\u0438\u0441\u0438\u043C\u044B\u0439 \u0442\u0435\u043A\u0441\u0442",
+  notionIssueStyle: "\u0426\u0432\u0435\u0442 \u0438\u043B\u0438 \u043F\u043E\u0434\u0447\u0451\u0440\u043A\u0438\u0432\u0430\u043D\u0438\u0435 \u043D\u0435 \u043F\u0435\u0440\u0435\u043D\u0435\u0441\u0435\u043D\u044B",
+  notionIssueTable: "\u041E\u0444\u043E\u0440\u043C\u043B\u0435\u043D\u0438\u0435 \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043A\u043E\u0432 \u0441\u0442\u0440\u043E\u043A \u043D\u0435 \u043F\u0435\u0440\u0435\u043D\u0435\u0441\u0435\u043D\u043E",
+  notionIssueLink: "\u0412\u0441\u0442\u0430\u0432\u043A\u0430 \u0438\u043B\u0438 \u043F\u0440\u0435\u0432\u044C\u044E \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B \u043E\u0431\u044B\u0447\u043D\u043E\u0439 \u0441\u0441\u044B\u043B\u043A\u043E\u0439",
+  notionIssueIcon: "\u042D\u0442\u043E\u0442 \u0442\u0438\u043F \u0438\u043A\u043E\u043D\u043A\u0438 \u043F\u0435\u0440\u0435\u043D\u0435\u0441\u0442\u0438 \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C",
+  notionIssueCover: "\u042D\u0442\u043E\u0442 \u0442\u0438\u043F \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u043D\u0435 \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442\u0441\u044F",
+  notionIssueDatabase: "\u0411\u0430\u0437\u0430 \u0434\u0430\u043D\u043D\u044B\u0445 \u043E\u0441\u0442\u0430\u0432\u043B\u0435\u043D\u0430 \u0441\u0441\u044B\u043B\u043A\u043E\u0439; \u0435\u0451 \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u043C\u043E\u0435 \u043D\u0435 \u0438\u043C\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043E",
+  notionIssueContents: "\u041E\u0433\u043B\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043E\u0441\u0442\u0430\u0432\u043B\u0435\u043D\u043E \u0441\u0441\u044B\u043B\u043A\u043E\u0439 \u043D\u0430 Notion",
+  notionResultFolder: "\u041F\u0430\u043F\u043A\u0430: {folder}.",
+  notionRetry: "\u0427\u0430\u0441\u0442\u044C \u0444\u0430\u0439\u043B\u043E\u0432 \u043C\u043E\u0433\u043B\u0430 \u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C\u0441\u044F. \u041F\u043E\u0432\u0442\u043E\u0440\u0438\u0442\u0435 \u0441 \u0442\u0435\u043C \u0436\u0435 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u043E\u043C \u0438 \u043F\u0430\u043F\u043A\u043E\u0439 \u0434\u043B\u044F \u043F\u0440\u043E\u0434\u043E\u043B\u0436\u0435\u043D\u0438\u044F; \u0433\u043E\u0442\u043E\u0432\u044B\u0435 \u0437\u0430\u043C\u0435\u0442\u043A\u0438 \u0431\u0443\u0434\u0443\u0442 \u043F\u0440\u043E\u043F\u0443\u0449\u0435\u043D\u044B.",
+  notionCancelling: "\u041E\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u0430 \u043F\u043E\u0441\u043B\u0435 \u0442\u0435\u043A\u0443\u0449\u0435\u0433\u043E \u0437\u0430\u043F\u0440\u043E\u0441\u0430\u2026",
+  notionCancelled: "\u0418\u043C\u043F\u043E\u0440\u0442 \u043E\u0442\u043C\u0435\u043D\u0451\u043D. \u0413\u043E\u0442\u043E\u0432\u044B\u0435 \u0444\u0430\u0439\u043B\u044B \u043E\u0441\u0442\u0430\u043B\u0438\u0441\u044C \u0432 \u0445\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0435.",
+  notionPageInvalid: "\u0412\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 Notion \u0438\u043B\u0438 \u0435\u0451 ID \u0438\u0437 32 \u0441\u0438\u043C\u0432\u043E\u043B\u043E\u0432.",
+  notionAuthError: "\u0422\u043E\u043A\u0435\u043D \u043D\u0435 \u0443\u043A\u0430\u0437\u0430\u043D, \u043D\u0435\u0432\u0435\u0440\u0435\u043D \u0438\u043B\u0438 \u0441\u0440\u043E\u043A \u0435\u0433\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F \u0438\u0441\u0442\u0451\u043A.",
+  notionAccessError: "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u043D\u0435\u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0430 \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u043F\u0440\u0430\u0432\u043E Read content \u0438 Connections \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B. \u0414\u043E\u0441\u0442\u0443\u043F \u043A API \u0442\u0430\u043A\u0436\u0435 \u043C\u043E\u0436\u0435\u0442 \u0431\u044B\u0442\u044C \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D.",
+  notionNetworkError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u0432\u044F\u0437\u0430\u0442\u044C\u0441\u044F \u0441 Notion \u0438\u043B\u0438 \u0441\u043A\u0430\u0447\u0430\u0442\u044C \u0444\u0430\u0439\u043B. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0441\u043E\u0435\u0434\u0438\u043D\u0435\u043D\u0438\u0435 \u0438 \u043F\u043E\u0432\u0442\u043E\u0440\u0438\u0442\u0435 \u043F\u043E\u043F\u044B\u0442\u043A\u0443.",
+  notionRateError: "Notion \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0438\u0432\u0430\u0435\u0442 \u0437\u0430\u043F\u0440\u043E\u0441\u044B. \u041F\u043E\u0432\u0442\u043E\u0440\u0438\u0442\u0435 \u043F\u043E\u043F\u044B\u0442\u043A\u0443 \u043F\u043E\u0437\u0436\u0435.",
+  notionLimitError: "\u041F\u0440\u0435\u0432\u044B\u0448\u0435\u043D\u044B \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u0438\u044F \u0431\u0430\u0437\u043E\u0432\u043E\u0433\u043E \u0438\u043C\u043F\u043E\u0440\u0442\u0430. \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043C\u0435\u043D\u044C\u0448\u0443\u044E \u0432\u0435\u0442\u043A\u0443 \u0441\u0442\u0440\u0430\u043D\u0438\u0446.",
+  notionMediaError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u0430\u0447\u0430\u0442\u044C \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0435. \u0418\u043C\u043F\u043E\u0440\u0442 \u043E\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D, \u0447\u0442\u043E\u0431\u044B \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0438\u0435 \u0444\u0430\u0439\u043B\u043E\u0432 \u043D\u0435 \u043E\u0441\u0442\u0430\u043B\u043E\u0441\u044C \u043D\u0435\u0437\u0430\u043C\u0435\u0447\u0435\u043D\u043D\u044B\u043C.",
+  notionMediaSizeError: "\u0424\u0430\u0439\u043B \u043F\u0440\u0435\u0432\u044B\u0448\u0430\u0435\u0442 \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u0438\u0435 \u0432 100 \u041C\u0411.",
+  notionMediaHtml: "\u0421\u0435\u0440\u0432\u0435\u0440 \u0432\u0435\u0440\u043D\u0443\u043B \u0432\u0435\u0431-\u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0432\u043C\u0435\u0441\u0442\u043E \u0444\u0430\u0439\u043B\u0430.",
+  notionMediaUrl: "Notion \u043D\u0435 \u0432\u0435\u0440\u043D\u0443\u043B \u0440\u0430\u0431\u043E\u0447\u0443\u044E HTTPS-\u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0444\u0430\u0439\u043B.",
+  notionMediaSource: "Notion \u043D\u0435 \u043F\u0440\u0435\u0434\u043E\u0441\u0442\u0430\u0432\u0438\u043B \u0434\u043E\u0441\u0442\u0443\u043F \u043A \u044D\u0442\u043E\u043C\u0443 \u0444\u0430\u0439\u043B\u0443.",
+  notionRequestError: "\u041F\u0435\u0440\u0435\u043D\u043E\u0441 \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0432\u0435\u0440\u0448\u0438\u0442\u044C. \u0414\u0430\u043D\u043D\u044B\u0435 \u0432 Notion \u043D\u0435 \u043C\u0435\u043D\u044F\u043B\u0438\u0441\u044C.",
+  notionDestinationConflict: "\u0412 \u043F\u0430\u043F\u043A\u0435 \u0435\u0441\u0442\u044C \u0434\u0440\u0443\u0433\u0438\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0438\u043B\u0438 \u0434\u0440\u0443\u0433\u043E\u0439 \u043F\u043B\u0430\u043D \u0438\u043C\u043F\u043E\u0440\u0442\u0430. \u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043D\u043E\u0432\u043E\u0435 \u0438\u043C\u044F \u043B\u0438\u0431\u043E \u0432\u043E\u0437\u043E\u0431\u043D\u043E\u0432\u0438\u0442\u0435 \u043F\u0440\u0435\u0436\u043D\u0438\u0439 \u0438\u043C\u043F\u043E\u0440\u0442 \u0441 \u0442\u0435\u043C \u0436\u0435 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u043E\u043C \u0438 \u043D\u0435\u0438\u0437\u043C\u0435\u043D\u0451\u043D\u043D\u043E\u0439 \u0441\u0442\u0440\u0443\u043A\u0442\u0443\u0440\u043E\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446.",
+  blockDragHint: "\u041F\u0435\u0440\u0435\u0442\u0430\u0449\u0438\u0442\u0435 \u0431\u043B\u043E\u043A\n\u041A\u043B\u0438\u043A \u2014 \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E",
+  blockCopy: "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0431\u043B\u043E\u043A",
+  blockCopyFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u0431\u043B\u043E\u043A.",
+  blockMoveUp: "\u041F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0431\u043B\u043E\u043A \u0432\u044B\u0448\u0435",
+  blockMoveDown: "\u041F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0431\u043B\u043E\u043A \u043D\u0438\u0436\u0435",
+  blockAddLabel: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0431\u043B\u043E\u043A",
+  blockAddHint: "\u041D\u0430\u0436\u043C\u0438\u0442\u0435, \u0447\u0442\u043E\u0431\u044B \u0432\u0441\u0442\u0430\u0432\u0438\u0442\u044C \u0441\u043D\u0438\u0437\u0443\nAlt + \u043A\u043B\u0438\u043A \u2014 \u0432\u0441\u0442\u0430\u0432\u0438\u0442\u044C \u0441\u0432\u0435\u0440\u0445\u0443",
+  blockDragChanged: "NaitFlow: \u0437\u0430\u043C\u0435\u0442\u043A\u0430 \u0438\u0437\u043C\u0435\u043D\u0438\u043B\u0430\u0441\u044C \u0432\u043E \u0432\u0440\u0435\u043C\u044F \u043F\u0435\u0440\u0435\u0442\u0430\u0441\u043A\u0438\u0432\u0430\u043D\u0438\u044F. \u0411\u043B\u043E\u043A \u043D\u0435 \u043F\u0435\u0440\u0435\u043C\u0435\u0449\u0451\u043D.",
+  slashMenu: "\u0412\u0441\u0442\u0430\u0432\u0438\u0442\u044C \u0431\u043B\u043E\u043A",
+  slashBasic: "\u041E\u0441\u043D\u043E\u0432\u043D\u044B\u0435 \u0431\u043B\u043E\u043A\u0438",
+  slashMedia: "\u041C\u0435\u0434\u0438\u0430",
+  slashFiltered: "\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u043F\u043E\u0438\u0441\u043A\u0430",
+  slashClose: "\u0417\u0430\u043A\u0440\u044B\u0442\u044C \u043C\u0435\u043D\u044E",
+  slashNoResults: "\u041F\u043E\u0434\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u0431\u043B\u043E\u043A\u043E\u0432 \u043D\u0435\u0442",
+  selectionFormat: "\u0424\u043E\u0440\u043C\u0430\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435 \u0432\u044B\u0434\u0435\u043B\u0435\u043D\u0438\u044F",
+  selectionBlockType: "\u0422\u0438\u043F \u0431\u043B\u043E\u043A\u0430",
+  selectionBold: "\u0416\u0438\u0440\u043D\u044B\u0439",
+  selectionItalic: "\u041A\u0443\u0440\u0441\u0438\u0432",
+  selectionStrike: "\u0417\u0430\u0447\u0451\u0440\u043A\u043D\u0443\u0442\u044B\u0439",
+  selectionCode: "\u041A\u043E\u0434 \u0432 \u0441\u0442\u0440\u043E\u043A\u0435",
+  selectionLink: "\u0412\u0441\u0442\u0430\u0432\u0438\u0442\u044C \u0441\u0441\u044B\u043B\u043A\u0443",
+  slashText: "\u0422\u0435\u043A\u0441\u0442",
+  slashHeading1: "\u0417\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A 1",
+  slashHeading2: "\u0417\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A 2",
+  slashHeading3: "\u0417\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A 3",
+  slashBullet: "\u041C\u0430\u0440\u043A\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A",
+  slashNumbered: "\u041D\u0443\u043C\u0435\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439 \u0441\u043F\u0438\u0441\u043E\u043A",
+  slashTodo: "To-do list",
+  slashPage: "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430",
+  slashQuote: "\u0426\u0438\u0442\u0430\u0442\u0430",
+  slashDivider: "\u0420\u0430\u0437\u0434\u0435\u043B\u0438\u0442\u0435\u043B\u044C",
+  slashImage: "\u0418\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0435",
+  slashVideo: "\u0412\u0438\u0434\u0435\u043E",
+  slashAudio: "\u0410\u0443\u0434\u0438\u043E",
+  slashCode: "\u041A\u043E\u0434",
+  slashFile: "\u0424\u0430\u0439\u043B",
+  slashChoosePage: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0434\u043B\u044F \u0441\u0441\u044B\u043B\u043A\u0438\u2026",
+  slashChooseAttachment: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u0438\u0437 \u0445\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0430\u2026",
+  slashNoFiles: "\u041F\u043E\u0434\u0445\u043E\u0434\u044F\u0449\u0438\u0445 \u0444\u0430\u0439\u043B\u043E\u0432 \u043D\u0435\u0442. \u0421\u043D\u0430\u0447\u0430\u043B\u0430 \u0434\u043E\u0431\u0430\u0432\u044C\u0442\u0435 \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0435 \u0432 \u0445\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0435.",
+  slashContextChanged: "NaitFlow: \u043C\u0435\u0441\u0442\u043E \u0432\u0441\u0442\u0430\u0432\u043A\u0438 \u0438\u0437\u043C\u0435\u043D\u0438\u043B\u043E\u0441\u044C. \u041E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u043C\u0435\u043D\u044E \u0431\u043B\u043E\u043A\u043E\u0432 \u0437\u0430\u043D\u043E\u0432\u043E.",
   openPagesRibbon: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B NaitFlow",
   openPagesCommand: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0434\u0435\u0440\u0435\u0432\u043E \u0441\u0442\u0440\u0430\u043D\u0438\u0446",
   chooseIconCommand: "\u0412\u044B\u0431\u0440\u0430\u0442\u044C \u0438\u043A\u043E\u043D\u043A\u0443 \u0442\u0435\u043A\u0443\u0449\u0435\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
@@ -294,6 +472,7 @@ var RU = {
   renamePage: "\u041F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C",
   renamePagePrompt: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B",
   renamePageFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u0435\u0440\u0435\u0438\u043C\u0435\u043D\u043E\u0432\u0430\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u2014 {error}",
+  renameMediaFailed: "NaitFlow: \u043F\u043E\u0441\u043B\u0435 \u043F\u0435\u0440\u0435\u043C\u0435\u0449\u0435\u043D\u0438\u044F \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043E\u0431\u043D\u043E\u0432\u0438\u0442\u044C \u043D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043F\u0443\u0442\u0438 \u043A \u043E\u0431\u043B\u043E\u0436\u043A\u0430\u043C \u0438\u043B\u0438 \u0438\u043A\u043E\u043D\u043A\u0430\u043C.",
   movePage: "\u041F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0432\u2026",
   movePageSearch: "\u041F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0432\u2026",
   movePagePlaceholder: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0430\u043F\u043A\u0443 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F\u2026",
@@ -312,11 +491,12 @@ var RU = {
   trashDeletedAt: "\u041A\u043E\u0433\u0434\u0430 \u0443\u0434\u0430\u043B\u0435\u043D\u043E",
   trashEmpty: "\u041D\u0435\u0442 \u0443\u0434\u0430\u043B\u0451\u043D\u043D\u044B\u0445 \u0441\u0442\u0440\u0430\u043D\u0438\u0446",
   trashClearAll: "\u041E\u0447\u0438\u0441\u0442\u0438\u0442\u044C \u0441\u043F\u0438\u0441\u043E\u043A \u043F\u043E\u043B\u043D\u043E\u0441\u0442\u044C\u044E",
+  trashClearAllTitle: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u0432\u0441\u0451 \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430?",
   trashRestore: "\u0412\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C",
   trashRestoreExists: "NaitFlow: \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0435 \u043C\u0435\u0441\u0442\u043E \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0443\u0436\u0435 \u0437\u0430\u043D\u044F\u0442\u043E.",
   trashRestoreFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0432\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u2014 {error}",
   trashDeleteForever: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430",
-  trashDeleteForeverTitle: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C {title} \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430?",
+  trashDeleteForeverTitle: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u0444\u0430\u0439\u043B \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430?",
   ok: "\u041E\u041A",
   trashDeleteForeverPrompt: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C \xAB{title}\xBB \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430? \u042D\u0442\u043E \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435 \u043D\u0435\u043B\u044C\u0437\u044F \u043E\u0442\u043C\u0435\u043D\u0438\u0442\u044C.",
   trashDeleteFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0443\u0434\u0430\u043B\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u043D\u0430\u0432\u0441\u0435\u0433\u0434\u0430 \u2014 {error}",
@@ -372,6 +552,24 @@ async function setField(app, file, field, value) {
     if (value === null || value === "") delete fm[field];
     else fm[field] = value;
   });
+}
+async function relocatePageMedia(app, from, to) {
+  const rewrite = (value) => {
+    if (typeof value !== "string") return;
+    const prefix = /^(?:image:)?(?:\[\[)?/.exec(value)[0];
+    return value.startsWith(`${from}/`, prefix.length) ? `${prefix}${to}${value.slice(prefix.length + from.length)}` : void 0;
+  };
+  const fields = [FIELDS.cover, FIELDS.icon];
+  for (const file of app.vault.getMarkdownFiles()) {
+    const cached = app.metadataCache.getFileCache(file)?.frontmatter;
+    if (!cached || !fields.some((field) => rewrite(cached[field]) !== void 0)) continue;
+    await app.fileManager.processFrontMatter(file, (frontmatter) => {
+      for (const field of fields) {
+        const updated = rewrite(frontmatter[field]);
+        if (updated !== void 0) frontmatter[field] = updated;
+      }
+    });
+  }
 }
 async function ensureFolder(app, path) {
   const normalized = (0, import_obsidian2.normalizePath)(path);
@@ -433,6 +631,7 @@ var IconPickerModal = class extends import_obsidian3.Modal {
   virtualFrame = 0;
   onOpen() {
     this.modalEl.addClass("naitflow-modal", "naitflow-icon-modal");
+    this.closeButtonEl?.remove();
     this.render();
   }
   onClose() {
@@ -509,15 +708,15 @@ var IconPickerModal = class extends import_obsidian3.Modal {
       recentItems.push({ record, native });
     }
     if (recentItems.length) sections.push({ id: "recent", name: t("recent"), items: recentItems, top: 0, end: 0 });
-    for (const source of data.categories) {
+    for (const source2 of data.categories) {
       const items = [];
-      for (const id of source.emojis) {
+      for (const id of source2.emojis) {
         const record = data.emojis[id];
         const native = record?.skins[0]?.native;
         if (!record || !native || !matches(record)) continue;
         items.push({ record, native });
       }
-      if (items.length) sections.push({ id: source.id, name: categoryName(source.id, source.name), items, top: 0, end: 0 });
+      if (items.length) sections.push({ id: source2.id, name: categoryName(source2.id, source2.name), items, top: 0, end: 0 });
     }
     const categories = content.createDiv("naitflow-categories");
     const categoryButtons = /* @__PURE__ */ new Map();
@@ -526,9 +725,9 @@ var IconPickerModal = class extends import_obsidian3.Modal {
     let currentSections = sections;
     const updatePressed = () => {
       for (const [id, button] of categoryButtons) {
-        const active = id === this.category;
-        button.toggleClass("is-active", active);
-        button.setAttr("aria-pressed", String(active));
+        const active2 = id === this.category;
+        button.toggleClass("is-active", active2);
+        button.setAttr("aria-pressed", String(active2));
       }
     };
     for (const option of options) {
@@ -578,8 +777,8 @@ var IconPickerModal = class extends import_obsidian3.Modal {
         surface.empty();
         for (const block of visible) {
           if (block.kind === "heading") {
-            const heading = surface.createDiv({ cls: "naitflow-virtual-heading", text: block.section.name });
-            heading.style.top = `${block.top}px`;
+            const heading2 = surface.createDiv({ cls: "naitflow-virtual-heading", text: block.section.name });
+            heading2.style.top = `${block.top}px`;
             continue;
           }
           if (block.kind !== "emoji-row") continue;
@@ -593,9 +792,9 @@ var IconPickerModal = class extends import_obsidian3.Modal {
           }
         }
       }
-      const active = [...sections].reverse().find((section) => section.top <= viewportTop + 28) ?? sections[0];
-      if (active && this.category !== active.id) {
-        this.category = active.id;
+      const active2 = [...sections].reverse().find((section) => section.top <= viewportTop + 28) ?? sections[0];
+      if (active2 && this.category !== active2.id) {
+        this.category = active2.id;
         updatePressed();
       }
     };
@@ -844,6 +1043,7 @@ var CoverPickerModal = class extends import_obsidian4.Modal {
   unsplashCache = /* @__PURE__ */ new Map();
   onOpen() {
     this.modalEl.addClass("naitflow-modal", "naitflow-cover-modal");
+    this.closeButtonEl?.remove();
     this.render();
   }
   render() {
@@ -912,8 +1112,8 @@ var CoverPickerModal = class extends import_obsidian4.Modal {
     this.renderBuiltInGroup(parent, "The MET Museum \xB7 Hudson River School", "https://www.metmuseum.org/art/collection", MET_HUDSON_COVER_ROOT, MET_HUDSON_COVERS);
   }
   renderBuiltInGroup(parent, title, href, root, presets) {
-    const heading = parent.createEl("a", { cls: "naitflow-gallery-heading naitflow-gallery-heading--link", text: title, href });
-    heading.setAttrs({ target: "_blank", rel: "noopener noreferrer" });
+    const heading2 = parent.createEl("a", { cls: "naitflow-gallery-heading naitflow-gallery-heading--link", text: title, href });
+    heading2.setAttrs({ target: "_blank", rel: "noopener noreferrer" });
     const grid = parent.createDiv("naitflow-cover-grid");
     for (const preset of presets) {
       const sourcePath = (0, import_obsidian4.normalizePath)(`${this.plugin.manifest.dir}/${root}/${preset.file}`);
@@ -10488,12 +10688,21 @@ var LoadedArchive = class _LoadedArchive {
     }
   }
 };
+var ImportDownloadError = class extends Error {
+  constructor(reason, status) {
+    super(`notion-media-${reason}`);
+    this.reason = reason;
+    this.status = status;
+  }
+};
 var NaitFlowImportPlan = class {
-  constructor(app, archive, format, sourceName, pages, attachments, renamedCount, unresolvedLinksCount) {
+  constructor(app, archive, format, sourceName, pages, attachments, renamedCount, unresolvedLinksCount, checkActive = () => {
+  }) {
     this.app = app;
     this.archive = archive;
     this.pages = pages;
     this.attachments = attachments;
+    this.checkActive = checkActive;
     this.format = format;
     this.sourceName = sourceName;
     this.pagesCount = pages.length;
@@ -10527,8 +10736,10 @@ var NaitFlowImportPlan = class {
     await this.archive.close();
   }
   async execute(destinationInput, onProgress) {
+    this.checkActive();
     const requestedName = normalizeImportName(destinationInput);
     if (!requestedName) throw new Error("destination-empty");
+    if (this.format === "notion-api") return this.executeNotion(requestedName, onProgress);
     const destination = uniqueImportName(this.app, requestedName);
     const folders = /* @__PURE__ */ new Set([destination]);
     for (const page of this.pages) {
@@ -10565,16 +10776,104 @@ var NaitFlowImportPlan = class {
     }
     return { destination, pages: this.pages.length, attachments: this.attachments.length };
   }
+  async executeNotion(destination, onProgress) {
+    const rootId = this.pages[0]?.sourceId;
+    const marker = this.app.vault.getAbstractFileByPath(`${destination}.md`);
+    const folder = this.app.vault.getAbstractFileByPath(destination);
+    const signature = this.pages.map((page) => `${page.sourceId}:${page.targetPath}`).sort().join("\n");
+    if (marker || folder) {
+      if (!(marker instanceof import_obsidian5.TFile)) throw new Error("destination-exists");
+      if (folder && !(folder instanceof import_obsidian5.TFolder)) throw new Error("destination-exists");
+      const data = await this.readImportProperties(marker);
+      if (data?.["naitflow-notion-root"] !== rootId || data?.["naitflow-notion-plan"] !== signature) throw new Error("destination-exists");
+    }
+    const existing = /* @__PURE__ */ new Set();
+    for (const page of this.pages) {
+      const path = (0, import_obsidian5.normalizePath)(`${destination}/${page.targetPath}`);
+      const file = this.app.vault.getAbstractFileByPath(path);
+      if (!file) continue;
+      if (!(file instanceof import_obsidian5.TFile) || (await this.readImportProperties(file))?.["naitflow-notion-id"] !== page.sourceId) throw new Error("destination-exists");
+      existing.add(path);
+    }
+    this.checkActive();
+    if (!marker) {
+      const file = await this.app.vault.create(`${destination}.md`, "");
+      try {
+        await this.app.fileManager.processFrontMatter(file, (fm) => {
+          fm["naitflow-notion-root"] = rootId;
+          fm["naitflow-notion-plan"] = signature;
+        });
+      } catch (error) {
+        await this.app.vault.delete(file);
+        throw error;
+      }
+    }
+    this.checkActive();
+    await ensureFolder(this.app, destination);
+    const total = this.pages.length + this.attachments.length;
+    let current = 0;
+    const attachmentFailures = [];
+    for (const attachment of this.attachments) {
+      this.checkActive();
+      const path = (0, import_obsidian5.normalizePath)(`${destination}/${attachment.targetPath}`);
+      onProgress({ current, total, label: attachment.source.name });
+      const existingAttachment = this.app.vault.getAbstractFileByPath(path);
+      if (existingAttachment && !(existingAttachment instanceof import_obsidian5.TFile)) throw new Error("destination-exists");
+      if (!existingAttachment) {
+        let bytes;
+        try {
+          bytes = await attachment.source.readBinary();
+        } catch (error) {
+          this.checkActive();
+          if (!(error instanceof ImportDownloadError)) throw error;
+          attachmentFailures.push({ path, error });
+          onProgress({ current: ++current, total, label: attachment.source.name });
+          continue;
+        }
+        this.checkActive();
+        await ensureFolder(this.app, dirname(path));
+        this.checkActive();
+        await this.app.vault.createBinary(path, bytes);
+      }
+      onProgress({ current: ++current, total, label: attachment.source.name });
+    }
+    for (const page of this.pages) {
+      this.checkActive();
+      const path = (0, import_obsidian5.normalizePath)(`${destination}/${page.targetPath}`);
+      if (!existing.has(path)) {
+        await ensureFolder(this.app, dirname(path));
+        this.checkActive();
+        const file = await this.app.vault.create(path, this.convertMarkdown(page, destination));
+        try {
+          await this.applyPageMeta(file, page, destination);
+        } catch (error) {
+          await this.app.vault.delete(file);
+          throw error;
+        }
+      }
+      onProgress({ current: ++current, total, label: page.title });
+    }
+    return { destination, pages: this.pages.length, attachments: this.attachments.length - attachmentFailures.length, attachmentFailures };
+  }
+  async readImportProperties(file) {
+    const info = (0, import_obsidian5.getFrontMatterInfo)(await this.app.vault.read(file));
+    if (!info.exists) return void 0;
+    try {
+      return (0, import_obsidian5.parseYaml)(info.frontmatter);
+    } catch {
+      return void 0;
+    }
+  }
   convertMarkdown(page, destination) {
     let markdown = page.rawContent.replace(/\r\n?/g, "\n");
     if (this.format === "notion-md") markdown = removeMatchingTitle(markdown, page.title);
     return rewriteOutsideFences(markdown, (chunk) => chunk.replace(
       /(!?)\[([^\]]*)\]\(([^)\n]+)\)/g,
-      (original, embed, label, rawTarget) => {
+      (original, embed2, label, rawTarget) => {
         const target = cleanMarkdownTarget(rawTarget);
         const resolved = this.resolveTarget(page, target);
         if (!resolved) return original;
-        return renderResolvedLink(resolved, destination, label, embed === "!");
+        return renderResolvedLink(resolved, destination, label, embed2 === "!");
       }
     )).trimEnd() + "\n";
   }
@@ -10590,19 +10889,19 @@ var NaitFlowImportPlan = class {
       return token;
     };
     for (const image of Array.from(body.querySelectorAll("img[src]"))) {
-      const source = image.getAttribute("src") ?? "";
-      const resolved = this.resolveTarget(page, source);
+      const source2 = image.getAttribute("src") ?? "";
+      const resolved = this.resolveTarget(page, source2);
       if (!resolved) continue;
       const replacement = document2.createTextNode(makeToken(renderResolvedLink(resolved, destination, image.alt, true)));
       const linked = image.closest("a");
       (linked ?? image).replaceWith(replacement);
     }
-    for (const link of Array.from(body.querySelectorAll("a[href]"))) {
-      const href = link.getAttribute("href") ?? "";
+    for (const link2 of Array.from(body.querySelectorAll("a[href]"))) {
+      const href = link2.getAttribute("href") ?? "";
       const resolved = this.resolveTarget(page, href);
       if (!resolved) continue;
-      const label = (link.textContent ?? "").trim();
-      link.replaceWith(document2.createTextNode(makeToken(renderResolvedLink(resolved, destination, label, false))));
+      const label = (link2.textContent ?? "").trim();
+      link2.replaceWith(document2.createTextNode(makeToken(renderResolvedLink(resolved, destination, label, false))));
     }
     let markdown = (0, import_obsidian5.htmlToMarkdown)(body.innerHTML).replace(/\r\n?/g, "\n");
     for (const [token, value] of tokens) markdown = markdown.split(token).join(value);
@@ -10610,7 +10909,7 @@ var NaitFlowImportPlan = class {
   }
   resolveTarget(page, rawTarget) {
     const target = stripQueryAndHash(decodeSourcePath(rawTarget));
-    const id = knownIdInTarget(target, this.pageById);
+    const id = knownIdInTarget(this.format === "notion-api" ? target.replace(/-/g, "") : target, this.pageById);
     if (isExternalTarget(target)) {
       const linkedPage2 = id ? this.pageById.get(id) : void 0;
       return linkedPage2 ? { kind: "page", targetPath: linkedPage2.targetPath, page: linkedPage2 } : null;
@@ -10631,14 +10930,52 @@ var NaitFlowImportPlan = class {
       const resolved = this.resolveTarget(page, cover);
       if (resolved?.kind === "attachment") cover = (0, import_obsidian5.normalizePath)(`${destination}/${resolved.targetPath}`);
     }
-    if (!page.icon && !cover) return;
+    let icon = page.icon;
+    if (page.notionMeta?.icon) {
+      icon = page.notionMeta.icon;
+      if (icon.startsWith("image:")) {
+        const resolved = this.resolveTarget(page, icon.slice(6));
+        icon = resolved ? `image:${(0, import_obsidian5.normalizePath)(`${destination}/${resolved.targetPath}`)}` : void 0;
+      }
+    }
+    if (!icon && !cover && !page.notionMeta) return;
     await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-      if (page.icon) frontmatter[FIELDS.icon] = `emoji:${page.icon}`;
+      if (icon) frontmatter[FIELDS.icon] = page.notionMeta ? icon : `emoji:${icon}`;
       if (cover) frontmatter[FIELDS.cover] = cover;
       if (cover && page.coverY !== void 0) frontmatter[FIELDS.coverY] = page.coverY;
+      if (page.notionMeta) {
+        frontmatter["naitflow-notion-id"] = page.sourceId;
+        if (page.notionMeta.created) frontmatter["naitflow-notion-created"] = page.notionMeta.created;
+        if (page.notionMeta.edited) frontmatter["naitflow-notion-edited"] = page.notionMeta.edited;
+      }
     });
   }
 };
+async function prepareNotionSources(app, files, metadata, close, checkActive) {
+  const pages = await readPages(files, "notion-api");
+  for (const page of pages) {
+    const meta = metadata.get(page.sourceId);
+    if (!meta) throw new Error("pages-not-found");
+    page.title = sanitizePageName(meta.title);
+    page.notionMeta = meta;
+    page.cover = meta.cover;
+    page.icon = meta.icon;
+  }
+  if (!pages.length) throw new Error("pages-not-found");
+  const renamed = assignTargets(pages, "notion-api");
+  const attachments = assignAttachments(files, pages, "notion-api");
+  return new NaitFlowImportPlan(
+    app,
+    { close },
+    "notion-api",
+    pages[0].title,
+    pages,
+    attachments,
+    renamed,
+    countUnresolvedLinks(pages, attachments, "notion-api"),
+    checkActive
+  );
+}
 async function prepareImport(app, file) {
   const archive = await LoadedArchive.open(file);
   try {
@@ -10665,18 +11002,18 @@ async function readPages(files, format) {
   const pageExtension = format === "notion-html" ? "html" : "md";
   const candidates = files.filter((file) => file.extension === pageExtension && (format === "buildin-md" ? buildinId(file.name) : notionId(file.name)));
   const pages = [];
-  for (const source of candidates) {
-    const rawContent = await source.readText();
-    const id = format === "buildin-md" ? buildinId(source.name) : notionId(source.name);
+  for (const source2 of candidates) {
+    const rawContent = await source2.readText();
+    const id = format === "buildin-md" ? buildinId(source2.name) : notionId(source2.name);
     if (!id) continue;
-    const rawStem = stripExtension(source.name);
+    const rawStem = stripExtension(source2.name);
     const fallbackTitle = format === "buildin-md" ? buildinTitle(rawStem) : notionTitle(rawStem);
     const title = format === "notion-html" ? htmlTitle(rawContent) || fallbackTitle : format === "notion-md" ? markdownTitle(rawContent) || fallbackTitle : fallbackTitle;
-    const sourceParent = dirname(source.path);
+    const sourceParent = dirname(source2.path);
     const folderName = format === "buildin-md" ? rawStem : notionTitle(rawStem);
     const page = {
-      source,
-      sourcePath: source.path,
+      source: source2,
+      sourcePath: source2.path,
       sourceId: id,
       sourceFolderPath: normalizeSourcePath(`${sourceParent}/${folderName}`),
       rawContent,
@@ -10739,19 +11076,19 @@ function assignAttachments(files, pages, format) {
   const owners = [...pages].sort((a, b) => b.sourceFolderPath.length - a.sourceFolderPath.length);
   const usedNames = /* @__PURE__ */ new Map();
   const attachments = [];
-  for (const source of files) {
-    if (pageSources.has(sourceKey(source.path))) continue;
-    if (pageExtensions.has(source.extension) && basename(source.path).toLocaleLowerCase() === "index.html") continue;
-    const owner = owners.find((page) => sourceKey(source.path).startsWith(`${sourceKey(page.sourceFolderPath)}/`));
+  for (const source2 of files) {
+    if (pageSources.has(sourceKey(source2.path))) continue;
+    if (pageExtensions.has(source2.extension) && basename(source2.path).toLocaleLowerCase() === "index.html") continue;
+    const owner = owners.find((page) => sourceKey(source2.path).startsWith(`${sourceKey(page.sourceFolderPath)}/`));
     const folder = owner ? `${owner.targetFolderPath}/\u0412\u043B\u043E\u0436\u0435\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B` : "\u0412\u043B\u043E\u0436\u0435\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B";
-    const originalName = sanitizeAttachmentName(decodeSourceSegment(source.name), format);
+    const originalName = sanitizeAttachmentName(decodeSourceSegment(source2.name), format);
     const used = usedNames.get(folder) ?? /* @__PURE__ */ new Set();
     let name = originalName;
     let suffix = 2;
     while (used.has(name.toLocaleLowerCase())) name = appendFilenameSuffix(originalName, suffix++);
     used.add(name.toLocaleLowerCase());
     usedNames.set(folder, used);
-    attachments.push({ source, sourcePath: source.path, targetPath: normalizeSourcePath(`${folder}/${name}`) });
+    attachments.push({ source: source2, sourcePath: source2.path, targetPath: normalizeSourcePath(`${folder}/${name}`) });
   }
   return attachments;
 }
@@ -10798,8 +11135,8 @@ function markdownTargets(markdown) {
   });
   return targets;
 }
-function htmlTargets(html) {
-  const document2 = new DOMParser().parseFromString(html, "text/html");
+function htmlTargets(html2) {
+  const document2 = new DOMParser().parseFromString(html2, "text/html");
   const body = document2.querySelector("div.page-body");
   if (!body) return [];
   return [
@@ -10807,11 +11144,11 @@ function htmlTargets(html) {
     ...Array.from(body.querySelectorAll("img[src]"), (element) => element.getAttribute("src") ?? "")
   ];
 }
-function renderResolvedLink(target, destination, rawLabel, embed) {
+function renderResolvedLink(target, destination, rawLabel, embed2) {
   const fullPath = (0, import_obsidian5.normalizePath)(`${destination}/${target.targetPath}`);
   if (target.kind === "attachment") {
     const label2 = plainLinkLabel(rawLabel);
-    if (embed) return `![[${fullPath}]]`;
+    if (embed2) return `![[${fullPath}]]`;
     return label2 ? `[[${fullPath}|${escapeWikiAlias(label2)}]]` : `[[${fullPath}]]`;
   }
   const pagePath = fullPath.replace(/\.md$/i, "");
@@ -10825,7 +11162,7 @@ function rewriteOutsideFences(markdown, rewrite) {
   let result = "";
   const flush = () => {
     if (!plain) return;
-    result += rewrite(plain);
+    result += rewriteOutsideInlineCode(plain, rewrite);
     plain = "";
   };
   for (const line of lines) {
@@ -10833,8 +11170,8 @@ function rewriteOutsideFences(markdown, rewrite) {
     if (marker) {
       flush();
       result += line;
-      if (!fence) fence = marker[0] ?? null;
-      else if (marker[0] === fence) fence = null;
+      if (!fence) fence = { character: marker[0], length: marker.length };
+      else if (marker[0] === fence.character && marker.length >= fence.length && /^\s*(?:`+|~+)\s*$/.test(line)) fence = null;
     } else if (fence) {
       result += line;
     } else {
@@ -10843,6 +11180,21 @@ function rewriteOutsideFences(markdown, rewrite) {
   }
   flush();
   return result;
+}
+function rewriteOutsideInlineCode(text, rewrite) {
+  let result = "";
+  let copied = 0;
+  const markers = Array.from(text.matchAll(/`+/g));
+  for (let i = 0; i < markers.length; i++) {
+    const opening = markers[i];
+    const end = markers.findIndex((marker, j) => j > i && marker[0].length === opening[0].length);
+    if (end < 0) continue;
+    const closing = markers[end];
+    result += rewrite(text.slice(copied, opening.index)) + text.slice(opening.index, closing.index + closing[0].length);
+    copied = closing.index + closing[0].length;
+    i = end;
+  }
+  return result + rewrite(text.slice(copied));
 }
 function removeMatchingTitle(markdown, title) {
   const match = markdown.match(/^\uFEFF?#\s+([^\r\n]+)(?:\r?\n(?:\r?\n)?|$)/);
@@ -10871,8 +11223,8 @@ function notionTitle(stem) {
 function markdownTitle(markdown) {
   return plainLinkLabel(markdown.match(/^\uFEFF?#\s+([^\r\n]+)/)?.[1] ?? "");
 }
-function htmlTitle(html) {
-  return new DOMParser().parseFromString(html, "text/html").title.replace(/\s+/g, " ").trim();
+function htmlTitle(html2) {
+  return new DOMParser().parseFromString(html2, "text/html").title.replace(/\s+/g, " ").trim();
 }
 function cleanUnpairedParent(path, format, pageFolders) {
   if (!path) return "";
@@ -11043,10 +11395,10 @@ var ImportPreviewModal = class extends import_obsidian6.Modal {
   }
   renderPreview() {
     this.contentEl.empty();
-    const source = this.contentEl.createDiv("naitflow-import-source");
-    const sourceIcon = source.createSpan("naitflow-import-source-icon");
+    const source2 = this.contentEl.createDiv("naitflow-import-source");
+    const sourceIcon = source2.createSpan("naitflow-import-source-icon");
     (0, import_obsidian6.setIcon)(sourceIcon, "archive");
-    const sourceText = source.createDiv();
+    const sourceText = source2.createDiv();
     sourceText.createDiv({ cls: "naitflow-import-source-format", text: formatLabel(this.plan.format) });
     sourceText.createDiv({ cls: "naitflow-import-source-name", text: this.plan.sourceName });
     const stats = this.contentEl.createDiv("naitflow-import-stats");
@@ -11195,44 +11547,126 @@ var PageHeaderManager = class {
   constructor(plugin) {
     this.plugin = plugin;
   }
-  scheduled = 0;
+  scheduled = false;
+  destroyed = false;
+  views = /* @__PURE__ */ new Map();
+  documents = /* @__PURE__ */ new Set();
   schedule() {
-    window.clearTimeout(this.scheduled);
-    this.scheduled = window.setTimeout(() => this.refresh(), 80);
+    if (this.scheduled || this.destroyed) return;
+    this.scheduled = true;
+    queueMicrotask(() => {
+      this.scheduled = false;
+      if (!this.destroyed) this.refresh();
+    });
   }
   refresh() {
+    for (const [container, observers] of this.views) {
+      if (container.isConnected) continue;
+      observers.structure.disconnect();
+      observers.size.disconnect();
+      this.views.delete(container);
+    }
     for (const leaf of this.plugin.app.workspace.getLeavesOfType("markdown")) {
       const view = leaf.view;
       if (!(view instanceof import_obsidian8.MarkdownView) || !view.file) continue;
       this.decorate(view, view.file);
+      this.decorateBreadcrumbs(view, view.file);
       this.decorateTab(leaf, view.file);
     }
   }
+  destroy() {
+    this.destroyed = true;
+    for (const observers of this.views.values()) {
+      observers.structure.disconnect();
+      observers.size.disconnect();
+    }
+    this.views.clear();
+    for (const doc of this.documents) {
+      doc.querySelectorAll(".naitflow-page-header, .naitflow-tab-icon, .naitflow-breadcrumb-icon").forEach((element) => element.remove());
+      doc.querySelectorAll(".naitflow-note, .naitflow-tab-icon-host").forEach((element) => {
+        element.removeClass("naitflow-note", "naitflow-tab-icon-host");
+      });
+      doc.querySelectorAll(".naitflow-fluid-cover-host").forEach((element) => {
+        element.removeClass("naitflow-fluid-cover-host");
+        for (const side of ["left", "right"]) element.style.removeProperty(`--naitflow-cover-gutter-${side}`);
+      });
+    }
+    this.documents.clear();
+  }
   decorate(view, file) {
+    view.containerEl.addClass("naitflow-note");
+    this.documents.add(view.containerEl.ownerDocument);
+    if (!this.views.has(view.containerEl)) {
+      const structure = new MutationObserver((records) => {
+        const selector = ".cm-sizer, .markdown-preview-view, .markdown-preview-sizer, .naitflow-page-header, .view-header-title, .view-header-breadcrumb";
+        const changed = records.some((record) => [...record.addedNodes, ...record.removedNodes].some(
+          (node) => node.nodeType === 1 && (node.matches(selector) || node.querySelector(selector))
+        ));
+        if (changed) this.schedule();
+      });
+      structure.observe(view.containerEl, { childList: true, subtree: true });
+      const size = new ResizeObserver(() => this.schedule());
+      size.observe(view.containerEl);
+      this.views.set(view.containerEl, { structure, size });
+    }
     const targets = [
       view.containerEl.querySelector(".markdown-source-view .cm-sizer"),
-      view.containerEl.querySelector(".markdown-preview-view .markdown-preview-sizer")
+      view.containerEl.querySelector(".markdown-preview-view")
     ].filter((item) => Boolean(item));
     for (const target of targets) {
       const fluidHost = target.closest(".cm-scroller, .markdown-preview-view");
       if (fluidHost) {
+        const hostWindow = fluidHost.ownerDocument.defaultView;
+        if (!hostWindow) continue;
         fluidHost.addClass("naitflow-fluid-cover-host");
-        const hostStyle = window.getComputedStyle(fluidHost);
+        const hostStyle = hostWindow.getComputedStyle(fluidHost);
         fluidHost.style.setProperty("--naitflow-cover-gutter-left", hostStyle.paddingLeft);
         fluidHost.style.setProperty("--naitflow-cover-gutter-right", hostStyle.paddingRight);
-        if (!fluidHost.style.getPropertyValue("--naitflow-cover-gutter-top")) {
-          const hostRect = fluidHost.getBoundingClientRect();
-          const targetRect = target.getBoundingClientRect();
-          const topGutter = Math.max(0, targetRect.top - hostRect.top + fluidHost.scrollTop);
-          fluidHost.style.setProperty("--naitflow-cover-gutter-top", `${topGutter}px`);
-        }
       }
       let header = target.querySelector(":scope > .naitflow-page-header");
       if (!header) {
-        header = createDiv({ cls: "naitflow-page-header" });
-        target.prepend(header);
+        header = target.ownerDocument.createElement("div");
+        header.addClass("naitflow-page-header");
+        if (target.hasClass("cm-sizer")) {
+          target.append(header);
+        } else {
+          target.prepend(header);
+        }
       }
       this.renderHeader(header, file);
+    }
+  }
+  decorateBreadcrumbs(view, file) {
+    const header = view.containerEl.querySelector(":scope > .view-header .view-header-title-container");
+    const title = header?.querySelector(":scope > .view-header-title");
+    if (!header || !title) return;
+    const app = this.plugin.app;
+    const crumbs = header.querySelectorAll(":scope > .view-header-title-parent > .view-header-breadcrumb");
+    const folders = file.parent?.path.split("/").filter(Boolean) ?? [];
+    let folderPath = "";
+    crumbs.forEach((crumb, index) => {
+      const folder = folders[index];
+      if (folder) folderPath = folderPath ? `${folderPath}/${folder}` : folder;
+      const page = folder && crumbs.length === folders.length ? app.vault.getFileByPath(`${folderPath}.md`) : null;
+      this.updateBreadcrumbIcon(crumb, page ? readPageMeta(app, page).icon : void 0);
+    });
+    this.updateBreadcrumbIcon(header, readPageMeta(app, file).icon, title);
+  }
+  updateBreadcrumbIcon(host, raw, before = host.firstChild) {
+    const existing = host.querySelector(":scope > .naitflow-breadcrumb-icon");
+    if (!raw) {
+      existing?.remove();
+      return;
+    }
+    const icon = existing ?? host.ownerDocument.createElement("span");
+    if (!existing) {
+      icon.className = "naitflow-breadcrumb-icon";
+      icon.setAttribute("aria-hidden", "true");
+      host.insertBefore(icon, before);
+    }
+    if (icon.dataset.naitflowSignature !== raw) {
+      icon.dataset.naitflowSignature = raw;
+      renderPageIcon(this.plugin.app, icon, raw);
     }
   }
   renderHeader(header, file) {
@@ -11336,20 +11770,1585 @@ var PageHeaderManager = class {
   }
 };
 
-// src/page-tree.ts
+// src/slash-menu.ts
+var import_obsidian9 = require("obsidian");
+
+// src/icons/type.svg
+var type_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="textNormal" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M4.875 4.825c0-.345.28-.625.625-.625h9c.345 0 .625.28.625.625v1.8a.625.625 0 1 1-1.25 0V5.45h-3.25v9.1h.725a.625.625 0 1 1 0 1.25h-2.7a.625.625 0 1 1 0-1.25h.725v-9.1h-3.25v1.175a.625.625 0 1 1-1.25 0z"></path></svg>\n';
+
+// src/icons/heading-1.svg
+var heading_1_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="textH1" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M4.1 4.825a.625.625 0 1 0-1.25 0v10.35a.625.625 0 0 0 1.25 0V10.4h6.4v4.775a.625.625 0 0 0 1.25 0V4.825a.625.625 0 1 0-1.25 0V9.15H4.1zM17.074 8.45a.6.6 0 0 1 .073.362q.003.03.003.063v6.3a.625.625 0 1 1-1.25 0V9.802l-1.55.846a.625.625 0 1 1-.6-1.098l2.476-1.35a.625.625 0 0 1 .848.25"></path></svg>\n';
+
+// src/icons/heading-2.svg
+var heading_2_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="textH2" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M3.65 4.825a.625.625 0 1 0-1.25 0v10.35a.625.625 0 0 0 1.25 0V10.4h6.4v4.775a.625.625 0 0 0 1.25 0V4.825a.625.625 0 1 0-1.25 0V9.15h-6.4zm10.104 5.164c.19-.457.722-.84 1.394-.84.89 0 1.48.627 1.48 1.238 0 .271-.104.53-.302.746l-3.837 3.585a.625.625 0 0 0 .427 1.082h4.5a.625.625 0 1 0 0-1.25H14.5l2.695-2.518.027-.028c.406-.43.657-.994.657-1.617 0-1.44-1.299-2.488-2.731-2.488-1.128 0-2.145.643-2.548 1.608a.625.625 0 0 0 1.154.482"></path></svg>\n';
+
+// src/icons/heading-3.svg
+var heading_3_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="textH3" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M2.877 4.2c.346 0 .625.28.625.625V9.15h6.4V4.825a.625.625 0 0 1 1.25 0v10.35a.625.625 0 0 1-1.25 0V10.4h-6.4v4.775a.625.625 0 0 1-1.25 0V4.825c0-.345.28-.625.625-.625M14.93 9.37c-.692 0-1.183.34-1.341.671a.625.625 0 1 1-1.128-.539c.416-.87 1.422-1.382 2.47-1.382.686 0 1.33.212 1.818.584.487.373.843.932.843 1.598 0 .629-.316 1.162-.76 1.533l.024.018c.515.389.892.972.892 1.669 0 .696-.377 1.28-.892 1.668s-1.198.61-1.926.61c-1.1 0-2.143-.514-2.599-1.389a.625.625 0 0 1 1.109-.578c.187.36.728.717 1.49.717.482 0 .895-.148 1.174-.358s.394-.453.394-.67-.116-.46-.394-.67c-.28-.21-.692-.358-1.174-.358h-.461a.625.625 0 0 1 0-1.25h.357a1 1 0 0 1 .104-.01c.437 0 .81-.135 1.06-.326s.351-.41.351-.605-.101-.415-.351-.606-.623-.327-1.06-.327"></path></svg>\n';
+
+// src/icons/list.svg
+var list_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="listBullet" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M4.809 12.75a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5M16 13.375a.625.625 0 1 1 0 1.25H8.5a.625.625 0 0 1 0-1.25zM4.809 4.75a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5M16 5.375a.625.625 0 1 1 0 1.25H8.5a.625.625 0 0 1 0-1.25z"></path></svg>\n';
+
+// src/icons/list-ordered.svg
+var list_ordered_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="listNumber" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M5.088 3.026a.55.55 0 0 1 .27.474v4a.55.55 0 0 1-1.1 0V4.435l-.24.134a.55.55 0 1 1-.535-.962l1.059-.588a.55.55 0 0 1 .546.007M8.5 5.375a.625.625 0 1 0 0 1.25H16a.625.625 0 1 0 0-1.25zm0 8a.625.625 0 0 0 0 1.25H16a.625.625 0 1 0 0-1.25zM6 16.55H3.5a.55.55 0 0 1-.417-.908l1.923-2.24a.7.7 0 0 0 .166-.45.335.335 0 0 0-.266-.327l-.164-.035a.6.6 0 0 0-.245.004l-.03.007a.57.57 0 0 0-.426.44.55.55 0 1 1-1.08-.206 1.67 1.67 0 0 1 1.248-1.304l.029-.007c.24-.058.49-.061.732-.01l.164.035c.664.14 1.138.726 1.138 1.404 0 .427-.153.84-.432 1.165L4.697 15.45H6a.55.55 0 0 1 0 1.1"></path></svg>\n';
+
+// src/icons/square-check.svg
+var square_check_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="checklist" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M6.184 10.804a1.1 1.1 0 0 1 1.1 1.1v2.8a1.1 1.1 0 0 1-1.1 1.1h-2.8a1.1 1.1 0 0 1-1.1-1.1v-2.8a1.1 1.1 0 0 1 1.1-1.1zm-2.65 3.75h2.5v-2.5h-2.5zm13.339-1.875a.625.625 0 0 1 0 1.25H9.748a.625.625 0 1 1 0-1.25zM6.748 3.394a.625.625 0 0 1 1.072.642l-2.85 4.75a.626.626 0 0 1-1.01.086l-1.9-2.217a.626.626 0 0 1 .948-.813l1.336 1.557zm10.125 2.634a.626.626 0 0 1 0 1.25H9.748a.625.625 0 1 1 0-1.25z"></path></svg>\n';
+
+// src/icons/file-text.svg
+var file_text_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="page" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M13.3 14.25a.55.55 0 0 1-.55.55h-5.5a.55.55 0 1 1 0-1.1h5.5a.55.55 0 0 1 .55.55m-.55-1.95a.55.55 0 1 0 0-1.1h-5.5a.55.55 0 0 0 0 1.1z"></path><path d="M6.25 2.375A2.125 2.125 0 0 0 4.125 4.5v11c0 1.174.951 2.125 2.125 2.125h7.5a2.125 2.125 0 0 0 2.125-2.125V8.121c0-.563-.224-1.104-.622-1.502L11.63 2.997a2.13 2.13 0 0 0-1.502-.622zM5.375 4.5c0-.483.392-.875.875-.875h3.7V6.25A2.05 2.05 0 0 0 12 8.3h2.625v7.2a.875.875 0 0 1-.875.875h-7.5a.875.875 0 0 1-.875-.875zm8.691 2.7H12a.95.95 0 0 1-.95-.95V4.184z"></path></svg>\n';
+
+// src/icons/quote.svg
+var quote_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="quote" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M15.796 4.971a5.067 5.067 0 0 0-5.067 5.067v.635a4.433 4.433 0 0 0 4.433 4.433 3.164 3.164 0 1 0-3.11-3.75 3.2 3.2 0 0 1-.073-.683v-.635a3.817 3.817 0 0 1 3.817-3.817h.635a.625.625 0 1 0 0-1.25zm-9.054 0a5.067 5.067 0 0 0-5.067 5.068v.634a4.433 4.433 0 0 0 4.433 4.433 3.164 3.164 0 1 0-3.11-3.75 3.2 3.2 0 0 1-.073-.683v-.634A3.817 3.817 0 0 1 6.742 6.22h.635a.625.625 0 1 0 0-1.25z"></path></svg>\n';
+
+// src/icons/minus.svg
+var minus_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="dashLong" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M4 9.375a.625.625 0 1 0 0 1.25h12a.625.625 0 1 0 0-1.25z"></path></svg>\n';
+
+// src/icons/image.svg
+var image_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="photo" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M8.5 9.31a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"></path><path d="M2.375 6.25c0-1.174.951-2.125 2.125-2.125h11c1.174 0 2.125.951 2.125 2.125v7.5a2.125 2.125 0 0 1-2.125 2.125h-11a2.125 2.125 0 0 1-2.125-2.125zM4.5 5.375a.875.875 0 0 0-.875.875v5.491l1.996-1.995a.625.625 0 0 1 .883 0l1.98 1.98 4.137-4.137a.625.625 0 0 1 .883 0l2.871 2.87V6.25a.875.875 0 0 0-.875-.875zm11.875 6.853-3.312-3.313-4.137 4.136a.625.625 0 0 1-.884 0l-1.98-1.98-2.437 2.438v.241c0 .483.392.875.875.875h11a.875.875 0 0 0 .875-.875z"></path></svg>\n';
+
+// src/icons/video.svg
+var video_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="playButton" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M7.814 12.407c0 .295.323.479.58.33l4.165-2.407a.38.38 0 0 0 0-.66L8.394 7.263a.385.385 0 0 0-.58.33z"></path><path d="M4.5 4.125A2.125 2.125 0 0 0 2.375 6.25v7.5c0 1.174.951 2.125 2.125 2.125h11a2.125 2.125 0 0 0 2.125-2.125v-7.5A2.125 2.125 0 0 0 15.5 4.125zM3.625 6.25c0-.483.392-.875.875-.875h11c.483 0 .875.392.875.875v7.5a.875.875 0 0 1-.875.875h-11a.875.875 0 0 1-.875-.875z"></path></svg>\n';
+
+// src/icons/music.svg
+var music_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="volumeOn" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M9.207 3.197c.619-.578 1.63-.14 1.63.708v12.417c0 .847-1.011 1.286-1.63.708l-3.523-3.291H2.712a.625.625 0 0 1-.625-.625v-6c0-.346.28-.625.625-.625h2.972zm.38 1.356L6.357 7.57a.63.63 0 0 1-.426.169H3.337v4.75H5.93c.158 0 .31.06.426.168l3.23 3.017zm3.224 2.08a.625.625 0 0 1 .88.08 5.31 5.31 0 0 1 0 6.8.625.625 0 0 1-.96-.8 4.06 4.06 0 0 0 0-5.2.625.625 0 0 1 .08-.88"></path><path d="M16.224 4.755a.625.625 0 0 0-1.024.717 8.09 8.09 0 0 1 0 9.283.625.625 0 0 0 1.024.717 9.34 9.34 0 0 0 0-10.717"></path></svg>\n';
+
+// src/icons/code.svg
+var code_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="code" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M11.971 3.1c.332.094.525.44.43.772l-3.6 12.6a.625.625 0 0 1-1.202-.343l3.6-12.6a.625.625 0 0 1 .772-.43M5.417 5.598a.626.626 0 0 1 .885.884L2.784 10l3.518 3.519a.625.625 0 0 1-.885.883l-3.96-3.96a.626.626 0 0 1 0-.884zm8.281 0a.626.626 0 0 1 .884 0l3.96 3.96a.626.626 0 0 1 0 .884l-3.96 3.96a.626.626 0 0 1-.884-.883L17.215 10l-3.517-3.518a.626.626 0 0 1 0-.884"></path></svg>\n';
+
+// src/icons/paperclip.svg
+var paperclip_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="paperClip" style="width: 20px; height: 20px; display: block; fill: var(--c-icoPri); flex-shrink: 0;"><path d="M10.184 3.64A3.475 3.475 0 0 1 15.1 8.554l-5.374 5.374a2.05 2.05 0 1 1-2.9-2.9l2.688-2.686a.625.625 0 0 1 .884.884L7.71 11.913a.8.8 0 0 0 1.13 1.131l5.375-5.374a2.225 2.225 0 1 0-3.147-3.146L5.694 9.898a3.65 3.65 0 1 0 5.162 5.161l4.702-4.702a.625.625 0 0 1 .884.884l-4.702 4.702a4.9 4.9 0 1 1-6.93-6.93z"></path></svg>\n';
+
+// src/icons/drag-handle.svg
+var drag_handle_default = '<!-- Tested by NaitLAB -->\n<svg aria-hidden="true" role="graphics-symbol" viewBox="0 0 20 20" class="dragHandle x1lliihq x2lah0s xw4jnvo x1qx5ct2 x19zyb68 x14rh7hd" style="--x-fill: var(--c-icoTer); --x-color: var(--c-icoTer);"><path d="M6.25 4a1.25 1.25 0 1 0 2.5 0 1.25 1.25 0 0 0-2.5 0m5 0a1.25 1.25 0 1 0 2.5 0 1.25 1.25 0 0 0-2.5 0m1.25 7.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5M6.25 10a1.25 1.25 0 1 0 2.5 0 1.25 1.25 0 0 0-2.5 0m6.25 7.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5M6.25 16a1.25 1.25 0 1 0 2.5 0 1.25 1.25 0 0 0-2.5 0"></path></svg>\n';
+
+// src/notion-icons.ts
+var ICONS = {
+  "type": type_default,
+  "heading-1": heading_1_default,
+  "heading-2": heading_2_default,
+  "heading-3": heading_3_default,
+  "list": list_default,
+  "list-ordered": list_ordered_default,
+  "square-check": square_check_default,
+  "file-text": file_text_default,
+  "quote": quote_default,
+  "minus": minus_default,
+  "image": image_default,
+  "video": video_default,
+  "music": music_default,
+  "code": code_default,
+  "paperclip": paperclip_default,
+  "drag-handle": drag_handle_default
+};
+function setNotionIcon(container, name) {
+  const source2 = ICONS[name];
+  if (!source2) return;
+  const parsed = new DOMParser().parseFromString(source2.replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" '), "image/svg+xml");
+  const svg = parsed.documentElement;
+  svg.removeAttribute("class");
+  svg.removeAttribute("style");
+  svg.setAttribute("fill", "currentColor");
+  svg.setAttribute("focusable", "false");
+  container.replaceChildren(container.ownerDocument.importNode(svg, true));
+}
+
+// src/slash-menu.ts
+var BLOCKS2 = [
+  { label: "slashText", icon: "type", aliases: "text paragraph \u0442\u0435\u043A\u0441\u0442 \u0430\u0431\u0437\u0430\u0446", snippet: "", group: "basic" },
+  ...[1, 2, 3].map((level) => ({ label: `slashHeading${level}`, icon: `heading-${level}`, aliases: `heading ${level} h${level} \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043E\u043A ${level}`, hint: "#".repeat(level), snippet: `${"#".repeat(level)} `, group: "basic" })),
+  { label: "slashBullet", icon: "list", aliases: "bulleted bullet list \u0441\u043F\u0438\u0441\u043E\u043A \u043C\u0430\u0440\u043A\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439", hint: "-", snippet: "- ", group: "basic" },
+  { label: "slashNumbered", icon: "list-ordered", aliases: "numbered ordered list \u0441\u043F\u0438\u0441\u043E\u043A \u043D\u0443\u043C\u0435\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0439", hint: "1.", snippet: "1. ", group: "basic" },
+  { label: "slashTodo", icon: "square-check", aliases: "todo to-do task checklist \u0437\u0430\u0434\u0430\u0447\u0430 \u0437\u0430\u0434\u0430\u0447\u0438 \u0447\u0435\u043A\u043B\u0438\u0441\u0442", hint: "[ ]", snippet: "- [ ] ", group: "basic" },
+  { label: "slashPage", icon: "file-text", aliases: "page link \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u0441\u0441\u044B\u043B\u043A\u0430", kind: "page", group: "basic" },
+  { label: "slashQuote", icon: "quote", aliases: "quote \u0446\u0438\u0442\u0430\u0442\u0430", hint: ">", snippet: "> ", group: "basic" },
+  { label: "slashDivider", icon: "minus", aliases: "divider separator \u0440\u0430\u0437\u0434\u0435\u043B\u0438\u0442\u0435\u043B\u044C \u043B\u0438\u043D\u0438\u044F", hint: "---", snippet: "---\n", group: "basic" },
+  { label: "slashImage", icon: "image", aliases: "image picture \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0435 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0430 \u0444\u043E\u0442\u043E", kind: "image", group: "media" },
+  { label: "slashVideo", icon: "video", aliases: "video \u0432\u0438\u0434\u0435\u043E", kind: "video", group: "media" },
+  { label: "slashAudio", icon: "music", aliases: "audio music \u0430\u0443\u0434\u0438\u043E \u043C\u0443\u0437\u044B\u043A\u0430", kind: "audio", group: "media" },
+  { label: "slashCode", icon: "code", aliases: "code \u043A\u043E\u0434 \u0431\u043B\u043E\u043A \u043A\u043E\u0434\u0430", hint: "```", snippet: "```\n\n```", caret: 4, group: "media" },
+  { label: "slashFile", icon: "paperclip", aliases: "file attachment \u0444\u0430\u0439\u043B \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0435", kind: "file", group: "media" }
+];
+var EXTENSIONS = {
+  image: /^(avif|bmp|gif|jpe?g|png|svg|webp)$/i,
+  video: /^(mp4|m4v|mov|webm|ogv|mkv)$/i,
+  audio: /^(mp3|m4a|wav|ogg|oga|opus|flac|webm|3gp)$/i
+};
+var SlashMenuSuggest = class extends import_obsidian9.EditorSuggest {
+  destroyed = false;
+  picker = null;
+  menu = null;
+  previousGroup = "";
+  constructor(app) {
+    super(app);
+    this.limit = BLOCKS2.length;
+  }
+  onTrigger(cursor, editor, file) {
+    if (this.destroyed || this.picker || !file || editor.somethingSelected() || editor.listSelections().length !== 1) return null;
+    const match = /^( {0,3})\/([^/\n]{0,60})$/.exec(editor.getLine(cursor.line).slice(0, cursor.ch));
+    if (!match || this.insideLiteral(editor, cursor.line)) return null;
+    return { start: { line: cursor.line, ch: match[1].length }, end: cursor, query: match[2] };
+  }
+  getSuggestions(context) {
+    this.previousGroup = "";
+    const words = context.query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    const items = BLOCKS2.filter((item) => words.every((word) => `${t(item.label)} ${item.aliases}`.toLocaleLowerCase().includes(word)));
+    return items.length ? items : [{ label: "slashNoResults", icon: "search", aliases: "", group: "basic" }];
+  }
+  renderSuggestion(item, el) {
+    el.addClass("naitflow-slash-row");
+    if (item.label === "slashNoResults") {
+      el.addClass("naitflow-slash-empty");
+      el.setText(t(item.label));
+    } else {
+      if (this.previousGroup !== item.group) {
+        const heading2 = el.ownerDocument.createElement("div");
+        heading2.className = "naitflow-slash-group";
+        heading2.textContent = t(this.context?.query.trim() ? "slashFiltered" : item.group === "basic" ? "slashBasic" : "slashMedia");
+        if (!this.previousGroup || !this.context?.query.trim()) el.before(heading2);
+      }
+      const icon = el.createSpan("naitflow-slash-icon");
+      icon.setAttribute("aria-hidden", "true");
+      setNotionIcon(icon, item.icon);
+      el.createSpan({ cls: "naitflow-slash-label", text: t(item.label) });
+      if (item.hint) el.createSpan({ cls: "naitflow-slash-hint", text: item.hint });
+    }
+    this.previousGroup = item.group;
+    this.decorate(el);
+  }
+  decorate(row) {
+    const menu = row.closest(".suggestion-container");
+    if (!menu) return;
+    this.menu = menu;
+    menu.addClass("naitflow-slash-menu");
+    menu.setAttribute("aria-label", t("slashMenu"));
+    if (menu.querySelector(".naitflow-slash-footer")) return;
+    const footer = menu.createDiv("naitflow-slash-footer");
+    const button = footer.createEl("button", { cls: "naitflow-slash-close", attr: { type: "button" } });
+    button.createSpan({ text: t("slashClose") });
+    button.createSpan({ cls: "naitflow-slash-hint", text: "esc" });
+    button.onpointerdown = (event) => event.preventDefault();
+    button.onclick = () => this.close();
+  }
+  selectSuggestion(item) {
+    const context = this.context;
+    if (!context || item.label === "slashNoResults") return;
+    const saved = { ...context, start: { ...context.start }, end: { ...context.end } };
+    this.close();
+    if (item.kind) {
+      this.picker = new VaultFilePicker(this.app, item.kind, (file) => {
+        if (!this.canInsert(saved)) return;
+        const link2 = this.app.fileManager.generateMarkdownLink(file, saved.file.path);
+        this.insert(saved, item.kind === "page" || item.kind === "file" ? link2 : `!${link2}`);
+      }, () => {
+        this.picker = null;
+      });
+      this.picker.open();
+      return;
+    }
+    if (this.canInsert(saved)) this.insert(saved, item.snippet ?? "", item.caret);
+  }
+  canInsert(context) {
+    const sameFile = this.app.workspace.getLeavesOfType("markdown").some((leaf) => leaf.view instanceof import_obsidian9.MarkdownView && leaf.view.editor === context.editor && leaf.view.file === context.file);
+    if (this.destroyed || !sameFile || context.editor.getRange(context.start, context.end) !== `/${context.query}`) {
+      if (!this.destroyed) new import_obsidian9.Notice(t("slashContextChanged"));
+      return false;
+    }
+    return true;
+  }
+  insert(context, text, caret = text.length) {
+    const beforeCaret = text.slice(0, caret).split("\n");
+    const target = { line: context.start.line + beforeCaret.length - 1, ch: (beforeCaret.length === 1 ? context.start.ch : 0) + beforeCaret[beforeCaret.length - 1].length };
+    context.editor.transaction({ changes: [{ from: context.start, to: context.end, text }], selection: { from: target } }, "input.autocomplete");
+    context.editor.focus();
+  }
+  insideLiteral(editor, line) {
+    let fence = null;
+    let frontmatter = editor.getLine(0).trim() === "---";
+    for (let index = frontmatter ? 1 : 0; index < line; index++) {
+      const text = editor.getLine(index);
+      if (frontmatter) {
+        if (/^(---|\.\.\.)\s*$/.test(text)) frontmatter = false;
+        continue;
+      }
+      const match = /^ {0,3}(`{3,}|~{3,})(.*)$/.exec(text);
+      if (!match) continue;
+      const marker = match[1];
+      if (!fence) fence = { character: marker[0], length: marker.length };
+      else if (marker[0] === fence.character && marker.length >= fence.length && !match[2].trim()) fence = null;
+    }
+    return frontmatter || fence !== null;
+  }
+  close() {
+    super.close();
+    this.menu?.querySelector(".naitflow-slash-footer")?.remove();
+    this.menu?.removeClass("naitflow-slash-menu");
+    this.menu = null;
+  }
+  destroy() {
+    this.destroyed = true;
+    this.picker?.close();
+    this.picker = null;
+    this.close();
+  }
+};
+var VaultFilePicker = class extends import_obsidian9.FuzzySuggestModal {
+  constructor(app, kind, choose, finish) {
+    super(app);
+    this.kind = kind;
+    this.choose = choose;
+    this.finish = finish;
+    this.setPlaceholder(t(kind === "page" ? "slashChoosePage" : "slashChooseAttachment"));
+    this.emptyStateText = t("slashNoFiles");
+  }
+  getItems() {
+    return this.app.vault.getFiles().filter((file) => this.kind === "page" ? file.extension.toLowerCase() === "md" : this.kind === "file" ? file.extension.toLowerCase() !== "md" : EXTENSIONS[this.kind].test(file.extension));
+  }
+  getItemText(file) {
+    return file.path;
+  }
+  onChooseItem(file) {
+    this.choose(file);
+  }
+  onClose() {
+    super.onClose();
+    this.finish();
+  }
+};
+
+// src/block-drag.ts
+var import_state = require("@codemirror/state");
+var import_view = require("@codemirror/view");
 var import_obsidian10 = require("obsidian");
 
+// src/markdown-blocks.ts
+var listMarker = (line) => /^( {0,3})([-+*]|\d+[.)])[ \t]+/.exec(line);
+var fenceMarker = (line) => /^ {0,3}(`{3,}|~{3,})/.exec(line);
+var heading = (line) => /^ {0,3}#{1,6}(?:\s|$)/.test(line);
+var divider = (line) => /^ {0,3}(?:(?:\*\s*){3,}|(?:-\s*){3,}|(?:_\s*){3,})$/.test(line);
+var setext = (line) => /^ {0,3}(?:=+|-+)\s*$/.test(line);
+var quote = (line) => /^ {0,3}>/.test(line);
+var embed = (line) => /^\s*!(?:\[\[[^\n]+\]\]|\[[^\n]*\]\([^\n]+\))\s*$/.test(line);
+var indented = (line) => /^(?: {4}|\t)/.test(line);
+var indentation = (line) => (line.match(/^[ \t]*/)?.[0] ?? "").replace(/\t/g, "    ").length;
+var math = (line) => /^\s*\$\$/.test(line);
+var html = (line) => /^ {0,3}<(script|style|pre|textarea|details|div|table|iframe|video|audio|section|article|figure)(?:\s|>)/i.exec(line);
+var startsBlock = (line) => heading(line) || divider(line) || !!fenceMarker(line) || quote(line) || !!listMarker(line) || embed(line) || math(line) || !!html(line) || /^\s*<!--/.test(line);
+function markdownBlocks(text) {
+  const lines = text.split("\n");
+  const offsets = [];
+  let offset = 0;
+  for (const line of lines) {
+    offsets.push(offset);
+    offset += line.length + 1;
+  }
+  const result = [];
+  let i = 0;
+  if (lines[0]?.trim() === "---") {
+    i = 1;
+    while (i < lines.length && !/^(---|\.\.\.)\s*$/.test(lines[i])) i++;
+    if (i === lines.length) return result;
+    i++;
+  }
+  while (i < lines.length) {
+    if (!lines[i].trim()) {
+      i++;
+      continue;
+    }
+    const start = i;
+    const first = lines[i];
+    if (/^\^[a-zA-Z0-9-]+\s*$/.test(first) && result.length) {
+      let previous = result[result.length - 1];
+      if (previous.kind === "list") {
+        while (result.length > 1) {
+          const before = result[result.length - 2];
+          if (before.kind !== "list" || before.listKind !== previous.listKind) break;
+          result.pop();
+          previous = before;
+        }
+      }
+      previous.to = offsets[i] + first.replace(/\r$/, "").length;
+      i++;
+      continue;
+    }
+    let kind = "paragraph";
+    let listKind;
+    const fence = fenceMarker(first), list = listMarker(first), tag = html(first);
+    if (fence) {
+      kind = "code";
+      const marker = fence[1];
+      i++;
+      while (i < lines.length) {
+        const end = /^ {0,3}(`+|~+)\s*$/.exec(lines[i++]);
+        if (end && end[1][0] === marker[0] && end[1].length >= marker.length) break;
+      }
+    } else if (math(first)) {
+      kind = "math";
+      i++;
+      if (!/^\s*\$\$.*\$\$\s*$/.test(first)) {
+        while (i < lines.length && !/\$\$\s*$/.test(lines[i++])) {
+        }
+      }
+    } else if (tag || /^\s*<!--/.test(first)) {
+      kind = "html";
+      const closing = tag ? new RegExp(`</${tag[1]}\\s*>`, "i") : /-->/;
+      i++;
+      if (!closing.test(first)) while (i < lines.length && !closing.test(lines[i++])) {
+      }
+    } else if (heading(first)) {
+      kind = "heading";
+      i++;
+    } else if (divider(first)) {
+      kind = "divider";
+      i++;
+    } else if (embed(first)) {
+      kind = "embed";
+      i++;
+    } else if (list) {
+      kind = "list";
+      listKind = /^\d/.test(list[2]) ? "ordered" : "bullet";
+      const indent = list[1].length;
+      i++;
+      while (i < lines.length) {
+        const next = lines[i];
+        if (!next.trim()) {
+          let after = i + 1;
+          while (after < lines.length && !lines[after].trim()) after++;
+          if (after < lines.length && indentation(lines[after]) > indent) {
+            i = after;
+            continue;
+          }
+          break;
+        }
+        const sibling = listMarker(next);
+        if (sibling && sibling[1].length <= indent) break;
+        if (indentation(next) <= indent && startsBlock(next)) break;
+        i++;
+      }
+    } else if (quote(first)) {
+      kind = "quote";
+      i++;
+      while (i < lines.length && lines[i].trim() && (quote(lines[i]) || !startsBlock(lines[i]))) i++;
+    } else if (indented(first)) {
+      kind = "code";
+      i++;
+      while (i < lines.length) {
+        if (indented(lines[i])) {
+          i++;
+          continue;
+        }
+        if (!lines[i].trim()) {
+          let after = i + 1;
+          while (after < lines.length && !lines[after].trim()) after++;
+          if (after < lines.length && indented(lines[after])) {
+            i = after;
+            continue;
+          }
+        }
+        break;
+      }
+    } else {
+      i++;
+      while (i < lines.length && lines[i].trim()) {
+        if (setext(lines[i])) {
+          kind = "heading";
+          i++;
+          break;
+        }
+        if (startsBlock(lines[i])) break;
+        i++;
+      }
+    }
+    const last = i - 1;
+    result.push({ from: offsets[start], to: offsets[last] + lines[last].replace(/\r$/, "").length, kind, listKind });
+  }
+  return result;
+}
+function moveMarkdownBlock(text, blocks, source2, boundary) {
+  if (!Number.isInteger(source2) || !Number.isInteger(boundary) || !blocks[source2] || boundary < 0 || boundary > blocks.length || boundary === source2 || boundary === source2 + 1) return null;
+  const order = blocks.map((_, index) => index);
+  order.splice(source2, 1);
+  const destination = boundary > source2 ? boundary - 1 : boundary;
+  order.splice(destination, 0, source2);
+  const lo = Math.max(0, Math.min(source2, destination) - 1);
+  const hi = Math.min(blocks.length - 1, Math.max(source2, destination) + 1);
+  let insert = "", selection = 0;
+  const newline = text.includes("\r\n") ? "\r\n" : "\n";
+  for (let slot = lo; slot <= hi; slot++) {
+    const originalIndex = order[slot];
+    const block = blocks[originalIndex];
+    if (originalIndex === source2) selection = blocks[lo].from + insert.length;
+    insert += text.slice(block.from, block.to);
+    if (slot < hi) {
+      let gap = text.slice(blocks[slot].to, blocks[slot + 1].from);
+      const next = blocks[order[slot + 1]];
+      const minBreaks = block.kind === "list" && next.kind === "list" && block.listKind === next.listKind ? 1 : 2;
+      for (let n = (gap.match(/\n/g) ?? []).length; n < minBreaks; n++) gap += newline;
+      insert += gap;
+    }
+  }
+  return { from: blocks[lo].from, to: blocks[hi].to, insert, selection };
+}
+
+// src/block-drag.ts
+var selectBlock = import_state.StateEffect.define();
+var bulletBlockStart = import_view.Decoration.line({ class: "naitflow-bullet-block-start" });
+var bulletBlockEnd = import_view.Decoration.line({ class: "naitflow-bullet-block-end" });
+var paragraphBlockStart = import_view.Decoration.line({ class: "naitflow-paragraph-block-start" });
+var paragraphBlockEnd = import_view.Decoration.line({ class: "naitflow-paragraph-block-end" });
+var selectedBlock = import_state.StateField.define({
+  create: () => null,
+  update(block, tr) {
+    for (const effect of tr.effects) if (effect.is(selectBlock)) return effect.value;
+    return tr.docChanged ? null : block;
+  },
+  provide: (field) => import_view.EditorView.decorations.compute([field], (state) => {
+    const blocks = state.field(field);
+    if (!blocks) return import_view.Decoration.none;
+    const rows = [];
+    for (const block of blocks) {
+      const first = state.doc.lineAt(block.from).number;
+      const last = state.doc.lineAt(block.to).number;
+      const type = block.listKind === "bullet" ? " is-bulleted" : block.kind === "paragraph" ? " is-paragraph" : "";
+      for (let n = first; n <= last; n++) {
+        const edges = `${n === first ? " is-first" : ""}${n === last ? " is-last" : ""}`;
+        rows.push(import_view.Decoration.line({ class: `naitflow-block-selected${type}${edges}` }).range(state.doc.line(n).from));
+      }
+    }
+    return import_view.Decoration.set(rows);
+  })
+});
+var BlockDragView = class {
+  constructor(view) {
+    this.view = view;
+    this.document = view.dom.ownerDocument;
+    this.win = this.document.defaultView;
+    this.controls = this.document.createElement("div");
+    this.controls.className = "naitflow-block-controls";
+    this.add = this.document.createElement("button");
+    this.add.type = "button";
+    this.add.className = "clickable-icon naitflow-block-add";
+    this.add.setAttribute("aria-label", t("blockAddLabel"));
+    (0, import_obsidian10.setIcon)(this.add, "plus");
+    (0, import_obsidian10.setTooltip)(this.add, t("blockAddHint"), { placement: "bottom" });
+    this.handle = this.document.createElement("button");
+    this.handle.type = "button";
+    this.handle.className = "clickable-icon naitflow-block-handle";
+    (0, import_obsidian10.setTooltip)(this.handle, t("blockDragHint"), { placement: "bottom", classes: ["naitflow-block-handle-tooltip"], gap: 6 });
+    this.handle.setAttribute("aria-haspopup", "menu");
+    this.handle.setAttribute("aria-keyshortcuts", "Alt+ArrowUp Alt+ArrowDown");
+    this.handle.draggable = false;
+    setNotionIcon(this.handle, "drag-handle");
+    this.indicator = this.document.createElement("div");
+    this.indicator.className = "naitflow-block-drop-line";
+    this.indicator.setAttribute("aria-hidden", "true");
+    this.controls.hidden = this.indicator.hidden = true;
+    this.controls.append(this.add, this.handle);
+    this.document.body.append(this.controls, this.indicator);
+    this.document.addEventListener("pointerdown", this.clearBlockOnPointer, true);
+    view.dom.addEventListener("pointermove", this.onHover);
+    view.dom.addEventListener("pointerdown", this.onRangeStart, true);
+    view.dom.addEventListener("pointerup", this.onRangeEnd);
+    view.dom.addEventListener("lostpointercapture", this.onRangeEnd);
+    view.dom.addEventListener("pointerleave", this.onLeave);
+    view.scrollDOM.addEventListener("scroll", this.onScroll, { passive: true });
+    view.contentDOM.addEventListener("pointerdown", this.onMarkerPointer, true);
+    view.dom.addEventListener("keydown", this.clearBlockOnKey);
+    this.handle.addEventListener("pointerdown", this.onPointerDown);
+    this.handle.addEventListener("keydown", this.onHandleKey);
+    this.controls.addEventListener("pointerleave", this.onLeave);
+    this.controls.addEventListener("pointerenter", this.cancelLeave);
+    this.add.addEventListener("pointerdown", this.keepEditorFocus);
+    this.add.addEventListener("click", this.onAdd);
+    this.win.addEventListener("resize", this.onScroll);
+    this.updateBlockSpacing();
+  }
+  blockSpacing = import_view.Decoration.none;
+  document;
+  win;
+  controls;
+  add;
+  handle;
+  indicator;
+  blocks = null;
+  current = null;
+  drag = null;
+  rangeDrag;
+  menu;
+  frame = 0;
+  leaveTimer;
+  update(update) {
+    if (update.docChanged) {
+      this.stopRange();
+      this.blocks = null;
+      this.menu?.hide();
+      if (this.drag) {
+        this.stopDrag();
+        new import_obsidian10.Notice(t("blockDragChanged"));
+      }
+    }
+    if (update.docChanged || update.startState.field(import_obsidian10.editorLivePreviewField, false) !== update.state.field(import_obsidian10.editorLivePreviewField, false) || update.startState.field(import_obsidian10.editorInfoField, false)?.file !== update.state.field(import_obsidian10.editorInfoField, false)?.file) {
+      this.updateBlockSpacing();
+    }
+    if (update.docChanged || update.viewportChanged || update.geometryChanged || update.selectionSet) this.hide();
+  }
+  editable() {
+    return !this.view.state.readOnly && this.view.state.facet(import_view.EditorView.editable) && this.view.state.field(import_obsidian10.editorInfoField, false)?.file?.extension.toLowerCase() === "md";
+  }
+  getBlocks() {
+    return this.blocks ??= markdownBlocks(this.view.state.doc.toString());
+  }
+  updateBlockSpacing() {
+    const { state } = this.view;
+    if (!state.field(import_obsidian10.editorLivePreviewField, false) || state.field(import_obsidian10.editorInfoField, false)?.file?.extension.toLowerCase() !== "md") {
+      this.blockSpacing = import_view.Decoration.none;
+      return;
+    }
+    const rows = [];
+    for (const block of this.getBlocks()) {
+      if (block.listKind === "bullet") {
+        rows.push(bulletBlockStart.range(block.from), bulletBlockEnd.range(state.doc.lineAt(block.to).from));
+      } else if (block.kind === "paragraph") {
+        rows.push(paragraphBlockStart.range(block.from), paragraphBlockEnd.range(state.doc.lineAt(block.to).from));
+      }
+    }
+    this.blockSpacing = import_view.Decoration.set(rows);
+  }
+  onHover = (event) => {
+    if (this.rangeDrag) {
+      this.extendRange(event);
+      return;
+    }
+    if (this.drag || this.menu || event.buttons || event.pointerType === "touch") return;
+    this.cancelLeave();
+    if (!this.editable()) {
+      this.hide();
+      return;
+    }
+    if (!this.view.contentDOM.contains(event.target)) {
+      const controls = this.controls.getBoundingClientRect();
+      const content = this.view.contentDOM.getBoundingClientRect();
+      if (this.current !== null && event.clientX >= controls.left - 4 && event.clientX <= content.left + 8 && event.clientY >= controls.top - 4 && event.clientY <= controls.bottom + 4) return;
+      this.hide();
+      return;
+    }
+    const position = this.view.posAtCoords({ x: event.clientX, y: event.clientY });
+    if (position === null) {
+      this.hide();
+      return;
+    }
+    const blocks = this.getBlocks();
+    const index = blocks.findIndex((block2) => position >= block2.from && position <= block2.to);
+    if (index < 0) {
+      this.hide();
+      return;
+    }
+    const block = blocks[index];
+    const coordinates = this.view.coordsAtPos(block.from);
+    const clip = this.view.scrollDOM.getBoundingClientRect();
+    if (!coordinates || coordinates.top < clip.top || coordinates.top >= clip.bottom) {
+      this.hide();
+      return;
+    }
+    const startNode = this.view.domAtPos(block.from).node;
+    const line = (startNode.nodeType === 1 ? startNode : startNode.parentElement)?.closest(".cm-line");
+    const lineLeft = line?.getBoundingClientRect().left ?? coordinates.left;
+    const gutters = this.view.scrollDOM.querySelector(":scope > .cm-gutters")?.getBoundingClientRect();
+    const controlsRight = Math.min(lineLeft - 18, gutters?.width ? gutters.left - 6 : Infinity);
+    this.controls.hidden = false;
+    const controlsLeft = controlsRight - this.controls.offsetWidth;
+    if (controlsLeft < clip.left + 8) {
+      this.hide();
+      return;
+    }
+    this.current = index;
+    this.handle.dataset.blockFrom = String(block.from);
+    const hasWiderHighlight = block.kind === "paragraph" || block.listKind === "bullet";
+    const highlightInset = hasWiderHighlight && this.view.state.field(import_obsidian10.editorLivePreviewField, false) ? 1 : 0;
+    this.controls.style.left = `${controlsLeft - highlightInset}px`;
+    this.controls.style.top = `${coordinates.top}px`;
+  };
+  onLeave = (event) => {
+    if (this.drag) return;
+    const next = event.relatedTarget;
+    if (next && (this.controls.contains(next) || this.view.dom.contains(next))) return;
+    this.cancelLeave();
+    this.leaveTimer = this.win.setTimeout(() => this.hide(), 120);
+  };
+  cancelLeave = () => {
+    if (this.leaveTimer !== void 0) this.win.clearTimeout(this.leaveTimer);
+    this.leaveTimer = void 0;
+  };
+  onScroll = () => {
+    if (!this.drag) this.hide();
+  };
+  hide() {
+    if (this.drag) return;
+    this.cancelLeave();
+    this.controls.hidden = true;
+    this.current = null;
+  }
+  keepEditorFocus = (event) => {
+    event.preventDefault();
+  };
+  onRangeStart = (event) => {
+    if (event.button !== 0 || event.shiftKey || event.pointerType === "touch" || this.menu || this.drag || !this.editable() || !this.view.state.field(import_obsidian10.editorLivePreviewField, false)) return;
+    const target = event.target;
+    if (!target.closest(".cm-content, .cm-contentContainer, .cm-sizer, .cm-scroller") || target.closest(".cm-gutters, button, a, input, .cm-fold-indicator, .naitflow-page-header, .inline-title")) return;
+    const scroller = this.view.scrollDOM;
+    const viewport = scroller.getBoundingClientRect();
+    const left = viewport.left + scroller.clientLeft;
+    const right = left + scroller.clientWidth;
+    if (event.clientX < left || event.clientX >= right) return;
+    const content = this.view.contentDOM.getBoundingClientRect();
+    const blocks = this.getBlocks();
+    const last = blocks.at(-1);
+    const fromBelow = !!last && event.clientY >= this.view.documentTop + this.view.lineBlockAt(last.to).bottom;
+    const fromSide = event.clientX >= content.left - 40 && event.clientX < content.left || event.clientX >= content.right;
+    if (!fromBelow && !fromSide) return;
+    const anchor = fromBelow ? blocks.length - 1 : this.blockByHeight(event.clientY);
+    if (anchor < 0) return;
+    event.preventDefault();
+    this.view.focus();
+    this.rangeDrag = { pointer: event.pointerId, anchor, end: null, x: event.clientX, y: event.clientY, fromBelow };
+    this.view.dom.setPointerCapture(event.pointerId);
+  };
+  blockByHeight(y) {
+    const line = this.view.lineBlockAtHeight(y - this.view.documentTop);
+    return this.getBlocks().findIndex((block) => line.from >= block.from && line.from <= block.to);
+  }
+  extendRange(event) {
+    const range = this.rangeDrag;
+    if (!range || range.pointer !== event.pointerId) return;
+    const displacement = event.clientY - range.y;
+    if (range.end === null && (range.fromBelow ? displacement > -4 : Math.abs(displacement) < 4)) return;
+    const end = this.blockByHeight(event.clientY);
+    if (end < 0 || end === range.end) return;
+    range.end = end;
+    const blocks = this.getBlocks().slice(Math.min(range.anchor, end), Math.max(range.anchor, end) + 1);
+    this.view.dispatch({ selection: import_state.EditorSelection.cursor(this.view.state.selection.main.head), effects: selectBlock.of(blocks) });
+  }
+  onRangeEnd = (event) => {
+    const range = this.rangeDrag;
+    if (!range || event.pointerId !== range.pointer) return;
+    this.stopRange();
+    if (event.type === "pointerup" && range.fromBelow && range.end === null && Math.hypot(event.clientX - range.x, event.clientY - range.y) < 4) {
+      const pos = this.view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
+      this.view.dispatch({ selection: import_state.EditorSelection.cursor(pos), userEvent: "select.pointer" });
+    }
+  };
+  stopRange() {
+    const range = this.rangeDrag;
+    this.rangeDrag = void 0;
+    if (range && this.view.dom.hasPointerCapture(range.pointer)) this.view.dom.releasePointerCapture(range.pointer);
+  }
+  clearBlockOnPointer = (event) => {
+    if (this.menu || this.controls.contains(event.target) || !this.view.state.field(selectedBlock)) return;
+    this.view.dispatch({ effects: selectBlock.of(null) });
+  };
+  clearBlockOnKey = (event) => {
+    if (!this.menu && this.view.state.field(selectedBlock) && (event.key === "Escape" || event.key.startsWith("Arrow"))) {
+      this.view.dispatch({ effects: selectBlock.of(null) });
+    }
+  };
+  onMarkerPointer = (event) => {
+    if (event.button !== 0 || event.shiftKey || !this.view.state.field(import_obsidian10.editorLivePreviewField, false) || !this.editable()) return;
+    const element = event.target;
+    const marker = element.closest?.(".cm-formatting-list-ul");
+    const row = marker?.closest(".HyperMD-list-line:not(.HyperMD-task-line, .HyperMD-codeblock)");
+    if (!row) return;
+    const line = this.view.state.doc.lineAt(this.view.posAtDOM(row));
+    const prefix = /^[ \t]*[-+*][ \t]+/.exec(line.text)?.[0];
+    if (!prefix) return;
+    event.preventDefault();
+    this.view.focus();
+    this.view.dispatch({ selection: import_state.EditorSelection.cursor(line.from + prefix.length), userEvent: "select.pointer" });
+  };
+  onAdd = (event) => {
+    if (this.drag || this.current === null || !this.editable()) return;
+    const block = this.getBlocks()[this.current];
+    if (!block) return;
+    const { doc } = this.view.state;
+    const from = event.altKey ? block.from : block.to;
+    const before = doc.sliceString(Math.max(0, from - 2), from);
+    const after = doc.sliceString(from, from + 2);
+    const prefix = event.altKey ? before && !before.endsWith("\n\n") ? "\n" : "" : "\n\n";
+    const suffix = event.altKey ? "\n\n" : after === "\n\n" || !after ? "" : "\n";
+    this.view.focus();
+    this.view.dispatch({
+      changes: { from, insert: `${prefix}/${suffix}` },
+      selection: import_state.EditorSelection.cursor(from + prefix.length + 1),
+      userEvent: "input.type",
+      scrollIntoView: true
+    });
+  };
+  onPointerDown = (event) => {
+    if (event.button !== 0 || this.current === null || !this.editable()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.drag = { doc: this.view.state.doc, source: this.current, pointer: event.pointerId, startX: event.clientX, startY: event.clientY, x: event.clientX, y: event.clientY, moved: false, boundary: null };
+    this.handle.setPointerCapture(event.pointerId);
+    this.document.addEventListener("pointermove", this.onPointerMove, true);
+    this.document.addEventListener("pointerup", this.onPointerUp, true);
+    this.document.addEventListener("pointercancel", this.onCancel, true);
+    this.document.addEventListener("keydown", this.onDragKey, true);
+    this.win.addEventListener("blur", this.onCancel);
+    this.frame = this.win.requestAnimationFrame(this.autoScroll);
+  };
+  onPointerMove = (event) => {
+    const drag = this.drag;
+    if (!drag || event.pointerId !== drag.pointer) return;
+    event.preventDefault();
+    event.stopPropagation();
+    drag.x = event.clientX;
+    drag.y = event.clientY;
+    if (!drag.moved && Math.hypot(drag.x - drag.startX, drag.y - drag.startY) < 4) return;
+    if (!drag.moved) {
+      drag.moved = true;
+      this.handle.classList.add("is-dragging");
+      this.document.body.classList.add("naitflow-is-block-dragging");
+    }
+    this.placeDrop();
+  };
+  placeDrop() {
+    const drag = this.drag;
+    if (!drag?.moved) return;
+    const clip = this.view.scrollDOM.getBoundingClientRect();
+    const blocks = this.getBlocks();
+    drag.boundary = null;
+    this.indicator.hidden = true;
+    if (drag.x < clip.left || drag.x > clip.right || drag.y < clip.top || drag.y > clip.bottom) return;
+    const content = this.view.contentDOM.getBoundingClientRect();
+    const x = Math.max(content.left + 4, Math.min(drag.x, content.right - 4));
+    const pos = this.view.posAtCoords({ x, y: drag.y });
+    if (pos === null || !blocks.length) return;
+    let index = blocks.findIndex((block2) => pos <= block2.to);
+    if (index === -1) index = blocks.length - 1;
+    const block = blocks[index];
+    const top = this.view.coordsAtPos(block.from)?.top ?? this.view.documentTop + this.view.lineBlockAt(block.from).top;
+    const bottom = this.view.coordsAtPos(block.to)?.bottom ?? this.view.documentTop + this.view.lineBlockAt(block.to).bottom;
+    const before = drag.y < (top + bottom) / 2;
+    const boundary = before ? index : index + 1;
+    if (boundary === drag.source || boundary === drag.source + 1) return;
+    drag.boundary = boundary;
+    const style = this.win.getComputedStyle(this.view.contentDOM);
+    const left = content.left + parseFloat(style.paddingLeft || "0");
+    const width = content.width - parseFloat(style.paddingLeft || "0") - parseFloat(style.paddingRight || "0");
+    this.indicator.style.left = `${left}px`;
+    this.indicator.style.width = `${Math.max(0, width)}px`;
+    this.indicator.style.top = `${Math.max(clip.top, Math.min(before ? top - 3 : bottom + 3, clip.bottom - 3))}px`;
+    this.indicator.hidden = false;
+  }
+  autoScroll = () => {
+    const drag = this.drag;
+    if (!drag) return;
+    if (drag.moved) {
+      const rect = this.view.scrollDOM.getBoundingClientRect();
+      if (drag.x >= rect.left && drag.x <= rect.right) {
+        const speed = drag.y < rect.top + 36 ? -Math.min(14, (rect.top + 36 - drag.y) / 3) : drag.y > rect.bottom - 36 ? Math.min(14, (drag.y - rect.bottom + 36) / 3) : 0;
+        if (speed) {
+          this.view.scrollDOM.scrollTop += speed;
+          this.placeDrop();
+        }
+      }
+    }
+    this.frame = this.win.requestAnimationFrame(this.autoScroll);
+  };
+  onPointerUp = (event) => {
+    const drag = this.drag;
+    if (!drag || event.pointerId !== drag.pointer) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const anchor = this.handle.getBoundingClientRect();
+    this.stopDrag();
+    if (!this.editable() || this.view.state.doc !== drag.doc) return;
+    if (drag.moved && drag.boundary !== null) this.move(drag.source, drag.boundary);
+    else if (!drag.moved) this.openBlockMenu(drag.source, anchor);
+  };
+  onCancel = () => {
+    this.stopDrag();
+  };
+  onDragKey = (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.stopDrag();
+    }
+  };
+  onHandleKey = (event) => {
+    if (this.current === null || !this.editable()) return;
+    if (event.altKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+      event.preventDefault();
+      this.move(this.current, event.key === "ArrowUp" ? this.current - 1 : this.current + 2);
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      this.openBlockMenu(this.current, this.handle.getBoundingClientRect());
+    }
+  };
+  openBlockMenu(index, anchor) {
+    const blocks = this.getBlocks();
+    const block = blocks[index];
+    if (!block) return;
+    this.menu?.hide();
+    this.view.dispatch({ selection: import_state.EditorSelection.cursor(this.view.state.selection.main.head), effects: selectBlock.of([block]) });
+    const doc = this.view.state.doc;
+    const menu = this.menu = new import_obsidian10.Menu().setUseNativeMenu(false);
+    menu.addItem((item) => item.setTitle(t("blockCopy")).setIcon("copy").onClick(() => {
+      void this.copyBlock(doc.sliceString(block.from, block.to));
+    }));
+    menu.addItem((item) => item.setTitle(t("blockMoveUp")).setIcon("arrow-up").setDisabled(index === 0).onClick(() => {
+      if (this.view.state.doc === doc && this.editable()) this.move(index, index - 1);
+    }));
+    menu.addItem((item) => item.setTitle(t("blockMoveDown")).setIcon("arrow-down").setDisabled(index === blocks.length - 1).onClick(() => {
+      if (this.view.state.doc === doc && this.editable()) this.move(index, index + 2);
+    }));
+    menu.onHide(() => {
+      if (this.menu === menu) this.menu = void 0;
+    });
+    menu.showAtPosition({ x: anchor.right + 4, y: anchor.top }, this.document);
+  }
+  async copyBlock(text) {
+    try {
+      await this.win.navigator.clipboard.writeText(text);
+    } catch {
+      new import_obsidian10.Notice(t("blockCopyFailed"));
+    }
+  }
+  move(source2, boundary) {
+    const change = moveMarkdownBlock(this.view.state.doc.toString(), this.getBlocks(), source2, boundary);
+    if (!change) return;
+    this.view.dispatch({ changes: { from: change.from, to: change.to, insert: change.insert }, selection: import_state.EditorSelection.cursor(change.selection), userEvent: "move.drop", scrollIntoView: true });
+    this.view.focus();
+  }
+  stopDrag() {
+    const drag = this.drag;
+    this.drag = null;
+    this.win.cancelAnimationFrame(this.frame);
+    this.frame = 0;
+    this.document.removeEventListener("pointermove", this.onPointerMove, true);
+    this.document.removeEventListener("pointerup", this.onPointerUp, true);
+    this.document.removeEventListener("pointercancel", this.onCancel, true);
+    this.document.removeEventListener("keydown", this.onDragKey, true);
+    this.win.removeEventListener("blur", this.onCancel);
+    if (drag && this.handle.hasPointerCapture(drag.pointer)) this.handle.releasePointerCapture(drag.pointer);
+    this.handle.classList.remove("is-dragging");
+    if (!this.document.querySelector(".naitflow-block-handle.is-dragging")) this.document.body.classList.remove("naitflow-is-block-dragging");
+    this.indicator.hidden = true;
+    this.hide();
+  }
+  destroy() {
+    this.menu?.hide();
+    this.stopDrag();
+    this.stopRange();
+    this.document.removeEventListener("pointerdown", this.clearBlockOnPointer, true);
+    this.view.dom.removeEventListener("pointermove", this.onHover);
+    this.view.dom.removeEventListener("pointerdown", this.onRangeStart, true);
+    this.view.dom.removeEventListener("pointerup", this.onRangeEnd);
+    this.view.dom.removeEventListener("lostpointercapture", this.onRangeEnd);
+    this.view.dom.removeEventListener("pointerleave", this.onLeave);
+    this.view.scrollDOM.removeEventListener("scroll", this.onScroll);
+    this.view.contentDOM.removeEventListener("pointerdown", this.onMarkerPointer, true);
+    this.view.dom.removeEventListener("keydown", this.clearBlockOnKey);
+    this.win.removeEventListener("resize", this.onScroll);
+    this.handle.removeEventListener("pointerdown", this.onPointerDown);
+    this.handle.removeEventListener("keydown", this.onHandleKey);
+    this.controls.removeEventListener("pointerleave", this.onLeave);
+    this.controls.removeEventListener("pointerenter", this.cancelLeave);
+    this.add.removeEventListener("pointerdown", this.keepEditorFocus);
+    this.add.removeEventListener("click", this.onAdd);
+    this.controls.remove();
+    this.indicator.remove();
+  }
+};
+var textSelectionClass = import_view.EditorView.editorAttributes.of(
+  (view) => view.state.selection.ranges.some((range) => !range.empty) ? { class: "naitflow-text-selected" } : null
+);
+var blockDragExtension = [selectedBlock, textSelectionClass, import_view.ViewPlugin.fromClass(BlockDragView, {
+  decorations: (view) => view.blockSpacing
+})];
+
+// src/selection-toolbar.ts
+var import_state2 = require("@codemirror/state");
+var import_view2 = require("@codemirror/view");
+var import_obsidian11 = require("obsidian");
+var formats = [
+  { label: "selectionBold", icon: "bold", marker: "**" },
+  { label: "selectionItalic", icon: "italic", marker: "_" },
+  { label: "selectionStrike", icon: "strikethrough", marker: "~~" },
+  { label: "selectionCode", icon: "code", marker: "`" }
+];
+var blockTypes = [
+  { label: "slashText", icon: "type", prefix: "", match: /^/ },
+  { label: "slashHeading1", icon: "heading-1", prefix: "# ", match: /^#[ \t]+/ },
+  { label: "slashHeading2", icon: "heading-2", prefix: "## ", match: /^##[ \t]+/ },
+  { label: "slashHeading3", icon: "heading-3", prefix: "### ", match: /^###[ \t]+/ },
+  { label: "slashBullet", icon: "list", prefix: "- ", match: /^[-+*][ \t]+(?!\[[ xX]\](?:\s|$))/ },
+  { label: "slashNumbered", icon: "list-ordered", prefix: "1. ", match: /^\d+[.)][ \t]+/ },
+  { label: "slashTodo", icon: "square-check", prefix: "- [ ] ", match: /^[-+*][ \t]+\[[ xX]\][ \t]+/ },
+  { label: "slashQuote", icon: "quote", prefix: "> ", match: /^>[ \t]?/ }
+];
+var SelectionToolbar = class {
+  constructor(view) {
+    this.view = view;
+    this.doc = view.dom.ownerDocument;
+    this.win = this.doc.defaultView;
+    this.toolbar = this.doc.createElement("div");
+    this.toolbar.className = "naitflow-selection-toolbar";
+    this.toolbar.setAttribute("role", "group");
+    this.toolbar.setAttribute("aria-label", t("selectionFormat"));
+    this.toolbar.hidden = true;
+    this.typeButton = this.button("selectionBlockType", "chevron-down", () => this.openTypeMenu());
+    this.typeButton.setAttribute("aria-haspopup", "menu");
+    this.typeLabel = this.doc.createElement("span");
+    this.typeButton.prepend(this.typeLabel);
+    this.formatButtons = formats.map((format) => this.button(format.label, format.icon, () => this.format(format.marker)));
+    this.formatButtons.push(this.button("selectionLink", "link", () => this.insertLink()));
+    this.doc.body.append(this.toolbar);
+    const { signal } = this.events;
+    view.contentDOM.addEventListener("pointerdown", (event) => {
+      this.pointerSelecting = event.button === 0;
+      this.dismissed = false;
+      this.hide();
+    }, { signal });
+    this.doc.addEventListener("pointerup", this.finishSelecting, { signal });
+    this.doc.addEventListener("pointercancel", this.finishSelecting, { signal });
+    this.doc.addEventListener("keydown", this.onKey, { signal, capture: true });
+    this.toolbar.addEventListener("pointerdown", (event) => event.preventDefault(), { signal });
+    this.toolbar.addEventListener("focusout", this.schedule, { signal });
+    this.view.scrollDOM.addEventListener("scroll", this.schedule, { signal, passive: true });
+    this.win.addEventListener("resize", this.schedule, { signal });
+    this.win.addEventListener("blur", () => {
+      this.pointerSelecting = false;
+      this.hide();
+    }, { signal });
+  }
+  doc;
+  win;
+  events = new AbortController();
+  toolbar;
+  typeButton;
+  typeLabel;
+  formatButtons;
+  menu;
+  frame = 0;
+  pointerSelecting = false;
+  dismissed = false;
+  blockDoc;
+  blocks = [];
+  button(label, icon, action) {
+    const button = this.doc.createElement("button");
+    button.type = "button";
+    button.className = "clickable-icon";
+    button.setAttribute("aria-label", t(label));
+    (0, import_obsidian11.setIcon)(button, icon);
+    (0, import_obsidian11.setTooltip)(button, t(label));
+    button.addEventListener("click", action, { signal: this.events.signal });
+    this.toolbar.append(button);
+    return button;
+  }
+  update(update) {
+    if (update.selectionSet || update.docChanged) {
+      this.dismissed = false;
+      this.hide();
+    }
+    if (update.selectionSet || update.docChanged || update.focusChanged || update.geometryChanged || update.viewportChanged) this.schedule();
+  }
+  finishSelecting = () => {
+    if (!this.pointerSelecting) return;
+    this.pointerSelecting = false;
+    this.schedule();
+  };
+  onKey = (event) => {
+    if (this.toolbar.hidden || this.menu || !this.view.hasFocus && !this.toolbar.contains(this.doc.activeElement)) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      this.dismissed = true;
+      this.hide();
+      this.view.focus();
+    } else if (event.key === "F10" && event.altKey && this.view.hasFocus) {
+      event.preventDefault();
+      this.toolbar.querySelector("button:not(:disabled)")?.focus();
+    }
+  };
+  schedule = () => {
+    if (this.frame) return;
+    this.frame = this.win.requestAnimationFrame(() => {
+      this.frame = 0;
+      this.render();
+    });
+  };
+  get context() {
+    const { state } = this.view;
+    const { from, to } = state.selection.main;
+    if (state.readOnly || !state.facet(import_view2.EditorView.editable) || state.selection.ranges.length !== 1 || from === to || state.field(import_obsidian11.editorInfoField, false)?.file?.extension.toLowerCase() !== "md") return null;
+    const selection = state.sliceDoc(from, to);
+    const value = selection.trim();
+    if (!value) return null;
+    if (this.blockDoc !== state.doc) {
+      this.blockDoc = state.doc;
+      this.blocks = markdownBlocks(state.doc.toString());
+    }
+    const start = from + selection.length - selection.trimStart().length;
+    const end = to - (selection.length - selection.trimEnd().length);
+    const block = this.blocks.find((item) => start >= item.from && end <= item.to);
+    if (!block || !["paragraph", "heading", "list", "quote"].includes(block.kind)) return null;
+    return { from: start, to: end, value, block };
+  }
+  getLineType(position) {
+    const line = this.view.state.doc.lineAt(position);
+    const indent = /^[ \t]*/.exec(line.text)[0].length;
+    const text = line.text.slice(indent);
+    const next = line.number < this.view.state.doc.lines ? this.view.state.doc.line(line.number + 1).text : "";
+    if (/^#{4,6}\s|^\||^[:| -]+\|/.test(text) || /^\s*(?:=+|-{2,})\s*$/.test(next)) return null;
+    const type = blockTypes.slice(1).find((item) => item.match.test(text)) ?? blockTypes[0];
+    const from = line.from + indent;
+    return { type, from, to: from + type.match.exec(text)[0].length };
+  }
+  render() {
+    if (this.menu) return;
+    if (this.dismissed || this.pointerSelecting || !this.view.hasFocus && !this.toolbar.contains(this.doc.activeElement)) {
+      this.hide();
+      return;
+    }
+    const context = this.context;
+    if (!context) {
+      this.hide();
+      return;
+    }
+    const start = this.view.coordsAtPos(context.from, 1);
+    const end = this.view.coordsAtPos(context.to, -1);
+    const pane = this.view.scrollDOM.getBoundingClientRect();
+    const lineType = context.value.includes("\n") ? null : this.getLineType(context.from);
+    this.typeButton.disabled = !lineType;
+    this.typeLabel.textContent = t(lineType?.type.label ?? "slashText");
+    const multiline = context.value.includes("\n");
+    for (const [index, button] of this.formatButtons.entries()) button.disabled = multiline && (index >= 3 || context.block.kind !== "paragraph");
+    if (!start || !end || pane.width < 100) {
+      this.hide();
+      return;
+    }
+    const anchor = start.bottom > pane.top && start.top < pane.bottom ? start : end;
+    if (anchor.bottom <= pane.top || anchor.top >= pane.bottom) {
+      this.hide();
+      return;
+    }
+    this.toolbar.style.maxWidth = `${pane.width - 16}px`;
+    this.toolbar.hidden = false;
+    const { width, height } = this.toolbar.getBoundingClientRect();
+    this.toolbar.style.left = `${Math.max(pane.left + 8, Math.min(anchor.left, pane.right - width - 8))}px`;
+    this.toolbar.style.top = `${anchor.top - height - 8 >= pane.top ? anchor.top - height - 8 : Math.min(end.bottom + 8, pane.bottom - height)}px`;
+  }
+  openTypeMenu() {
+    const context = this.context;
+    const line = context && this.getLineType(context.from);
+    if (!line || !context || this.typeButton.disabled) return;
+    const { doc, selection } = this.view.state;
+    const menu = this.menu = new import_obsidian11.Menu().setUseNativeMenu(false);
+    this.typeButton.setAttribute("aria-expanded", "true");
+    for (const option of blockTypes) menu.addItem((item) => item.setTitle(t(option.label)).setIcon(option.icon).setChecked(line.type === option).onClick(() => {
+      if (this.view.state.doc !== doc || !this.view.state.selection.eq(selection) || !this.context) return;
+      if (line.type === option) {
+        this.view.focus();
+        return;
+      }
+      this.view.dispatch({ changes: { from: line.from, to: line.to, insert: option.prefix }, userEvent: "input.format" });
+      this.view.focus();
+    }));
+    menu.onHide(() => {
+      this.menu = void 0;
+      this.typeButton.removeAttribute("aria-expanded");
+      this.schedule();
+    });
+    const { left, bottom } = this.typeButton.getBoundingClientRect();
+    menu.showAtPosition({ x: left, y: bottom + 4 }, this.doc);
+  }
+  format(marker) {
+    const context = this.context;
+    if (!context) return;
+    let { from, to, value } = context;
+    const { state } = this.view;
+    let prefix = marker;
+    let suffix = marker;
+    if (marker === "`") {
+      let longest = 0;
+      for (const run of value.matchAll(/`+/g)) longest = Math.max(longest, run[0].length);
+      const before = /(`+) ?$/.exec(state.sliceDoc(state.doc.lineAt(from).from, from))?.[0];
+      const after = /^ ?(`+)/.exec(state.sliceDoc(to, state.doc.lineAt(to).to))?.[0];
+      if (before && after && before.trim() === after.trim() && before.trim().length > longest) {
+        return this.replace(from - before.length, to + after.length, value, 0, value.length);
+      }
+      prefix = "`".repeat(longest + 1);
+      suffix = prefix;
+      if (/^`|`$/.test(value)) {
+        prefix += " ";
+        suffix = ` ${suffix}`;
+      }
+    } else {
+      const size = marker.length;
+      if (from >= size && state.sliceDoc(from - size, from) === marker && state.sliceDoc(to, to + size) === marker) {
+        return this.replace(from - size, to + size, value, 0, value.length);
+      }
+      if (value.length > size * 2 && value.startsWith(marker) && value.endsWith(marker)) {
+        value = value.slice(size, -size);
+        return this.replace(from, to, value, 0, value.length);
+      }
+    }
+    this.replace(from, to, `${prefix}${value}${suffix}`, prefix.length, prefix.length + value.length);
+  }
+  insertLink() {
+    const context = this.context;
+    if (!context || context.value.includes("\n")) return;
+    const label = context.value.replace(/([\[\]\\])/g, "\\$1");
+    const cursor = label.length + 3;
+    this.replace(context.from, context.to, `[${label}]()`, cursor, cursor);
+  }
+  replace(from, to, insert, anchor, head) {
+    this.view.dispatch({ changes: { from, to, insert }, selection: import_state2.EditorSelection.range(from + anchor, from + head), userEvent: "input.format" });
+    this.view.focus();
+  }
+  hide() {
+    this.toolbar.hidden = true;
+    this.menu?.hide();
+  }
+  destroy() {
+    this.events.abort();
+    this.hide();
+    this.win.cancelAnimationFrame(this.frame);
+    this.toolbar.remove();
+  }
+};
+var selectionToolbarExtension = import_obsidian11.Platform.isMobile ? [] : import_view2.ViewPlugin.fromClass(SelectionToolbar);
+
+// src/subpage-link-hover.ts
+var import_state3 = require("@codemirror/state");
+var import_view3 = require("@codemirror/view");
+var import_obsidian13 = require("obsidian");
+
+// src/subpage-preview.ts
+var import_obsidian12 = require("obsidian");
+var subpageTargetAttribute = "data-naitflow-subpage-target";
+var rowSelector = `[${subpageTargetAttribute}]`;
+function rowAt(target) {
+  const node = target;
+  return node?.closest?.(rowSelector) ?? null;
+}
+function excerpt(markdown) {
+  const start = (0, import_obsidian12.getFrontMatterInfo)(markdown).contentStart;
+  return markdown.slice(start, start + 2600).replace(/!\[\[[^\]\n]+\]\]|!\[[^\]\n]*\]\([^\n)]*\)/g, "").replace(/^\s*\r?\n/gm, "\n").replace(/^ {0,3}(?:#{1,6}|>|[-*+]|\d+\.)[ \t]+/gm, "").replace(/\[\[([^\]\n|]+)(?:\|([^\]\n]*))?\]\]/g, (_match, path, alias) => alias || path.split("/").pop() || "").replace(/\[([^\]\n]+)\]\([^\n)]*\)/g, "$1").replace(/\*\*|__|`|~~/g, "").trim().slice(0, 420);
+}
+function breadcrumb(file) {
+  const segments = file.path.split("/").slice(0, -1);
+  return (segments.length > 2 ? [segments[0], "\u2026", segments[segments.length - 1]] : segments).join(" \u203A ");
+}
+var SubpagePreview = class {
+  constructor(app, doc, win) {
+    this.app = app;
+    this.doc = doc;
+    this.win = win;
+    const capture = { capture: true, signal: this.listeners.signal };
+    doc.addEventListener("mouseover", this.onOver, capture);
+    doc.addEventListener("mouseout", this.onOut, capture);
+    doc.addEventListener("mouseleave", this.onDocumentLeave, capture);
+    doc.addEventListener("pointerdown", this.hide, capture);
+    doc.addEventListener("focusin", this.hide, capture);
+    doc.addEventListener("scroll", this.hide, capture);
+    doc.addEventListener("keydown", this.onKey, capture);
+    win.addEventListener("resize", this.hide, capture);
+    win.addEventListener("blur", this.hide, capture);
+  }
+  listeners = new AbortController();
+  win;
+  row;
+  target;
+  timer;
+  card;
+  generation = 0;
+  onOver = (event) => {
+    const row = rowAt(event.target);
+    const path = row?.getAttribute(subpageTargetAttribute);
+    const target = path ? this.app.vault.getFileByPath(path) : null;
+    if (!row || !target || event.buttons || !this.win.matchMedia("(hover: hover)").matches) return;
+    event.stopPropagation();
+    if (this.row === row && this.target === target) return;
+    this.hide();
+    this.row = row;
+    this.target = target;
+    const generation = this.generation;
+    this.timer = this.win.setTimeout(() => {
+      this.timer = void 0;
+      void this.show(row, target, generation);
+    }, 360);
+  };
+  onOut = (event) => {
+    if (this.row && rowAt(event.target) === this.row && rowAt(event.relatedTarget) !== this.row) this.hide();
+  };
+  onDocumentLeave = (event) => {
+    if (event.target === this.doc) this.hide();
+  };
+  onKey = (event) => {
+    if (event.key === "Escape") this.hide();
+  };
+  async show(row, file, generation) {
+    let text;
+    try {
+      text = excerpt(await this.app.vault.cachedRead(file));
+    } catch {
+      return;
+    }
+    if (generation !== this.generation || !row.isConnected || row.getAttribute(subpageTargetAttribute) !== file.path) return;
+    const meta = readPageMeta(this.app, file);
+    const card = this.doc.body.createDiv({ cls: "naitflow-subpage-preview", attr: { "aria-hidden": "true" } });
+    this.card = card;
+    const cover = meta.cover ? this.app.vault.getFileByPath(meta.cover) : null;
+    if (cover) {
+      const image = card.createEl("img", { cls: "naitflow-subpage-preview-cover", attr: { src: this.app.vault.getResourcePath(cover), alt: "" } });
+      image.style.objectPosition = `center ${meta.coverY}%`;
+    }
+    const content = card.createDiv("naitflow-subpage-preview-content");
+    renderPageIcon(this.app, content.createSpan("naitflow-subpage-preview-icon"), meta.icon);
+    const path = breadcrumb(file);
+    if (path) content.createDiv({ cls: "naitflow-subpage-preview-path", text: path });
+    content.createDiv({ cls: "naitflow-subpage-preview-title", text: displayName(file) });
+    if (text) content.createDiv({ cls: "naitflow-subpage-preview-text", text });
+    const edge = 8;
+    const anchor = row.getBoundingClientRect();
+    const below = anchor.bottom + 6;
+    const above = anchor.top - 6;
+    const spaceBelow = this.win.innerHeight - edge - below;
+    const spaceAbove = above - edge;
+    const placeBelow = spaceBelow >= card.offsetHeight || spaceBelow >= spaceAbove;
+    const available = placeBelow ? spaceBelow : spaceAbove;
+    if (available < 64) {
+      this.hide();
+      return;
+    }
+    card.style.maxHeight = `${available}px`;
+    const box = card.getBoundingClientRect();
+    const top = placeBelow ? below : above - box.height;
+    card.style.left = `${Math.max(edge, Math.min(anchor.left + 4, this.win.innerWidth - box.width - edge))}px`;
+    card.style.top = `${Math.max(edge, Math.min(top, this.win.innerHeight - box.height - edge))}px`;
+  }
+  dismissWithin(root) {
+    if (this.row && root.contains(this.row)) this.hide();
+  }
+  hide = () => {
+    this.generation++;
+    if (this.timer !== void 0) this.win.clearTimeout(this.timer);
+    this.timer = void 0;
+    this.card?.remove();
+    this.card = this.row = this.target = void 0;
+  };
+  destroy() {
+    this.hide();
+    this.listeners.abort();
+  }
+};
+function createSubpagePreviews(plugin) {
+  const previews = /* @__PURE__ */ new Map();
+  let disposed = false;
+  plugin.registerEvent(plugin.app.workspace.on("window-close", (_workspaceWindow, window2) => {
+    previews.get(window2.document)?.destroy();
+    previews.delete(window2.document);
+  }));
+  plugin.register(() => {
+    disposed = true;
+    for (const preview of previews.values()) preview.destroy();
+    previews.clear();
+  });
+  return (doc, create = true) => {
+    if (disposed || import_obsidian12.Platform.isMobile || !doc.defaultView) return;
+    let preview = previews.get(doc);
+    if (!preview && create) {
+      preview = new SubpagePreview(plugin.app, doc, doc.defaultView);
+      previews.set(doc, preview);
+    }
+    return preview;
+  };
+}
+
+// src/subpage-link-hover.ts
+var rowClass = "naitflow-subpage-link-row";
+var spacer = import_view3.Decoration.line({ class: "naitflow-subpage-link-spacer" });
+var refreshTargets = import_state3.StateEffect.define();
+function findSubpage(app, link2, source2, encoded = false) {
+  let { path, subpath } = (0, import_obsidian13.parseLinktext)(link2);
+  if (!path || subpath || /^[a-z][a-z\d+.-]*:/i.test(path)) return;
+  if (encoded) {
+    try {
+      path = decodeURIComponent(path);
+    } catch {
+      return;
+    }
+  }
+  const target = app.metadataCache.getFirstLinkpathDest(path, source2);
+  if (!target || target.extension !== "md" || target.path === source2) return;
+  if (target.parent?.path === pageFolderPath(source2)) return target;
+  if (target.parent && app.vault.getFileByPath(`${target.parent.path}.md`)) return;
+  const parent = readPageMeta(app, target).parent;
+  return parent && app.metadataCache.getFirstLinkpathDest(parent, target.path)?.path === source2 ? target : void 0;
+}
+function createIcon(app, document2, icon) {
+  const el = document2.createElement("span");
+  el.className = "naitflow-subpage-link-icon";
+  el.setAttribute("aria-hidden", "true");
+  renderPageIcon(app, el, icon);
+  return el;
+}
+function openSubpage(app, event, target, source2) {
+  if (event.type === "auxclick" && event.button !== 1) return;
+  event.preventDefault();
+  event.stopPropagation();
+  void app.workspace.openLinkText(target.path, source2, import_obsidian13.Keymap.isModEvent(event) || event.button === 1);
+}
+var SubpageLink = class extends import_view3.WidgetType {
+  constructor(app, target, source2, icon) {
+    super();
+    this.app = app;
+    this.target = target;
+    this.source = source2;
+    this.icon = icon;
+    this.path = target.path;
+  }
+  path;
+  eq(other) {
+    return this.target === other.target && this.path === other.path && this.source === other.source && this.icon === other.icon;
+  }
+  toDOM(view) {
+    const doc = view.dom.ownerDocument;
+    const link2 = doc.createElement("a");
+    link2.className = "internal-link naitflow-subpage-link";
+    link2.setAttribute("href", this.path);
+    link2.draggable = false;
+    link2.append(createIcon(this.app, doc, this.icon), this.target.basename);
+    link2.onclick = link2.onauxclick = (event) => openSubpage(this.app, event, this.target, this.source);
+    return link2;
+  }
+};
+function standaloneLinks(doc) {
+  const links = /* @__PURE__ */ new Map();
+  for (const block of markdownBlocks(doc)) {
+    if (block.kind !== "paragraph") continue;
+    let from = block.from;
+    for (const line of doc.slice(block.from, block.to).split("\n")) {
+      const text = line.trim();
+      const wiki = /^\[\[([^\]\n|]+)(?:\|[^\]\n]*)?\]\]$/.exec(text)?.[1];
+      const markdown = /^\[[^\]\n]*\]\((?:<([^<>\n]+)>|([^\s()]+))\)$/.exec(text);
+      const target = wiki ?? markdown?.[1] ?? markdown?.[2];
+      if (target) links.set(from, { target, encoded: !wiki });
+      from += line.length + 1;
+    }
+  }
+  return links;
+}
+function readingPageLinks(paragraph) {
+  const links = [];
+  let startsLine = true;
+  for (const node of paragraph.childNodes) {
+    if (node.nodeType === 3 && !node.textContent?.trim()) {
+      if (node.textContent?.includes("\n")) startsLine = true;
+    } else if (node.nodeType === 1 && node.matches("br")) {
+      startsLine = true;
+    } else if (startsLine && node.nodeType === 1 && node.matches("a.internal-link")) {
+      links.push(node);
+      startsLine = false;
+    } else return [];
+  }
+  return links;
+}
+function registerSubpageLinkHover(plugin) {
+  const { app } = plugin;
+  const previewFor = createSubpagePreviews(plugin);
+  const editors = /* @__PURE__ */ new Set();
+  const linkCache = /* @__PURE__ */ new WeakMap();
+  const linksFor = (doc) => {
+    const cached = linkCache.get(doc);
+    if (cached) return cached;
+    const links = standaloneLinks(doc.toString());
+    linkCache.set(doc, links);
+    return links;
+  };
+  const targetAt = (state, from, source2) => {
+    const link2 = linksFor(state.doc).get(from);
+    return link2 && findSubpage(app, link2.target, source2, link2.encoded);
+  };
+  const moveCaret = import_state3.EditorState.transactionFilter.of((tr) => {
+    const { startState } = tr;
+    const source2 = startState.field(import_obsidian13.editorInfoField, false)?.file?.path;
+    if (!source2 || !startState.field(import_obsidian13.editorLivePreviewField, false)) return tr;
+    const { doc } = startState;
+    if (tr.docChanged || !tr.selection || !tr.isUserEvent("select") || tr.selection.ranges.length !== 1 || !tr.selection.main.empty) return tr;
+    const cursor = tr.selection.main.head;
+    const line = doc.lineAt(cursor);
+    if (!targetAt(startState, line.from, source2)) return tr;
+    const direction = cursor < startState.selection.main.head ? -1 : 1;
+    for (const step of [direction, -direction]) {
+      for (let n = line.number + step; n >= 1 && n <= doc.lines; n += step) {
+        const other = doc.line(n);
+        if (!targetAt(startState, other.from, source2)) {
+          return [tr, { selection: { anchor: step > 0 ? other.from : other.to } }];
+        }
+      }
+    }
+    return tr;
+  });
+  const linkWidgets = import_view3.ViewPlugin.fromClass(class {
+    constructor(view) {
+      this.view = view;
+      editors.add(view);
+      this.refresh(view);
+    }
+    decorations = import_view3.Decoration.none;
+    hideCaret = false;
+    source;
+    destroy() {
+      editors.delete(this.view);
+      previewFor(this.view.dom.ownerDocument, false)?.dismissWithin(this.view.dom);
+    }
+    update(update) {
+      const source2 = update.state.field(import_obsidian13.editorInfoField, false)?.file?.path;
+      const modeChanged = update.startState.field(import_obsidian13.editorLivePreviewField, false) !== update.state.field(import_obsidian13.editorLivePreviewField, false);
+      const targetsChanged = update.transactions.some((tr) => tr.effects.some((effect) => effect.is(refreshTargets)));
+      if (update.docChanged || update.viewportChanged || source2 !== this.source || modeChanged || targetsChanged) {
+        previewFor(update.view.dom.ownerDocument, false)?.dismissWithin(update.view.dom);
+      }
+      if (update.docChanged || update.viewportChanged || update.selectionSet || source2 !== this.source || modeChanged || targetsChanged) {
+        this.refresh(update.view);
+      }
+    }
+    refresh(view) {
+      this.source = view.state.field(import_obsidian13.editorInfoField, false)?.file?.path;
+      const source2 = this.source;
+      if (!source2 || !view.state.field(import_obsidian13.editorLivePreviewField, false)) {
+        this.decorations = import_view3.Decoration.none;
+        this.hideCaret = false;
+        return;
+      }
+      previewFor(view.dom.ownerDocument);
+      const { main, ranges } = view.state.selection;
+      this.hideCaret = ranges.length === 1 && main.empty && !!targetAt(view.state, view.state.doc.lineAt(main.head).from, source2);
+      this.decorations = this.visibleDecorations(view, source2);
+    }
+    visibleDecorations(view, source2) {
+      const { doc } = view.state;
+      const decorations = [];
+      let previous = 0;
+      for (const [from, link2] of linksFor(doc)) {
+        if (!view.visibleRanges.some((range) => from >= range.from && from < range.to)) continue;
+        const target = findSubpage(app, link2.target, source2, link2.encoded);
+        if (!target) continue;
+        const line = doc.lineAt(from);
+        if (previous && line.number === previous + 2 && !doc.line(previous + 1).text.trim()) {
+          const gap = doc.line(previous + 1);
+          if (!view.state.selection.ranges.some((range) => range.from <= gap.to && range.to >= gap.from)) {
+            decorations.push(spacer.range(gap.from));
+          }
+        }
+        decorations.push(import_view3.Decoration.line({ class: rowClass, attributes: { [subpageTargetAttribute]: target.path } }).range(line.from));
+        const widget = new SubpageLink(app, target, source2, readPageMeta(app, target).icon);
+        decorations.push(import_view3.Decoration.replace({ widget }).range(line.from, line.to));
+        previous = line.number;
+      }
+      return import_view3.Decoration.set(decorations, true);
+    }
+  }, {
+    decorations: (view) => view.decorations,
+    provide: (extension2) => [
+      import_view3.EditorView.atomicRanges.of((view) => view.plugin(extension2)?.decorations ?? import_view3.Decoration.none),
+      import_view3.EditorView.editorAttributes.of((view) => view.plugin(extension2)?.hideCaret ? { class: "naitflow-subpage-caret-hidden" } : null),
+      import_view3.EditorView.inputHandler.of((view, from, to) => from === to && view.plugin(extension2)?.hideCaret === true)
+    ]
+  });
+  plugin.registerEditorExtension([linkWidgets, moveCaret]);
+  const readingRows = /* @__PURE__ */ new Map();
+  const cleanRow = (row, restore) => {
+    previewFor(row.ownerDocument, false)?.dismissWithin(row);
+    restore();
+    row.classList.remove(rowClass);
+    row.removeAttribute(subpageTargetAttribute);
+    const group = row.parentElement;
+    if (group?.classList.contains("naitflow-subpage-link-group") && !group.querySelector(`:scope > .${rowClass}`)) {
+      group.classList.remove("naitflow-subpage-link-group");
+    }
+    readingRows.delete(row);
+  };
+  let refreshQueued = false;
+  let disposed = false;
+  const refreshEditors = () => {
+    if (refreshQueued) return;
+    refreshQueued = true;
+    queueMicrotask(() => {
+      refreshQueued = false;
+      if (!disposed) for (const editor of editors) editor.dispatch({ effects: refreshTargets.of(null) });
+    });
+  };
+  plugin.registerEvent(app.metadataCache.on("resolved", refreshEditors));
+  plugin.registerEvent(app.vault.on("rename", (file) => {
+    refreshEditors();
+    for (const entry of readingRows.values()) if (entry.target === file) entry.refresh();
+  }));
+  plugin.registerMarkdownPostProcessor((el, ctx) => {
+    if (!ctx.sourcePath.endsWith(".md")) return;
+    const paragraphs = el.matches("p") ? [el] : Array.from(el.querySelectorAll("p"));
+    for (const paragraph of paragraphs) {
+      if (paragraph.closest("li, blockquote") || readingRows.has(paragraph)) continue;
+      const links = readingPageLinks(paragraph);
+      if (!links.length || links.some((link2) => readingRows.has(link2))) continue;
+      const targets = links.map((link2) => {
+        const href = link2.getAttribute("data-href") ?? link2.getAttribute("href");
+        return href ? findSubpage(app, href, ctx.sourcePath) : void 0;
+      });
+      if (targets.some((target) => !target)) continue;
+      const grouped = links.length > 1;
+      if (grouped) paragraph.classList.add("naitflow-subpage-link-group");
+      const child = new import_obsidian13.MarkdownRenderChild(paragraph);
+      for (const [index, link2] of links.entries()) {
+        const target = targets[index];
+        const row = grouped ? link2 : paragraph;
+        const original = Array.from(link2.childNodes);
+        const refresh = () => {
+          previewFor(row.ownerDocument, false)?.dismissWithin(row);
+          link2.replaceChildren(createIcon(app, row.ownerDocument, readPageMeta(app, target).icon), target.basename);
+          if (previewFor(row.ownerDocument)) row.setAttribute(subpageTargetAttribute, target.path);
+        };
+        const open = (event) => openSubpage(app, event, target, ctx.sourcePath);
+        link2.addEventListener("click", open);
+        link2.addEventListener("auxclick", open);
+        row.classList.add(rowClass);
+        refresh();
+        const restore = () => {
+          link2.removeEventListener("click", open);
+          link2.removeEventListener("auxclick", open);
+          link2.replaceChildren(...original);
+        };
+        readingRows.set(row, { target, refresh, restore });
+        child.register(() => {
+          if (readingRows.get(row)?.restore === restore) cleanRow(row, restore);
+        });
+      }
+      ctx.addChild(child);
+    }
+  });
+  plugin.register(() => {
+    disposed = true;
+    for (const [row, entry] of readingRows) cleanRow(row, entry.restore);
+  });
+}
+
+// src/page-tree.ts
+var import_obsidian15 = require("obsidian");
+
 // src/trash-modal.ts
-var import_obsidian9 = require("obsidian");
+var import_obsidian14 = require("obsidian");
 function parentPath(path) {
   const index = path.lastIndexOf("/");
   return index === -1 ? "" : path.slice(0, index);
 }
 function formatDeletedAt(value) {
-  return new Intl.DateTimeFormat(localeCode() === "ru" ? "ru-RU" : "en-US", {
+  const formatted = new Intl.DateTimeFormat(localeCode() === "ru" ? "ru-RU" : "en-US", {
     dateStyle: "short",
     timeStyle: "short"
   }).format(new Date(value));
+  return localeCode() === "ru" ? formatted.replace(",", "") : formatted;
 }
 async function ensureParentFolders(app, path) {
   const parts = parentPath(path).split("/").filter(Boolean);
@@ -11382,6 +13381,7 @@ var NaitFlowTrashPopover = class {
     this.popover = popover;
     void this.reload();
     this.outsideHandler = (event) => {
+      if (event.target instanceof Element && event.target.closest(".naitflow-trash-confirm-modal")) return;
       if (this.popover && !this.popover.contains(event.target)) this.close();
     };
     this.keydownHandler = (event) => {
@@ -11415,7 +13415,7 @@ var NaitFlowTrashPopover = class {
     content.empty();
     const searchWrap = content.createDiv("naitflow-search-wrap naitflow-move-search-wrap");
     const searchIcon = searchWrap.createSpan("naitflow-search-icon");
-    (0, import_obsidian9.setIcon)(searchIcon, "search");
+    (0, import_obsidian14.setIcon)(searchIcon, "search");
     const search = searchWrap.createEl("input", { cls: "naitflow-search", attr: { type: "search", placeholder: t("trashSearch"), "aria-label": t("trashSearch") } });
     search.value = this.query;
     search.oninput = () => {
@@ -11427,7 +13427,9 @@ var NaitFlowTrashPopover = class {
     header.createSpan({ text: t("trashDeletedAt") });
     content.createDiv("naitflow-trash-list");
     this.renderRows();
-    content.createEl("button", { cls: "naitflow-trash-clear", text: t("trashClearAll"), attr: { type: "button", disabled: "true" } });
+    const footer = content.createDiv("naitflow-trash-footer");
+    const clear = footer.createEl("button", { cls: "naitflow-trash-clear", text: t("trashClearAll"), attr: { type: "button" } });
+    clear.onclick = () => new ConfirmTrashActionModal(this.app, t("trashClearAllTitle"), () => void this.clearAll()).open();
     window.setTimeout(() => search.focus(), 0);
   }
   renderRows() {
@@ -11445,22 +13447,22 @@ var NaitFlowTrashPopover = class {
   renderRow(parent, record) {
     const row = parent.createDiv("naitflow-trash-row");
     const fileIcon = row.createSpan("naitflow-trash-icon");
-    (0, import_obsidian9.setIcon)(fileIcon, "file-text");
+    renderPageIcon(this.app, fileIcon, record.icon);
     const details = row.createDiv("naitflow-trash-details");
     details.createDiv({ cls: "naitflow-trash-title", text: record.title });
     details.createDiv({ cls: "naitflow-trash-path", text: parentPath(record.originalFilePath) || "/" });
     row.createDiv({ cls: "naitflow-trash-date", text: formatDeletedAt(record.deletedAt) });
     const restore = row.createEl("button", { cls: "naitflow-trash-action", attr: { type: "button", "aria-label": t("trashRestore") } });
-    (0, import_obsidian9.setIcon)(restore, "undo-2");
+    (0, import_obsidian14.setIcon)(restore, "undo-2");
     restore.onclick = () => void this.restore(record);
     const remove = row.createEl("button", { cls: "naitflow-trash-action naitflow-trash-action--danger", attr: { type: "button", "aria-label": t("trashDeleteForever") } });
-    (0, import_obsidian9.setIcon)(remove, "trash-2");
-    remove.onclick = () => new ConfirmPermanentDeleteModal(this.app, record, () => void this.deleteForever(record)).open();
+    (0, import_obsidian14.setIcon)(remove, "trash-2");
+    remove.onclick = () => new ConfirmTrashActionModal(this.app, t("trashDeleteForeverTitle", { title: record.title }), () => void this.deleteForever(record)).open();
   }
   async restore(record) {
     const adapter = this.app.vault.adapter;
     if (await adapter.exists(record.originalFilePath) || record.originalFolderPath && await adapter.exists(record.originalFolderPath)) {
-      new import_obsidian9.Notice(t("trashRestoreExists"));
+      new import_obsidian14.Notice(t("trashRestoreExists"));
       return;
     }
     try {
@@ -11470,12 +13472,13 @@ var NaitFlowTrashPopover = class {
       if (record.trashedFolderPath && record.originalFolderPath && await adapter.exists(record.trashedFolderPath)) {
         await adapter.rename(record.trashedFolderPath, record.originalFolderPath);
       }
+      if (record.cacheRootPath && await adapter.exists(record.cacheRootPath)) await adapter.rmdir(record.cacheRootPath, true);
       await this.plugin.removeTrashRecord(record.id);
       this.plugin.refreshUi();
       await this.reload();
     } catch (error) {
       console.error("NaitFlow: failed to restore page", error);
-      new import_obsidian9.Notice(t("trashRestoreFailed", { error: String(error) }));
+      new import_obsidian14.Notice(t("trashRestoreFailed", { error: String(error) }));
     }
   }
   async deleteForever(record) {
@@ -11483,23 +13486,38 @@ var NaitFlowTrashPopover = class {
       const adapter = this.app.vault.adapter;
       if (await adapter.exists(record.trashedFilePath)) await adapter.remove(record.trashedFilePath);
       if (record.trashedFolderPath && await adapter.exists(record.trashedFolderPath)) await adapter.rmdir(record.trashedFolderPath, true);
+      if (record.cacheRootPath && await adapter.exists(record.cacheRootPath)) await adapter.rmdir(record.cacheRootPath, true);
       await this.plugin.removeTrashRecord(record.id);
       await this.reload();
     } catch (error) {
       console.error("NaitFlow: failed to permanently delete page", error);
-      new import_obsidian9.Notice(t("trashDeleteFailed", { error: String(error) }));
+      new import_obsidian14.Notice(t("trashDeleteFailed", { error: String(error) }));
+    }
+  }
+  async clearAll() {
+    try {
+      const adapter = this.app.vault.adapter;
+      await Promise.all(this.plugin.settings.trashRecords.map(async (record) => {
+        if (record.cacheRootPath && await adapter.exists(record.cacheRootPath)) await adapter.rmdir(record.cacheRootPath, true);
+      }));
+      await this.plugin.clearTrashRecords();
+      await this.reload();
+    } catch (error) {
+      console.error("NaitFlow: failed to clear trash", error);
+      new import_obsidian14.Notice(t("trashDeleteFailed", { error: String(error) }));
     }
   }
 };
-var ConfirmPermanentDeleteModal = class extends import_obsidian9.Modal {
-  constructor(app, record, onConfirm) {
+var ConfirmTrashActionModal = class extends import_obsidian14.Modal {
+  constructor(app, title, onConfirm) {
     super(app);
-    this.record = record;
+    this.title = title;
     this.onConfirm = onConfirm;
   }
   onOpen() {
     this.modalEl.addClass("naitflow-modal", "naitflow-trash-confirm-modal");
-    this.contentEl.createEl("div", { cls: "naitflow-trash-confirm-title", text: t("trashDeleteForeverTitle", { title: this.record.title }) });
+    this.closeButtonEl?.remove();
+    this.contentEl.createEl("div", { cls: "naitflow-trash-confirm-title", text: this.title });
     const actions = this.contentEl.createDiv("naitflow-modal-actions");
     const remove = actions.createEl("button", { cls: "naitflow-danger-button", text: t("ok") });
     remove.onclick = () => {
@@ -11532,7 +13550,7 @@ function getPhysicalParent(app, file, nodes) {
   const folderPath = file.parent?.path;
   if (!folderPath) return void 0;
   const parentFile = app.vault.getAbstractFileByPath(`${folderPath}.md`);
-  return parentFile instanceof import_obsidian10.TFile ? nodes.get(parentFile.path) : void 0;
+  return parentFile instanceof import_obsidian15.TFile ? nodes.get(parentFile.path) : void 0;
 }
 function getLegacyParent(app, file, nodes) {
   const parentRef = readPageMeta(app, file).parent;
@@ -11540,7 +13558,7 @@ function getLegacyParent(app, file, nodes) {
   const parentFile = app.metadataCache.getFirstLinkpathDest(parentRef, file.path);
   return parentFile ? nodes.get(parentFile.path) : void 0;
 }
-var NaitFlowTreeView = class extends import_obsidian10.ItemView {
+var NaitFlowTreeView = class extends import_obsidian15.ItemView {
   constructor(leaf, plugin) {
     super(leaf);
     this.plugin = plugin;
@@ -11574,7 +13592,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     const header = root.createDiv("naitflow-tree-header");
     header.createEl("strong", { text: t("pages") });
     const add = header.createEl("button", { attr: { "aria-label": t("newPage") } });
-    (0, import_obsidian10.setIcon)(add, "plus");
+    (0, import_obsidian15.setIcon)(add, "plus");
     add.onclick = () => void this.createPage();
     const nodes = this.buildTree();
     const list = root.createDiv("naitflow-tree-list");
@@ -11589,7 +13607,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     const footer = this.containerEl.createDiv("naitflow-tree-footer");
     const trash = footer.createEl("button", { cls: "naitflow-tree-trash" });
     const icon = trash.createSpan("naitflow-tree-trash-icon");
-    (0, import_obsidian10.setIcon)(icon, "trash-2");
+    (0, import_obsidian15.setIcon)(icon, "trash-2");
     trash.createSpan({ cls: "naitflow-tree-trash-label", text: t("trash") });
     trash.onclick = (event) => {
       this.containerEl.addClass("naitflow-trash-open");
@@ -11621,7 +13639,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     const visual = icon.createSpan("naitflow-tree-icon-visual");
     renderPageIcon(this.app, visual, readPageMeta(this.app, node.file).icon);
     const chevron = icon.createSpan("naitflow-tree-icon-chevron");
-    (0, import_obsidian10.setIcon)(chevron, isExpanded ? "chevron-down" : "chevron-right");
+    (0, import_obsidian15.setIcon)(chevron, isExpanded ? "chevron-down" : "chevron-right");
     icon.onclick = (event) => {
       event.stopPropagation();
       if (isExpanded) this.expanded.delete(node.file.path);
@@ -11632,13 +13650,13 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     title.createSpan({ cls: "naitflow-tree-title-label", text: displayName(node.file) });
     title.onclick = () => void this.app.workspace.getLeaf(false).openFile(node.file);
     const more = row.createEl("button", { cls: "naitflow-tree-more", attr: { "aria-label": t("pageMenu") } });
-    (0, import_obsidian10.setIcon)(more, "ellipsis");
+    (0, import_obsidian15.setIcon)(more, "ellipsis");
     more.onclick = (event) => {
       event.stopPropagation();
       this.openPageMenu(event, node.file);
     };
     const add = row.createEl("button", { cls: "naitflow-tree-add", attr: { "aria-label": t("nestedPage") } });
-    (0, import_obsidian10.setIcon)(add, "plus");
+    (0, import_obsidian15.setIcon)(add, "plus");
     add.onclick = (event) => {
       event.stopPropagation();
       void this.createPage(node.file);
@@ -11649,7 +13667,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
       for (const child of node.children) this.renderNode(children, child, depth + 1);
       const addChild = children.createEl("button", { cls: "naitflow-tree-add-child" });
       addChild.style.setProperty("--naitflow-depth", String(depth + 1));
-      (0, import_obsidian10.setIcon)(addChild, "plus");
+      (0, import_obsidian15.setIcon)(addChild, "plus");
       addChild.createSpan({ text: t("addSubpage") });
       addChild.onclick = () => void this.createPage(node.file);
     }
@@ -11657,7 +13675,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
   async createPage(parent) {
     try {
       const rawFolder = parent ? pageFolderPath(parent.path) : "";
-      const folder = rawFolder === "/" ? "" : (0, import_obsidian10.normalizePath)(rawFolder);
+      const folder = rawFolder === "/" ? "" : (0, import_obsidian15.normalizePath)(rawFolder);
       if (folder) await this.app.vault.createFolder(folder).catch((error) => {
         if (!String(error).toLocaleLowerCase().includes("already exists")) throw error;
       });
@@ -11665,7 +13683,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
       let file = null;
       for (let index = 1; index < 1e4; index++) {
         const name = index === 1 ? t("untitled") : `${t("untitled")} ${index}`;
-        const path = (0, import_obsidian10.normalizePath)(`${prefix}${name}.md`);
+        const path = (0, import_obsidian15.normalizePath)(`${prefix}${name}.md`);
         if (this.app.vault.getAbstractFileByPath(path)) continue;
         try {
           file = await this.app.vault.create(path, "");
@@ -11681,13 +13699,13 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
       await this.app.workspace.getLeaf(false).openFile(file);
       this.render();
     } catch (error) {
-      new import_obsidian10.Notice(t("createPageFailed", { error: String(error) }));
+      new import_obsidian15.Notice(t("createPageFailed", { error: String(error) }));
     }
   }
   openPageMenu(event, file) {
     event.preventDefault();
     event.stopPropagation();
-    const menu = new import_obsidian10.Menu();
+    const menu = new import_obsidian15.Menu();
     menu.addItem((item) => item.setTitle(t("openInNewTab")).setIcon("file-plus").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("tab"))));
     menu.addItem((item) => item.setTitle(t("openInRightPane")).setIcon("panel-right").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("split", "vertical"))));
     menu.addItem((item) => item.setTitle(t("openInNewWindow")).setIcon("external-link").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("window"))));
@@ -11698,7 +13716,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     menu.addItem((item) => item.setTitle(t("addBookmark")).setIcon("bookmark-plus").onClick(() => void this.addBookmark(file)));
     menu.addSeparator();
     menu.addItem((item) => item.setTitle(t("copyPath")).setIcon("clipboard-copy").onClick(() => void this.copyText(this.getAbsolutePath(file))));
-    if (import_obsidian10.Platform.isDesktopApp && this.app.vault.adapter instanceof import_obsidian10.FileSystemAdapter) {
+    if (import_obsidian15.Platform.isDesktopApp && this.app.vault.adapter instanceof import_obsidian15.FileSystemAdapter) {
       menu.addItem((item) => item.setTitle(t("showInExplorer")).setIcon("folder-open").onClick(() => this.showInExplorer(file)));
     }
     menu.addSeparator();
@@ -11718,21 +13736,21 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     try {
       await leaf.openFile(file);
     } catch (error) {
-      new import_obsidian10.Notice(String(error));
+      new import_obsidian15.Notice(String(error));
     }
   }
   async copyText(value) {
     try {
       await navigator.clipboard.writeText(value);
-      new import_obsidian10.Notice(t("copied"));
+      new import_obsidian15.Notice(t("copied"));
     } catch (error) {
       console.error("NaitFlow: failed to copy to clipboard", error);
-      new import_obsidian10.Notice(t("copyFailed"));
+      new import_obsidian15.Notice(t("copyFailed"));
     }
   }
   getAbsolutePath(file) {
     const adapter = this.app.vault.adapter;
-    if (!(adapter instanceof import_obsidian10.FileSystemAdapter)) return file.path;
+    if (!(adapter instanceof import_obsidian15.FileSystemAdapter)) return file.path;
     const separator = adapter.getBasePath().includes("\\") ? "\\" : "/";
     return `${adapter.getBasePath()}${separator}${file.path.split("/").join(separator)}`;
   }
@@ -11743,7 +13761,7 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
       electron.shell.showItemInFolder(this.getAbsolutePath(file));
     } catch (error) {
       console.error("NaitFlow: failed to show file in Explorer", error);
-      new import_obsidian10.Notice(t("showInExplorerFailed"));
+      new import_obsidian15.Notice(t("showInExplorerFailed"));
     }
   }
   async duplicatePage(file) {
@@ -11753,73 +13771,92 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     for (let index = 1; index < 1e4; index++) {
       const suffix = index === 1 ? t("copySuffix") : `${t("copySuffix")} ${index}`;
       const name = `${file.basename} ${suffix}`;
-      const candidate = (0, import_obsidian10.normalizePath)(parentPath2 ? `${parentPath2}/${name}.${file.extension}` : `${name}.${file.extension}`);
+      const candidate = (0, import_obsidian15.normalizePath)(parentPath2 ? `${parentPath2}/${name}.${file.extension}` : `${name}.${file.extension}`);
       if (!this.app.vault.getAbstractFileByPath(candidate) && !this.app.vault.getAbstractFileByPath(pageFolderPath(candidate))) {
         targetFilePath = candidate;
         break;
       }
     }
     if (!targetFilePath) {
-      new import_obsidian10.Notice(t("duplicatePageFailed", { error: t("noFreeFilename") }));
+      new import_obsidian15.Notice(t("duplicatePageFailed", { error: t("noFreeFilename") }));
       return;
     }
     try {
       await this.app.vault.copy(file, targetFilePath);
-      if (sourceFolder instanceof import_obsidian10.TFolder) await this.copyFolder(sourceFolder, pageFolderPath(targetFilePath));
+      if (sourceFolder instanceof import_obsidian15.TFolder) await this.copyFolder(sourceFolder, pageFolderPath(targetFilePath));
       const copy = this.app.vault.getAbstractFileByPath(targetFilePath);
-      if (copy instanceof import_obsidian10.TFile) await this.app.workspace.getLeaf(false).openFile(copy);
+      if (copy instanceof import_obsidian15.TFile) await this.app.workspace.getLeaf(false).openFile(copy);
     } catch (error) {
-      new import_obsidian10.Notice(t("duplicatePageFailed", { error: String(error) }));
+      new import_obsidian15.Notice(t("duplicatePageFailed", { error: String(error) }));
     }
   }
   async trashPage(file) {
-    const beforeFileTrash = await this.listTrashEntries();
     const title = displayName(file);
     const originalFilePath = file.path;
     const originalFolderPath = pageFolderPath(file.path);
-    if (!await this.app.fileManager.promptForDeletion(file)) return;
     const folder = this.app.vault.getAbstractFileByPath(pageFolderPath(file.path));
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const cacheRootPath = (0, import_obsidian15.normalizePath)(`.naitflow-trash/${id}`);
+    const trashedFilePath = (0, import_obsidian15.normalizePath)(`${cacheRootPath}/page.md`);
+    const trashedFolderPath = folder instanceof import_obsidian15.TFolder ? (0, import_obsidian15.normalizePath)(`${cacheRootPath}/page`) : void 0;
     try {
-      const afterFileTrash = await this.listTrashEntries();
-      const trashedFilePath = this.findNewTrashEntry(beforeFileTrash, afterFileTrash, file.name);
-      if (folder instanceof import_obsidian10.TFolder) await this.app.fileManager.trashFile(folder);
-      const afterFolderTrash = await this.listTrashEntries();
-      const trashedFolderPath = folder instanceof import_obsidian10.TFolder ? this.findNewTrashEntry(afterFileTrash, afterFolderTrash, folder.name) : void 0;
-      if (!trashedFilePath) {
-        new import_obsidian10.Notice(t("trashLocalUnavailable"));
+      await this.copyFileToTrashCache(file.path, trashedFilePath);
+      if (folder instanceof import_obsidian15.TFolder && trashedFolderPath) await this.copyFolderToTrashCache(folder, trashedFolderPath);
+      if (!await this.app.fileManager.promptForDeletion(file)) {
+        await this.removeTrashCache(cacheRootPath);
         return;
       }
       await this.plugin.addTrashRecord({
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id,
         title,
+        icon: readPageMeta(this.app, file).icon,
         originalFilePath,
-        originalFolderPath: folder instanceof import_obsidian10.TFolder ? originalFolderPath : void 0,
+        originalFolderPath: folder instanceof import_obsidian15.TFolder ? originalFolderPath : void 0,
         trashedFilePath,
         trashedFolderPath,
+        cacheRootPath,
         deletedAt: Date.now()
       });
+      if (folder instanceof import_obsidian15.TFolder && this.app.vault.getAbstractFileByPath(folder.path) === folder) {
+        await this.app.vault.delete(folder, true);
+      }
+      this.plugin.refreshUi();
     } catch (error) {
       console.error("NaitFlow: failed to move page to trash", error);
-      new import_obsidian10.Notice(t("deletePageFailed", { error: String(error) }));
+      new import_obsidian15.Notice(t("deletePageFailed", { error: String(error) }));
     }
   }
-  async listTrashEntries() {
-    try {
-      const listed = await this.app.vault.adapter.list(".trash");
-      return /* @__PURE__ */ new Set([...listed.files, ...listed.folders]);
-    } catch {
-      return /* @__PURE__ */ new Set();
+  async copyFileToTrashCache(sourcePath, targetPath) {
+    await this.ensureTrashCacheParent(targetPath);
+    await this.app.vault.adapter.writeBinary(targetPath, await this.app.vault.adapter.readBinary(sourcePath));
+  }
+  async copyFolderToTrashCache(source2, targetPath) {
+    const adapter = this.app.vault.adapter;
+    if (!await adapter.exists(targetPath)) await adapter.mkdir(targetPath);
+    for (const child of source2.children) {
+      const target = (0, import_obsidian15.normalizePath)(`${targetPath}/${child.name}`);
+      if (child instanceof import_obsidian15.TFolder) await this.copyFolderToTrashCache(child, target);
+      else await this.copyFileToTrashCache(child.path, target);
     }
   }
-  findNewTrashEntry(before, after, name) {
-    const candidates = [...after].filter((path) => !before.has(path));
-    return candidates.find((path) => path.endsWith(`/${name}`)) ?? (candidates.length === 1 ? candidates[0] : void 0);
+  async ensureTrashCacheParent(path) {
+    const adapter = this.app.vault.adapter;
+    const parts = path.split("/").slice(0, -1);
+    let current = "";
+    for (const part of parts) {
+      current = current ? `${current}/${part}` : part;
+      if (!await adapter.exists(current)) await adapter.mkdir(current);
+    }
   }
-  async copyFolder(source, targetPath) {
+  async removeTrashCache(path) {
+    const adapter = this.app.vault.adapter;
+    if (await adapter.exists(path)) await adapter.rmdir(path, true);
+  }
+  async copyFolder(source2, targetPath) {
     await ensureFolder(this.app, targetPath);
-    for (const child of source.children) {
-      const childTargetPath = (0, import_obsidian10.normalizePath)(`${targetPath}/${child.name}`);
-      if (child instanceof import_obsidian10.TFolder) await this.copyFolder(child, childTargetPath);
+    for (const child of source2.children) {
+      const childTargetPath = (0, import_obsidian15.normalizePath)(`${targetPath}/${child.name}`);
+      if (child instanceof import_obsidian15.TFolder) await this.copyFolder(child, childTargetPath);
       else await this.app.vault.copy(child, childTargetPath);
     }
   }
@@ -11827,11 +13864,11 @@ var NaitFlowTreeView = class extends import_obsidian10.ItemView {
     const commands = this.app.commands;
     const commandId = commands?.commands && "bookmarks:bookmark" in commands.commands ? "bookmarks:bookmark" : void 0;
     if (!commandId || !commands?.executeCommandById) {
-      new import_obsidian10.Notice(t("bookmarkUnavailable"));
+      new import_obsidian15.Notice(t("bookmarkUnavailable"));
       return;
     }
     if (this.app.workspace.getActiveFile()?.path !== file.path) await this.app.workspace.getLeaf(false).openFile(file);
-    if (!commands.executeCommandById(commandId)) new import_obsidian10.Notice(t("bookmarkUnavailable"));
+    if (!commands.executeCommandById(commandId)) new import_obsidian15.Notice(t("bookmarkUnavailable"));
   }
 };
 var RenamePagePopover = class {
@@ -11869,7 +13906,7 @@ var RenamePagePopover = class {
     const name = value.trim();
     if (!name) return;
     const parentPath2 = this.file.parent?.path ?? "";
-    const nextPath = (0, import_obsidian10.normalizePath)(parentPath2 ? `${parentPath2}/${name}.${this.file.extension}` : `${name}.${this.file.extension}`);
+    const nextPath = (0, import_obsidian15.normalizePath)(parentPath2 ? `${parentPath2}/${name}.${this.file.extension}` : `${name}.${this.file.extension}`);
     if (nextPath === this.file.path) {
       this.close();
       return;
@@ -11878,7 +13915,7 @@ var RenamePagePopover = class {
       await this.app.fileManager.renameFile(this.file, nextPath);
       this.close();
     } catch (error) {
-      new import_obsidian10.Notice(t("renamePageFailed", { error: String(error) }));
+      new import_obsidian15.Notice(t("renamePageFailed", { error: String(error) }));
     }
   }
   close() {
@@ -11903,7 +13940,7 @@ var MovePagePopover = class {
     popover.style.top = `${Math.max(12, Math.min(anchor.clientY, window.innerHeight - 454))}px`;
     const searchWrap = popover.createDiv("naitflow-search-wrap naitflow-move-search-wrap");
     const searchIcon = searchWrap.createSpan("naitflow-search-icon");
-    (0, import_obsidian10.setIcon)(searchIcon, "search");
+    (0, import_obsidian15.setIcon)(searchIcon, "search");
     const search = searchWrap.createEl("input", {
       cls: "naitflow-search",
       attr: { type: "search", placeholder: t("movePageSearch") }
@@ -11942,7 +13979,7 @@ var MovePagePopover = class {
       const expanded = forceExpanded || this.expanded.has(node.file.path);
       if (node.children.length) {
         const toggle = row.createEl("button", { cls: "naitflow-move-toggle", attr: { type: "button", "aria-expanded": String(expanded) } });
-        (0, import_obsidian10.setIcon)(toggle, expanded ? "chevron-down" : "chevron-right");
+        (0, import_obsidian15.setIcon)(toggle, expanded ? "chevron-down" : "chevron-right");
         toggle.onclick = (event) => {
           event.stopPropagation();
           if (this.expanded.has(node.file.path)) this.expanded.delete(node.file.path);
@@ -11978,12 +14015,12 @@ var MovePagePopover = class {
   async moveToFolder(folderPath) {
     try {
       if (folderPath) await ensureFolder(this.app, folderPath);
-      const nextPath = (0, import_obsidian10.normalizePath)(folderPath ? `${folderPath}/${this.file.name}` : this.file.name);
+      const nextPath = (0, import_obsidian15.normalizePath)(folderPath ? `${folderPath}/${this.file.name}` : this.file.name);
       if (nextPath === this.file.path) return;
       await this.app.fileManager.renameFile(this.file, nextPath);
       this.close();
     } catch (error) {
-      new import_obsidian10.Notice(t("movePageFailed", { error: String(error) }));
+      new import_obsidian15.Notice(t("movePageFailed", { error: String(error) }));
     }
   }
   close() {
@@ -11995,7 +14032,648 @@ var MovePagePopover = class {
 };
 
 // src/settings.ts
-var import_obsidian11 = require("obsidian");
+var import_obsidian18 = require("obsidian");
+
+// src/notion-import-settings.ts
+var import_obsidian17 = require("obsidian");
+
+// src/notion-api.ts
+var import_obsidian16 = require("obsidian");
+function notionPageId(value) {
+  const trimmed = value.trim();
+  const direct = trimmed.match(/^[0-9a-f]{32}$/i) ?? trimmed.match(/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i);
+  if (direct) return trimmed.replace(/-/g, "").toLowerCase();
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol !== "https:" || !/(^|\.)(notion\.so|notion\.site|notion\.com)$/i.test(url.hostname)) throw new Error();
+    const match = url.pathname.match(/([0-9a-f]{32}|[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})\/?$/i);
+    if (match?.[1]) return match[1].replace(/-/g, "").toLowerCase();
+  } catch {
+  }
+  throw new Error("notion-page-id");
+}
+function active(signal) {
+  if (signal.aborted) throw new Error("notion-cancelled");
+}
+async function pause(ms, signal) {
+  active(signal);
+  await new Promise((resolve, reject) => {
+    const stop = () => {
+      clearTimeout(timer);
+      reject(new Error("notion-cancelled"));
+    };
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", stop);
+      resolve();
+    }, ms);
+    signal.addEventListener("abort", stop, { once: true });
+  });
+}
+var NotionReader = class {
+  constructor(token, signal) {
+    this.token = token;
+    this.signal = signal;
+  }
+  nextRequest = 0;
+  dispose() {
+    this.token = "";
+  }
+  async get(path) {
+    for (let attempt = 0; attempt < 5; attempt++) {
+      active(this.signal);
+      await pause(Math.max(0, this.nextRequest - Date.now()), this.signal);
+      this.nextRequest = Date.now() + 350;
+      let response;
+      try {
+        response = await (0, import_obsidian16.requestUrl)({
+          url: `https://api.notion.com/v1/${path}`,
+          method: "GET",
+          throw: false,
+          headers: { Authorization: `Bearer ${this.token}`, "Notion-Version": "2026-03-11" }
+        });
+      } catch {
+        active(this.signal);
+        throw new Error("notion-network");
+      }
+      active(this.signal);
+      if (response.status === 200) return response.json;
+      if (response.status === 401) throw new Error("notion-auth");
+      if (response.status === 403 || response.status === 404) throw new Error("notion-access");
+      if (response.status === 429 && response.json?.additional_data?.rate_limit_reason === "public_api_request_blocked") throw new Error("notion-access");
+      if (response.status === 429 || response.status === 529 || response.status >= 500) {
+        const header = Object.entries(response.headers).find(([key]) => key.toLowerCase() === "retry-after")?.[1];
+        const seconds = Number(header);
+        if (Number.isFinite(seconds) && seconds > 300) throw new Error("notion-rate");
+        if (attempt < 4) await pause(Math.max(Number.isFinite(seconds) ? seconds * 1e3 : 0, 1e3 * 2 ** attempt), this.signal);
+        continue;
+      }
+      throw new Error("notion-request");
+    }
+    throw new Error("notion-rate");
+  }
+  async children(id) {
+    const result = [];
+    const cursors = /* @__PURE__ */ new Set();
+    let cursor = "";
+    do {
+      const data = await this.get(`blocks/${id}/children?page_size=100${cursor ? `&start_cursor=${encodeURIComponent(cursor)}` : ""}`);
+      if (!Array.isArray(data.results)) throw new Error("notion-request");
+      result.push(...data.results);
+      if (result.length > 5e4) throw new Error("notion-limit");
+      cursor = data.has_more ? String(data.next_cursor ?? "") : "";
+      if (data.has_more && (!cursor || cursors.has(cursor))) throw new Error("notion-request");
+      cursors.add(cursor);
+    } while (cursor);
+    return result;
+  }
+  async download(resolve, signed, allowHtml) {
+    for (let attempt = 0; ; attempt++) {
+      active(this.signal);
+      let url;
+      try {
+        url = await resolve();
+      } catch (error) {
+        if (error instanceof Error && error.message === "notion-access") throw new ImportDownloadError("source");
+        throw error;
+      }
+      active(this.signal);
+      if (!/^https:\/\//i.test(url)) throw new ImportDownloadError("url");
+      let response;
+      try {
+        response = await (0, import_obsidian16.requestUrl)({ url, method: "GET", throw: false });
+      } catch {
+        active(this.signal);
+        if (attempt >= 2) throw new ImportDownloadError("network");
+        await pause(1e3 * 2 ** attempt, this.signal);
+        continue;
+      }
+      active(this.signal);
+      const header = (name) => Object.entries(response.headers).find(([key]) => key.toLowerCase() === name)?.[1];
+      if (response.status === 200) {
+        const bytes = response.arrayBuffer;
+        if (!allowHtml && /^\s*(?:text\/html|application\/xhtml\+xml)\b/i.test(header("content-type") ?? "")) {
+          throw new ImportDownloadError("html");
+        }
+        if (bytes.byteLength > 100 * 1024 * 1024) throw new ImportDownloadError("size");
+        return bytes;
+      }
+      const status = response.status;
+      const retryable = status === 408 || status === 429 || status >= 500 || signed && status === 403;
+      if (attempt >= 2 || !retryable) throw new ImportDownloadError("http", status);
+      const retryAfter = header("retry-after");
+      const delay = retryAfter && /^\d+$/.test(retryAfter) ? Number(retryAfter) * 1e3 : retryAfter ? Date.parse(retryAfter) - Date.now() : 0;
+      if (delay > 3e4) throw new ImportDownloadError("http", status);
+      await pause(Math.max(Number.isFinite(delay) ? delay : 0, 1e3 * 2 ** attempt), this.signal);
+    }
+  }
+};
+function source(path, text, binary) {
+  return {
+    path,
+    name: path.split("/").pop(),
+    extension: path.split(".").pop().toLowerCase(),
+    readText: async () => text,
+    readBinary: binary ?? (async () => new TextEncoder().encode(text).buffer)
+  };
+}
+function escapeText(value) {
+  return value.replace(/([\\`*_[\]<>~])/g, "\\$1");
+}
+function link(text, url, image = false) {
+  return `${image ? "!" : ""}[${text.replace(/\n/g, " ").replace(/(?<!\\)([\[\]])/g, "\\$1")}](${url.replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29")})`;
+}
+function rich(items = []) {
+  return items.map((item) => {
+    if (item.type === "equation") return `$${item.equation?.expression ?? ""}$`;
+    const raw = String(item.plain_text ?? item.text?.content ?? "");
+    let text = escapeText(raw);
+    const annotations = item.annotations ?? {};
+    if (annotations.code) {
+      const fence = "`".repeat(Math.max(0, ...Array.from(raw.matchAll(/`+/g), (match) => match[0].length)) + 1);
+      text = `${fence} ${raw.replace(/\n/g, " ")} ${fence}`;
+    } else {
+      if (annotations.bold) text = `**${text}**`;
+      if (annotations.italic) text = `*${text}*`;
+      if (annotations.strikethrough) text = `~~${text}~~`;
+    }
+    const page = item.mention?.page?.id;
+    const url = item.href ?? item.text?.link?.url ?? (page ? `https://www.notion.so/${page.replace(/-/g, "")}` : "");
+    return url ? link(text, url) : text;
+  }).join("");
+}
+function mediaUrl(media) {
+  return String(media?.file?.url ?? media?.external?.url ?? media?.custom_emoji?.url ?? "");
+}
+function listItem(text, marker, indent) {
+  return marker + text.replace(/\r?\n/g, `  
+${" ".repeat(indent)}`);
+}
+async function prepareNotionApi(app, token, pageInput, signal, progress) {
+  const rootId = notionPageId(pageInput);
+  if (!token.trim() || /[\r\n]/.test(token)) throw new Error("notion-auth");
+  const reader = new NotionReader(token.trim(), signal);
+  token = "";
+  let closed = false;
+  const files = [];
+  const metadata = /* @__PURE__ */ new Map();
+  const issues = [];
+  const visited = /* @__PURE__ */ new Set();
+  let blocksCount = 0;
+  let textSize = 0;
+  const warn = (page, type) => {
+    if (!issues.some((issue) => issue.page === page && issue.type === type)) issues.push({ page, type });
+  };
+  const addMedia = (folder, id, kind, initial, resolve) => {
+    const url = mediaUrl(initial);
+    if (!url) throw new Error("notion-media");
+    let ext = "";
+    try {
+      ext = new URL(url).pathname.match(/\.([a-z0-9]{1,8})$/i)?.[1] ?? "";
+    } catch {
+    }
+    const name = `${id.replace(/-/g, "")}-${kind}.${ext || (kind === "image" || kind === "icon" || kind === "cover" ? "png" : "bin")}`;
+    const path = `${folder}/${name}`;
+    const signed = Boolean(initial.file);
+    const resolveDownload = initial.external ? async () => url : resolve;
+    if (!files.some((file) => file.path === path)) {
+      files.push(source(path, "", () => reader.download(resolveDownload, signed, /^html?$/i.test(ext))));
+    }
+    return `${folder.split("/").pop()}/${name}`;
+  };
+  const visitPage = async (id, parentFolder, depth) => {
+    active(signal);
+    id = id.replace(/-/g, "").toLowerCase();
+    if (visited.has(id)) return;
+    if (depth > 64 || visited.size >= 1e3) throw new Error("notion-limit");
+    visited.add(id);
+    const page = await reader.get(`pages/${id}`);
+    const titleProperty = Object.values(page.properties ?? {}).find((value) => value?.type === "title");
+    const title = (titleProperty?.title ?? []).map((part) => part.plain_text ?? part.text?.content ?? "").join("") || t("untitled");
+    progress(t("notionReadingPage", { count: visited.size, title }));
+    const folder = parentFolder ? `${parentFolder}/${id}` : id;
+    const meta = { title, created: page.created_time, edited: page.last_edited_time };
+    metadata.set(id, meta);
+    if (page.icon?.type === "emoji") meta.icon = `emoji:${page.icon.emoji}`;
+    else if (mediaUrl(page.icon)) meta.icon = `image:${addMedia(folder, id, "icon", page.icon, async () => mediaUrl((await reader.get(`pages/${id}`)).icon))}`;
+    else if (page.icon) warn(title, "icon");
+    if (mediaUrl(page.cover)) meta.cover = addMedia(folder, id, "cover", page.cover, async () => mediaUrl((await reader.get(`pages/${id}`)).cover));
+    else if (page.cover) warn(title, "cover");
+    const activeBlocks = /* @__PURE__ */ new Set();
+    const render = async (parent, nesting) => {
+      if (nesting > 64 || activeBlocks.has(parent)) throw new Error("notion-limit");
+      activeBlocks.add(parent);
+      try {
+        const blocks = await reader.children(parent);
+        const output = [];
+        for (const block of blocks) {
+          active(signal);
+          if (++blocksCount > 5e4) throw new Error("notion-limit");
+          const type = String(block.type ?? "unsupported");
+          const data = block[type] ?? {};
+          let text = rich(data.rich_text);
+          let nested = "";
+          if (type === "child_page") {
+            await visitPage(block.id, folder, depth + 1);
+            output.push(link(escapeText(data.title ?? t("untitled")), `https://www.notion.so/${String(block.id).replace(/-/g, "")}`));
+            continue;
+          }
+          if (type === "table") {
+            const rows = await reader.children(block.id);
+            blocksCount += rows.length;
+            if (blocksCount > 5e4) throw new Error("notion-limit");
+            const width = Number(data.table_width) || 1;
+            const cells = rows.map((row) => Array.from({ length: width }, (_, i) => rich(row.table_row?.cells?.[i]).replace(/\|/g, "\\|").replace(/\n/g, "<br>")));
+            if (!data.has_column_header) cells.unshift(Array.from({ length: width }, () => ""));
+            const lines = cells.map((row) => `| ${row.join(" | ")} |`);
+            lines.splice(1, 0, `| ${Array.from({ length: width }, () => "---").join(" | ")} |`);
+            output.push(lines.join("\n"));
+            if (data.has_row_header) warn(title, "table_row_header");
+            continue;
+          }
+          if (type === "synced_block" && data.synced_from?.block_id) nested = await render(data.synced_from.block_id, nesting + 1);
+          else if (block.has_children && type !== "child_database") nested = await render(block.id, nesting + 1);
+          switch (type) {
+            case "paragraph":
+              break;
+            case "heading_1":
+            case "heading_2":
+            case "heading_3":
+              text = `${"#".repeat(Number(type.slice(-1)))} ${text}`;
+              break;
+            case "bulleted_list_item":
+              text = listItem(text, "- ", 2);
+              break;
+            case "numbered_list_item":
+              text = listItem(text, "1. ", 3);
+              break;
+            case "to_do":
+              text = listItem(text, data.checked ? "- [x] " : "- [ ] ", 2);
+              break;
+            case "quote":
+              text = text.split("\n").map((line) => `> ${line}`).join("\n");
+              break;
+            case "callout":
+              text = `> [!note]
+${text.split("\n").map((line) => `> ${line}`).join("\n")}`;
+              break;
+            case "code": {
+              const raw = (data.rich_text ?? []).map((item) => item.plain_text ?? item.text?.content ?? "").join("");
+              const fence = "`".repeat(Math.max(2, ...Array.from(raw.matchAll(/`+/g), (match) => match[0].length)) + 1);
+              text = `${fence}${String(data.language ?? "").replace(/[^a-z0-9_+-]/gi, "")}
+${raw}
+${fence}`;
+              break;
+            }
+            case "equation":
+              text = `$$
+${data.expression ?? ""}
+$$`;
+              break;
+            case "divider":
+              text = "---";
+              break;
+            case "image":
+            case "file":
+            case "pdf":
+            case "audio":
+            case "video": {
+              if (!mediaUrl(data)) {
+                warn(title, type);
+                text = link(type, `https://www.notion.so/${id}#${String(block.id).replace(/-/g, "")}`);
+                break;
+              }
+              if (type === "video" && data.type === "external" && !/\.(mp4|webm|mov|m4v|ogv)(?:[?#]|$)/i.test(mediaUrl(data))) {
+                text = link(rich(data.caption) || mediaUrl(data), mediaUrl(data));
+                warn(title, "embed");
+                break;
+              }
+              const path = addMedia(folder, block.id, type, data, async () => mediaUrl((await reader.get(`blocks/${block.id}`))[type]));
+              text = link(rich(data.caption) || String(data.name ?? type), path, type !== "file");
+              break;
+            }
+            case "bookmark":
+            case "embed":
+            case "link_preview":
+              text = link(rich(data.caption) || String(data.url ?? type), String(data.url ?? ""));
+              warn(title, type);
+              break;
+            case "link_to_page":
+              text = link(t("notionLinkedPage"), `https://www.notion.so/${String(data.page_id ?? data.database_id ?? "").replace(/-/g, "")}`);
+              break;
+            case "toggle":
+              text = `**${text}**`;
+              warn(title, type);
+              break;
+            case "column_list":
+            case "column":
+              if (type === "column_list") warn(title, type);
+              break;
+            case "synced_block":
+              warn(title, type);
+              break;
+            case "table_of_contents":
+              warn(title, type);
+              text = link(t("notionLinkedPage"), `https://www.notion.so/${id}`);
+              break;
+            default:
+              warn(title, type);
+              text = `${text ? `${text}
+
+` : ""}${link(t("notionUnsupported", { type }), `https://www.notion.so/${id}#${String(block.id).replace(/-/g, "")}`)}`;
+          }
+          if (nested) {
+            if (["bulleted_list_item", "numbered_list_item", "to_do"].includes(type)) text += `
+${nested.trimEnd().split("\n").map((line) => `    ${line}`).join("\n")}`;
+            else if (["quote", "callout"].includes(type)) text += `
+>
+${nested.trimEnd().split("\n").map((line) => `> ${line}`).join("\n")}`;
+            else text += `
+
+${nested}`;
+          }
+          if ((data.rich_text ?? []).some((item) => item.annotations?.underline || item.annotations?.color && item.annotations.color !== "default")) warn(title, "text_style");
+          output.push(text);
+        }
+        return output.join("\n\n");
+      } finally {
+        activeBlocks.delete(parent);
+      }
+    };
+    const body = await render(id, 0);
+    textSize += body.length;
+    if (textSize > 20 * 1024 * 1024) throw new Error("notion-limit");
+    files.push(source(`${folder}.md`, body));
+  };
+  try {
+    await visitPage(rootId, "", 0);
+    files.sort((a, b) => a.path.split("/").length - b.path.split("/").length || a.path.localeCompare(b.path));
+    const plan = await prepareNotionSources(app, files, metadata, async () => {
+      closed = true;
+      reader.dispose();
+      files.length = 0;
+      metadata.clear();
+    }, () => {
+      active(signal);
+      if (closed) throw new Error("notion-cancelled");
+    });
+    return { plan, issues };
+  } catch (error) {
+    reader.dispose();
+    throw error;
+  }
+}
+
+// src/notion-import-settings.ts
+var NotionImportSettings = class {
+  constructor(plugin, parent) {
+    this.plugin = plugin;
+    new import_obsidian17.Setting(parent).setName(t("notionImport")).setDesc(t("notionImportDesc")).addButton((button) => {
+      button.setButtonText(t("importStart")).onClick(() => {
+        if (this.modal || this.disposed) return;
+        this.modal = new NotionImportModal(this.plugin, () => {
+          this.modal = void 0;
+          if (!this.disposed && button.buttonEl.isConnected) button.buttonEl.focus();
+        });
+        this.modal.open();
+      });
+    });
+  }
+  modal;
+  disposed = false;
+  dispose() {
+    this.disposed = true;
+    this.modal?.close();
+    this.modal = void 0;
+  }
+};
+var NotionImportModal = class extends import_obsidian17.Modal {
+  constructor(plugin, closed) {
+    super(plugin.app);
+    this.plugin = plugin;
+    this.closed = closed;
+  }
+  form;
+  onOpen() {
+    this.modalEl.addClass("naitflow-modal", "naitflow-notion-modal");
+    this.setTitle(t("notionImport"));
+    this.form = new NotionImportForm(this.plugin, this.contentEl);
+  }
+  onClose() {
+    this.form?.dispose();
+    this.form = void 0;
+    this.contentEl.empty();
+    this.closed();
+  }
+};
+var NotionImportForm = class {
+  constructor(plugin, parent) {
+    this.plugin = plugin;
+    const panel = parent.createDiv("naitflow-notion-panel");
+    const help = panel.createEl("p", { cls: "naitflow-notion-help", text: t("notionSetup") + " " });
+    help.createEl("a", {
+      text: t("notionCreateIntegration"),
+      href: "https://www.notion.so/developers",
+      attr: { target: "_blank", rel: "noopener noreferrer" }
+    });
+    this.token = this.field(panel, t("notionToken"), "password", t("notionTokenHint"));
+    this.token.autocomplete = "off";
+    this.token.spellcheck = false;
+    this.page = this.field(panel, t("notionSourcePage"), "text", "https://www.notion.so/\u2026");
+    this.destination = this.field(panel, t("importDestination"), "text", "_notion");
+    this.destination.value = "_notion";
+    for (const input of [this.token, this.page]) input.oninput = () => this.invalidate();
+    const actions = panel.createDiv("naitflow-notion-actions");
+    this.inspect = new import_obsidian17.ButtonComponent(actions).setButtonText(t("notionPreview")).onClick(() => void this.read());
+    this.start = new import_obsidian17.ButtonComponent(actions).setButtonText(t("importStart")).setCta().setDisabled(true).onClick(() => void this.run());
+    this.cancel = new import_obsidian17.ButtonComponent(actions).setButtonText(t("cancel")).setDisabled(true).onClick(() => this.clear());
+    this.status = panel.createDiv({ cls: "naitflow-notion-status", attr: { role: "status", "aria-live": "polite" } });
+    this.results = panel.createDiv("naitflow-notion-results");
+    this.transferReport = panel.createDiv("naitflow-notion-results");
+    const limitations = panel.createEl("details", { cls: "naitflow-notion-help" });
+    limitations.createEl("summary", { text: t("notionLimitations") });
+    limitations.createEl("p", { text: t("notionScope") });
+    this.token.focus();
+  }
+  controller;
+  preview;
+  busy = false;
+  disposed = false;
+  token;
+  page;
+  destination;
+  inspect;
+  start;
+  cancel;
+  status;
+  results;
+  transferReport;
+  dispose() {
+    this.disposed = true;
+    this.clear();
+    this.token.oninput = null;
+    this.page.oninput = null;
+  }
+  field(parent, label, type, placeholder) {
+    const row = parent.createEl("label", { cls: "naitflow-notion-field" });
+    row.createSpan({ text: label });
+    return row.createEl("input", { type, placeholder, attr: { spellcheck: "false" } });
+  }
+  invalidate() {
+    this.controller?.abort();
+    void this.preview?.plan.close();
+    this.preview = void 0;
+    this.start.setDisabled(true);
+    this.results.empty();
+    this.transferReport.empty();
+    this.status.empty();
+    this.status.removeClass("is-ready");
+    this.start.setButtonText(t("importStart"));
+  }
+  clear() {
+    this.invalidate();
+    this.token.value = "";
+    this.status.setText(this.busy ? t("notionCancelling") : "");
+    if (!this.busy) this.controls(false);
+  }
+  controls(busy) {
+    this.busy = busy;
+    this.token.disabled = busy;
+    this.page.disabled = busy;
+    this.destination.disabled = busy;
+    this.inspect.setDisabled(busy);
+    this.start.setDisabled(busy || !this.preview);
+    this.cancel.setDisabled(!busy && !this.preview);
+  }
+  async read() {
+    if (this.busy || this.disposed) return;
+    this.invalidate();
+    this.controller = new AbortController();
+    const signal = this.controller.signal;
+    this.controls(true);
+    this.status.setText(t("notionReading"));
+    try {
+      const preview = await prepareNotionApi(
+        this.plugin.app,
+        this.token.value,
+        this.page.value,
+        signal,
+        (label) => {
+          if (!signal.aborted && !this.disposed) this.status.setText(label);
+        }
+      );
+      if (signal.aborted || this.disposed) {
+        await preview.plan.close();
+        return;
+      }
+      this.preview = preview;
+      const { plan, issues } = preview;
+      this.status.setText(t("notionPreviewReady", { pages: plan.pagesCount, attachments: plan.attachmentsCount }));
+      this.status.addClass("is-ready");
+      if (plan.renamedCount) this.results.createEl("p", { text: t("importDuplicatesWarning", { count: plan.renamedCount }) });
+      if (issues.length) {
+        const details = this.results.createEl("details");
+        details.createEl("summary", { text: t("notionIssues", { count: issues.length }) });
+        const list = details.createEl("ul");
+        for (const issue of issues) list.createEl("li", { text: `${issue.page} \xB7 ${issueLabel(issue.type)}` });
+      }
+    } catch (error) {
+      if (!this.disposed) this.status.setText(notionImportError(error));
+    } finally {
+      if (signal.aborted) this.token.value = "";
+      this.controls(false);
+    }
+  }
+  async run() {
+    if (this.busy || !this.preview || this.disposed) return;
+    const preview = this.preview;
+    this.transferReport.empty();
+    this.status.removeClass("is-ready");
+    this.controls(true);
+    try {
+      const result = await preview.plan.execute(this.destination.value, ({ current, total, label }) => {
+        if (!this.disposed && !this.controller?.signal.aborted) this.status.setText(`${current}/${total} \xB7 ${label}`);
+      });
+      if (this.disposed || this.controller?.signal.aborted) return;
+      this.plugin.refreshUi();
+      const counts = t("importCompleteSummary", { pages: result.pages, attachments: result.attachments });
+      const folder = t("notionResultFolder", { folder: result.destination });
+      if (result.attachmentFailures?.length) {
+        const count = result.attachmentFailures.length;
+        this.status.setText(`${counts} ${t("notionMissingAttachments", { count })} ${folder}`);
+        const details = this.transferReport.createEl("details");
+        details.createEl("summary", { text: t("notionFailedAttachmentDetails", { count }) });
+        const list = details.createEl("ul");
+        for (const failure of result.attachmentFailures) {
+          list.createEl("li", { text: `${failure.path} \xB7 ${attachmentErrorLabel(failure.error)}` });
+        }
+        this.transferReport.createEl("p", { text: t("notionRetryAttachmentsHint") });
+        this.start.setButtonText(t("notionRetryAttachments"));
+        return;
+      }
+      this.status.addClass("is-ready");
+      this.status.setText(`${counts} ${folder}`);
+      await preview.plan.close();
+      this.preview = void 0;
+      this.token.value = "";
+    } catch (error) {
+      if (!this.disposed) this.status.setText(`${notionImportError(error)} ${t("notionRetry")}`);
+    } finally {
+      this.controls(false);
+    }
+  }
+};
+function attachmentErrorLabel(error) {
+  switch (error.reason) {
+    case "http":
+      return `HTTP ${error.status}`;
+    case "network":
+      return t("notionNetworkError");
+    case "size":
+      return t("notionMediaSizeError");
+    case "html":
+      return t("notionMediaHtml");
+    case "url":
+      return t("notionMediaUrl");
+    case "source":
+      return t("notionMediaSource");
+  }
+}
+function issueLabel(type) {
+  const keys = {
+    toggle: "notionIssueToggle",
+    column_list: "notionIssueColumns",
+    synced_block: "notionIssueSynced",
+    text_style: "notionIssueStyle",
+    table_row_header: "notionIssueTable",
+    bookmark: "notionIssueLink",
+    embed: "notionIssueLink",
+    link_preview: "notionIssueLink",
+    icon: "notionIssueIcon",
+    cover: "notionIssueCover",
+    child_database: "notionIssueDatabase",
+    table_of_contents: "notionIssueContents"
+  };
+  return keys[type] ? t(keys[type]) : t("notionUnsupported", { type });
+}
+function notionImportError(error) {
+  const code = error instanceof Error ? error.message : "";
+  const keys = {
+    "notion-page-id": "notionPageInvalid",
+    "notion-auth": "notionAuthError",
+    "notion-access": "notionAccessError",
+    "notion-network": "notionNetworkError",
+    "notion-rate": "notionRateError",
+    "notion-limit": "notionLimitError",
+    "notion-media": "notionMediaError",
+    "notion-media-size": "notionMediaSizeError",
+    "notion-cancelled": "notionCancelled",
+    "destination-empty": "importDestinationEmpty",
+    "destination-exists": "notionDestinationConflict"
+  };
+  return t(keys[code] ?? "notionRequestError");
+}
+
+// src/settings.ts
 var DEFAULT_SETTINGS = {
   assetsFolder: "Assets/NaitFlow",
   unsplashAccessKey: "",
@@ -12004,44 +14682,61 @@ var DEFAULT_SETTINGS = {
   openTreeOnStartup: true,
   trashRecords: []
 };
-var NaitFlowSettingTab = class extends import_obsidian11.PluginSettingTab {
+var NaitFlowSettingTab = class extends import_obsidian18.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
+    plugin.register(() => this.notionImport?.dispose());
   }
+  notionImport;
   display() {
+    this.notionImport?.dispose();
     this.containerEl.empty();
     this.containerEl.createEl("h2", { text: "NaitFlow" });
-    this.containerEl.createEl("p", { text: t("settingsIntro") });
+    this.containerEl.createEl("p", { cls: "naitflow-settings-intro", text: t("settingsIntro") });
     this.containerEl.createEl("h3", { text: t("importData") });
-    new import_obsidian11.Setting(this.containerEl).setName(t("importFormats")).setDesc(t("importFormatsDesc")).addButton((button) => button.setButtonText(t("importZip")).setCta().onClick(() => this.plugin.openImporter()));
-    new import_obsidian11.Setting(this.containerEl).setName(t("mediaFolder")).setDesc(t("mediaFolderDesc")).addText((text) => text.setValue(this.plugin.settings.assetsFolder).onChange(async (value) => {
+    new import_obsidian18.Setting(this.containerEl).setName(t("importFormats")).setDesc(t("importFormatsDesc")).addButton((button) => button.setButtonText(t("importZip")).setCta().onClick(() => this.plugin.openImporter()));
+    this.notionImport = new NotionImportSettings(this.plugin, this.containerEl);
+    new import_obsidian18.Setting(this.containerEl).setName(t("mediaFolder")).setDesc(t("mediaFolderDesc")).addText((text) => text.setValue(this.plugin.settings.assetsFolder).onChange(async (value) => {
       this.plugin.settings.assetsFolder = value.trim() || DEFAULT_SETTINGS.assetsFolder;
       await this.plugin.saveSettings();
     }));
-    new import_obsidian11.Setting(this.containerEl).setName("Unsplash Access Key").setDesc(t("unsplashKeyDesc")).addText((text) => {
+    new import_obsidian18.Setting(this.containerEl).setName("Unsplash Access Key").setDesc(t("unsplashKeyDesc")).addText((text) => {
       text.inputEl.type = "password";
       text.setPlaceholder(t("unsplashKeyPlaceholder")).setValue(this.plugin.settings.unsplashAccessKey).onChange(async (value) => {
         this.plugin.settings.unsplashAccessKey = value.trim();
         await this.plugin.saveSettings();
       });
     });
-    new import_obsidian11.Setting(this.containerEl).setName(t("openTreeOnStartup")).addToggle((toggle) => toggle.setValue(this.plugin.settings.openTreeOnStartup).onChange(async (value) => {
+    new import_obsidian18.Setting(this.containerEl).setName(t("openTreeOnStartup")).addToggle((toggle) => toggle.setValue(this.plugin.settings.openTreeOnStartup).onChange(async (value) => {
       this.plugin.settings.openTreeOnStartup = value;
       await this.plugin.saveSettings();
     }));
   }
+  hide() {
+    this.notionImport?.dispose();
+    this.notionImport = void 0;
+  }
 };
 
 // src/main.ts
-var NaitFlowPlugin = class extends import_obsidian12.Plugin {
+var NaitFlowPlugin = class extends import_obsidian19.Plugin {
   settings = { ...DEFAULT_SETTINGS, recentEmoji: [], recentIcons: [], trashRecords: [] };
   headers;
+  slashMenu;
   emojiFont;
+  emojiFontDocuments = /* @__PURE__ */ new WeakSet();
   async onload() {
     await this.loadSettings();
-    this.loadEmojiFont();
+    this.loadEmojiFont(document, window);
+    this.registerEvent(this.app.workspace.on("window-open", (_workspaceWindow, popoutWindow) => {
+      this.loadEmojiFont(popoutWindow.document, popoutWindow);
+    }));
     this.headers = new PageHeaderManager(this);
+    this.slashMenu = new SlashMenuSuggest(this.app);
+    this.registerEditorSuggest(this.slashMenu);
+    this.registerEditorExtension([blockDragExtension, selectionToolbarExtension]);
+    registerSubpageLinkHover(this);
     this.registerView(VIEW_TYPE_NAITFLOW, (leaf) => new NaitFlowTreeView(leaf, this));
     this.addRibbonIcon("panels-top-left", t("openPagesRibbon"), () => void this.activateTree());
     this.addSettingTab(new NaitFlowSettingTab(this.app, this));
@@ -12059,6 +14754,7 @@ var NaitFlowPlugin = class extends import_obsidian12.Plugin {
       return true;
     } });
     this.registerEvent(this.app.workspace.on("layout-change", () => this.headers.schedule()));
+    this.registerEvent(this.app.workspace.on("file-open", () => this.headers.schedule()));
     this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshActiveTreeState()));
     this.registerEvent(this.app.metadataCache.on("changed", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("create", () => this.refreshUi()));
@@ -12067,23 +14763,17 @@ var NaitFlowPlugin = class extends import_obsidian12.Plugin {
       this.refreshUi();
       void this.renamePairedFolder(file, oldPath);
     }));
-    this.registerInterval(window.setInterval(() => this.headers.schedule(), 1500));
     this.app.workspace.onLayoutReady(() => {
       this.headers.schedule();
       if (this.settings.openTreeOnStartup && !this.app.workspace.getLeavesOfType(VIEW_TYPE_NAITFLOW).length) void this.activateTree();
       const conflicts = ["iconic", "obsidian-icon-folder", "banners-reloaded", "pixel-banner"].filter((id) => this.isPluginEnabled(id));
-      if (conflicts.length) new import_obsidian12.Notice(t("pluginConflict"), 7e3);
+      if (conflicts.length) new import_obsidian19.Notice(t("pluginConflict"), 7e3);
     });
   }
   onunload() {
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_NAITFLOW);
-    document.querySelectorAll(".naitflow-page-header, .naitflow-tab-icon").forEach((element) => element.remove());
-    document.querySelectorAll(".naitflow-fluid-cover-host").forEach((element) => {
-      element.removeClass("naitflow-fluid-cover-host");
-      element.style.removeProperty("--naitflow-cover-gutter-left");
-      element.style.removeProperty("--naitflow-cover-gutter-right");
-      element.style.removeProperty("--naitflow-cover-gutter-top");
-    });
+    this.headers?.destroy();
+    this.slashMenu?.destroy();
     if (this.emojiFont) document.fonts.delete(this.emojiFont);
   }
   openIconPicker(file) {
@@ -12136,30 +14826,44 @@ var NaitFlowPlugin = class extends import_obsidian12.Plugin {
     this.settings.trashRecords = this.settings.trashRecords.filter((item) => item.id !== id);
     await this.saveSettings();
   }
+  async clearTrashRecords() {
+    this.settings.trashRecords = [];
+    await this.saveSettings();
+  }
   /** Keeps `Page.md` and its sibling `Page/` together after a native rename or move. */
   async renamePairedFolder(file, oldPath) {
-    if (!(file instanceof import_obsidian12.TFile) || file.extension.toLowerCase() !== "md") return;
-    const oldFolder = this.app.vault.getAbstractFileByPath(pageFolderPath(oldPath));
-    if (!(oldFolder instanceof import_obsidian12.TFolder)) return;
+    if (!(file instanceof import_obsidian19.TFile) || file.extension.toLowerCase() !== "md") return;
+    const previousPath = pageFolderPath(oldPath);
+    const oldFolder = this.app.vault.getAbstractFileByPath(previousPath);
+    if (!(oldFolder instanceof import_obsidian19.TFolder)) return;
     const nextPath = pageFolderPath(file.path);
     const existing = this.app.vault.getAbstractFileByPath(nextPath);
     if (existing && existing !== oldFolder) {
-      new import_obsidian12.Notice("NaitFlow: the matching page folder was not renamed because the destination already exists.", 8e3);
+      new import_obsidian19.Notice("NaitFlow: the matching page folder was not renamed because the destination already exists.", 8e3);
       return;
     }
     try {
-      await this.app.vault.rename(oldFolder, nextPath);
+      await this.app.fileManager.renameFile(oldFolder, nextPath);
     } catch (error) {
       console.error("NaitFlow: failed to rename matching page folder", error);
-      new import_obsidian12.Notice("NaitFlow: could not rename the matching page folder.", 8e3);
+      new import_obsidian19.Notice("NaitFlow: could not rename the matching page folder.", 8e3);
+      return;
+    }
+    try {
+      await relocatePageMedia(this.app, previousPath, nextPath);
+    } catch (error) {
+      console.error("NaitFlow: failed to update page media paths", error);
+      new import_obsidian19.Notice(t("renameMediaFailed"), 8e3);
     }
   }
-  loadEmojiFont() {
-    if (!this.manifest.dir) return;
+  loadEmojiFont(targetDocument, targetWindow) {
+    if (!this.manifest.dir || this.emojiFontDocuments.has(targetDocument)) return;
     const fontPath = `${this.manifest.dir}/NotoColorEmoji.ttf`;
     const fontUrl = this.app.vault.adapter.getResourcePath(fontPath);
-    this.emojiFont = new FontFace("NaitFlow Noto Color Emoji", `url("${fontUrl}")`, { display: "block" });
-    document.fonts.add(this.emojiFont);
+    const FontFaceConstructor = targetWindow.FontFace;
+    this.emojiFont = new FontFaceConstructor("NaitFlow Noto Color Emoji", `url("${fontUrl}")`, { display: "block" });
+    targetDocument.fonts.add(this.emojiFont);
+    this.emojiFontDocuments.add(targetDocument);
     void this.emojiFont.load().catch((error) => console.error("NaitFlow: failed to load Noto Color Emoji", error));
   }
   isPluginEnabled(id) {

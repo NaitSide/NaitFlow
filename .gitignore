@@ -1,20 +1,46 @@
+# Dependencies and generated local files
 node_modules/
-backups/
+*.tsbuildinfo
+*.log
+/backup/
+/backups/
+/BACK_UP/
+/TMP/
+/release/
+/dist/
+*.zip
 
-# Local Obsidian and plugin state. May contain API keys.
+# Local project instructions and notes
+AGENTS.md
+/AGENTS_NaitFlow/
+.agents/
+.codex/
+.claude/
+.github/copilot-instructions.md
+/PUBLISHING.md
+/CHANGELOG.md
+/local-transfer-report.json
+/docs/images/unsplash-application-keys-blurred.png
+
+# Vault state and credentials
 .obsidian/
+.naitflow-trash/
+.trash/
 data.json
-
-# Local environment and logs.
 .env
 .env.*
-*.log
-*.tsbuildinfo
+.npmrc
+.netrc
+credentials.json
+secrets.json
+*.key
+*.pem
+*.pfx
+*.p12
 
-# Editor and operating-system files.
+# Editor and operating-system files
 .idea/
 .vscode/
 .DS_Store
 Thumbs.db
-PUBLISHING.md
-
+desktop.ini

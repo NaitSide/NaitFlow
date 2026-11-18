@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import type NaitFlowPlugin from "./main";
 import { t } from "./i18n";
+import { NotionImportSettings } from "./notion-import-settings";
 
 export interface NaitFlowSettings {
   assetsFolder: string;
@@ -14,10 +15,12 @@ export interface NaitFlowSettings {
 export interface NaitFlowTrashRecord {
   id: string;
   title: string;
+  icon?: string;
   originalFilePath: string;
   originalFolderPath?: string;
   trashedFilePath: string;
   trashedFolderPath?: string;
+  cacheRootPath?: string;
   deletedAt: number;
 }
 
@@ -31,14 +34,17 @@ export const DEFAULT_SETTINGS: NaitFlowSettings = {
 };
 
 export class NaitFlowSettingTab extends PluginSettingTab {
+  private notionImport?: NotionImportSettings;
   constructor(app: App, private readonly plugin: NaitFlowPlugin) {
     super(app, plugin);
+    plugin.register(() => this.notionImport?.dispose());
   }
 
   override display(): void {
+    this.notionImport?.dispose();
     this.containerEl.empty();
     this.containerEl.createEl("h2", { text: "NaitFlow" });
-    this.containerEl.createEl("p", { text: t("settingsIntro") });
+    this.containerEl.createEl("p", { cls: "naitflow-settings-intro", text: t("settingsIntro") });
 
     this.containerEl.createEl("h3", { text: t("importData") });
     new Setting(this.containerEl)
@@ -48,6 +54,8 @@ export class NaitFlowSettingTab extends PluginSettingTab {
         .setButtonText(t("importZip"))
         .setCta()
         .onClick(() => this.plugin.openImporter()));
+
+    this.notionImport = new NotionImportSettings(this.plugin, this.containerEl);
 
     new Setting(this.containerEl)
       .setName(t("mediaFolder"))
@@ -74,5 +82,10 @@ export class NaitFlowSettingTab extends PluginSettingTab {
         this.plugin.settings.openTreeOnStartup = value;
         await this.plugin.saveSettings();
       }));
+  }
+
+  override hide(): void {
+    this.notionImport?.dispose();
+    this.notionImport = undefined;
   }
 }

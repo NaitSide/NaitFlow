@@ -2,29 +2,26 @@
 
 **English** | [Русский](README_RU.md)
 
-NaitFlow — Notion UI for Obsidian
+**0.1.75 Alpha** · In active development
 
-An Obsidian plugin that adds a Notion-style page sidebar, emoji/icons, and page covers.
+NaitFlow brings a Notion-inspired page and block workflow to Obsidian. Open **NaitFlow Pages** for a tree of pages and subpages with icons. Obsidian’s file explorer is available alongside it for working with folders and Markdown files in the same vault.
 
 ![NaitFlow emoji picker over a page cover](docs/images/naitflow-interface.png)
 
-## Features
+## What’s new in 0.1.75 Alpha
 
-- visual emoji picker with categories, search, and recent items;
-- built-in Lucide icon browser;
-- custom icon uploads and direct image links;
-- page icons above titles, in the NaitFlow tree, and in tabs;
-- local cover gallery featuring NASA, Webb, Artemis II, MET Open Access, and gradients;
-- cover uploads from your computer, direct links, or Unsplash search;
-- drag-to-reposition cover images vertically;
-- virtual nested pages through `naitflow-parent`, without turning notes into folders;
-- automatic English and Russian interface based on the Obsidian language.
+- Horizontal formatting toolbar and a slash menu for inserting blocks in Live Preview.
+- Whole-block selection from the margins and drag-to-reorder with an insertion line.
+- Refined list markers, alignment, and spacing.
+- Page icons in the tree and breadcrumbs, plus previews when hovering over subpage links.
+
+NaitFlow also supports cover galleries, custom page icons, a page trash, and imports from Notion exports, Buildin Markdown exports, and the Notion API.
 
 ## Manual installation
 
 Copy `main.js`, `manifest.json`, `styles.css`, `NotoColorEmoji.ttf`, `NotoColorEmoji-LICENSE.txt`, and the `presets` directory into `.obsidian/plugins/naitflow`. Restart Obsidian, then enable NaitFlow under **Community plugins**.
 
-Development and publishing notes are available in [PUBLISHING.md](PUBLISHING.md) (Russian).
+Requires Obsidian 1.8.0 or newer. iOS compatibility is unverified. See [third-party notices](THIRD_PARTY_NOTICES.md).
 
 ## Unsplash search
 
@@ -37,8 +34,6 @@ NaitFlow does not ship with a shared Unsplash key. To enable cover search for pe
    - **Application name:** `NaitFlow`
    - **Description:** `Cover image search and selection for the NaitFlow Obsidian plugin.`
 5. Open **Your apps → NaitFlow** and scroll to **Keys**. You will see an **Application ID**, **Access Key**, and **Secret Key**.
-
-   ![Unsplash Keys section with blurred example credentials](docs/images/unsplash-application-keys-blurred.png)
 
 6. Copy only the **Access Key**. NaitFlow does not need the Application ID or Secret Key.
 7. In Obsidian, open **Settings → NaitFlow → Unsplash Access Key** and paste the key.

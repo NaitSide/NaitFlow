@@ -1,5 +1,15 @@
 # Third-party notices
 
+## Notion interface SVGs
+
+`src/icons/` contains 15 menu SVGs and the `dragHandle` SVG copied from
+the rendered interface at https://app.notion.com/ on 2026-11-18 at the user's
+request. Their original path data and viewBox are retained; rendering colours
+are supplied by the host theme. These are Notion-sourced assets, not Lucide
+icons. No open-source licence was identified for these assets; they are not
+relicensed by this notice. This records their provenance and is not a grant
+of redistribution rights.
+
 ## zip.js
 
 NaitFlow includes `@zip.js/zip.js` 2.7.60.

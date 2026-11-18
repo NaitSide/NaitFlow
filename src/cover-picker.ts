@@ -105,6 +105,7 @@ export class CoverPickerModal extends Modal {
 
   override onOpen(): void {
     this.modalEl.addClass("naitflow-modal", "naitflow-cover-modal");
+    (this as Modal & { closeButtonEl?: HTMLElement }).closeButtonEl?.remove();
     this.render();
   }
 

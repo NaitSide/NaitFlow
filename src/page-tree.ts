@@ -293,51 +293,70 @@ export class NaitFlowTreeView extends ItemView {
   }
 
   private async trashPage(file: TFile): Promise<void> {
-    const beforeFileTrash = await this.listTrashEntries();
     const title = displayName(file);
     const originalFilePath = file.path;
     const originalFolderPath = pageFolderPath(file.path);
-    if (!await this.app.fileManager.promptForDeletion(file)) return;
     const folder = this.app.vault.getAbstractFileByPath(pageFolderPath(file.path));
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const cacheRootPath = normalizePath(`.naitflow-trash/${id}`);
+    const trashedFilePath = normalizePath(`${cacheRootPath}/page.md`);
+    const trashedFolderPath = folder instanceof TFolder ? normalizePath(`${cacheRootPath}/page`) : undefined;
     try {
-      const afterFileTrash = await this.listTrashEntries();
-      const trashedFilePath = this.findNewTrashEntry(beforeFileTrash, afterFileTrash, file.name);
-      if (folder instanceof TFolder) await this.app.fileManager.trashFile(folder);
-      const afterFolderTrash = await this.listTrashEntries();
-      const trashedFolderPath = folder instanceof TFolder
-        ? this.findNewTrashEntry(afterFileTrash, afterFolderTrash, folder.name)
-        : undefined;
-      if (!trashedFilePath) {
-        new Notice(t("trashLocalUnavailable"));
+      await this.copyFileToTrashCache(file.path, trashedFilePath);
+      if (folder instanceof TFolder && trashedFolderPath) await this.copyFolderToTrashCache(folder, trashedFolderPath);
+      if (!await this.app.fileManager.promptForDeletion(file)) {
+        await this.removeTrashCache(cacheRootPath);
         return;
       }
       await this.plugin.addTrashRecord({
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        id,
         title,
+        icon: readPageMeta(this.app, file).icon,
         originalFilePath,
         originalFolderPath: folder instanceof TFolder ? originalFolderPath : undefined,
         trashedFilePath,
         trashedFolderPath,
+        cacheRootPath,
         deletedAt: Date.now()
       });
+      if (folder instanceof TFolder && this.app.vault.getAbstractFileByPath(folder.path) === folder) {
+        await this.app.vault.delete(folder, true);
+      }
+      this.plugin.refreshUi();
     } catch (error) {
       console.error("NaitFlow: failed to move page to trash", error);
       new Notice(t("deletePageFailed", { error: String(error) }));
     }
   }
 
-  private async listTrashEntries(): Promise<Set<string>> {
-    try {
-      const listed = await this.app.vault.adapter.list(".trash");
-      return new Set([...listed.files, ...listed.folders]);
-    } catch {
-      return new Set();
+  private async copyFileToTrashCache(sourcePath: string, targetPath: string): Promise<void> {
+    await this.ensureTrashCacheParent(targetPath);
+    await this.app.vault.adapter.writeBinary(targetPath, await this.app.vault.adapter.readBinary(sourcePath));
+  }
+
+  private async copyFolderToTrashCache(source: TFolder, targetPath: string): Promise<void> {
+    const adapter = this.app.vault.adapter;
+    if (!await adapter.exists(targetPath)) await adapter.mkdir(targetPath);
+    for (const child of source.children) {
+      const target = normalizePath(`${targetPath}/${child.name}`);
+      if (child instanceof TFolder) await this.copyFolderToTrashCache(child, target);
+      else await this.copyFileToTrashCache(child.path, target);
     }
   }
 
-  private findNewTrashEntry(before: Set<string>, after: Set<string>, name: string): string | undefined {
-    const candidates = [...after].filter((path) => !before.has(path));
-    return candidates.find((path) => path.endsWith(`/${name}`)) ?? (candidates.length === 1 ? candidates[0] : undefined);
+  private async ensureTrashCacheParent(path: string): Promise<void> {
+    const adapter = this.app.vault.adapter;
+    const parts = path.split("/").slice(0, -1);
+    let current = "";
+    for (const part of parts) {
+      current = current ? `${current}/${part}` : part;
+      if (!await adapter.exists(current)) await adapter.mkdir(current);
+    }
+  }
+
+  private async removeTrashCache(path: string): Promise<void> {
+    const adapter = this.app.vault.adapter;
+    if (await adapter.exists(path)) await adapter.rmdir(path, true);
   }
 
   private async copyFolder(source: TFolder, targetPath: string): Promise<void> {

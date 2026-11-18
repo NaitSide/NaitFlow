@@ -54,6 +54,28 @@ export async function setField(app: App, file: TFile, field: string, value: stri
   });
 }
 
+/** Obsidian updates Markdown links on rename. NaitFlow also stores plain vault paths. */
+export async function relocatePageMedia(app: App, from: string, to: string): Promise<void> {
+  const rewrite = (value: unknown): string | undefined => {
+    if (typeof value !== "string") return;
+    const prefix = /^(?:image:)?(?:\[\[)?/.exec(value)![0];
+    return value.startsWith(`${from}/`, prefix.length)
+      ? `${prefix}${to}${value.slice(prefix.length + from.length)}`
+      : undefined;
+  };
+  const fields = [FIELDS.cover, FIELDS.icon];
+  for (const file of app.vault.getMarkdownFiles()) {
+    const cached = app.metadataCache.getFileCache(file)?.frontmatter;
+    if (!cached || !fields.some(field => rewrite(cached[field]) !== undefined)) continue;
+    await app.fileManager.processFrontMatter(file, frontmatter => {
+      for (const field of fields) {
+        const updated = rewrite(frontmatter[field]);
+        if (updated !== undefined) frontmatter[field] = updated;
+      }
+    });
+  }
+}
+
 export async function ensureFolder(app: App, path: string): Promise<void> {
   const normalized = normalizePath(path);
   if (!normalized || app.vault.getAbstractFileByPath(normalized)) return;

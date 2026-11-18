@@ -3,20 +3,33 @@ import { CoverPickerModal } from "./cover-picker";
 import { IconPickerModal } from "./icon-picker";
 import { chooseImportArchive } from "./import-modal";
 import { t } from "./i18n";
-import { pageFolderPath } from "./model";
+import { pageFolderPath, relocatePageMedia } from "./model";
 import { PageHeaderManager } from "./page-header";
+import { SlashMenuSuggest } from "./slash-menu";
+import { blockDragExtension } from "./block-drag";
+import { selectionToolbarExtension } from "./selection-toolbar";
+import { registerSubpageLinkHover } from "./subpage-link-hover";
 import { NaitFlowTreeView, VIEW_TYPE_NAITFLOW } from "./page-tree";
 import { DEFAULT_SETTINGS, NaitFlowSettings, NaitFlowSettingTab, NaitFlowTrashRecord } from "./settings";
 
 export default class NaitFlowPlugin extends Plugin {
   override settings: NaitFlowSettings = { ...DEFAULT_SETTINGS, recentEmoji: [], recentIcons: [], trashRecords: [] };
   private headers!: PageHeaderManager;
+  private slashMenu?: SlashMenuSuggest;
   private emojiFont?: FontFace;
+  private readonly emojiFontDocuments = new WeakSet<Document>();
 
   override async onload(): Promise<void> {
     await this.loadSettings();
-    this.loadEmojiFont();
+    this.loadEmojiFont(document, window);
+    this.registerEvent(this.app.workspace.on("window-open", (_workspaceWindow, popoutWindow) => {
+      this.loadEmojiFont(popoutWindow.document, popoutWindow);
+    }));
     this.headers = new PageHeaderManager(this);
+    this.slashMenu = new SlashMenuSuggest(this.app);
+    this.registerEditorSuggest(this.slashMenu);
+    this.registerEditorExtension([blockDragExtension, selectionToolbarExtension]);
+    registerSubpageLinkHover(this);
     this.registerView(VIEW_TYPE_NAITFLOW, (leaf) => new NaitFlowTreeView(leaf, this));
     this.addRibbonIcon("panels-top-left", t("openPagesRibbon"), () => void this.activateTree());
     this.addSettingTab(new NaitFlowSettingTab(this.app, this));
@@ -36,6 +49,7 @@ export default class NaitFlowPlugin extends Plugin {
     }});
 
     this.registerEvent(this.app.workspace.on("layout-change", () => this.headers.schedule()));
+    this.registerEvent(this.app.workspace.on("file-open", () => this.headers.schedule()));
     this.registerEvent(this.app.workspace.on("active-leaf-change", () => this.refreshActiveTreeState()));
     this.registerEvent(this.app.metadataCache.on("changed", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("create", () => this.refreshUi()));
@@ -44,7 +58,6 @@ export default class NaitFlowPlugin extends Plugin {
       this.refreshUi();
       void this.renamePairedFolder(file, oldPath);
     }));
-    this.registerInterval(window.setInterval(() => this.headers.schedule(), 1500));
 
     this.app.workspace.onLayoutReady(() => {
       this.headers.schedule();
@@ -56,13 +69,8 @@ export default class NaitFlowPlugin extends Plugin {
 
   override onunload(): void {
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_NAITFLOW);
-    document.querySelectorAll(".naitflow-page-header, .naitflow-tab-icon").forEach((element) => element.remove());
-    document.querySelectorAll<HTMLElement>(".naitflow-fluid-cover-host").forEach((element) => {
-      element.removeClass("naitflow-fluid-cover-host");
-      element.style.removeProperty("--naitflow-cover-gutter-left");
-      element.style.removeProperty("--naitflow-cover-gutter-right");
-      element.style.removeProperty("--naitflow-cover-gutter-top");
-    });
+    this.headers?.destroy();
+    this.slashMenu?.destroy();
     if (this.emojiFont) document.fonts.delete(this.emojiFont);
   }
 
@@ -117,10 +125,16 @@ export default class NaitFlowPlugin extends Plugin {
     await this.saveSettings();
   }
 
+  async clearTrashRecords(): Promise<void> {
+    this.settings.trashRecords = [];
+    await this.saveSettings();
+  }
+
   /** Keeps `Page.md` and its sibling `Page/` together after a native rename or move. */
   private async renamePairedFolder(file: TAbstractFile, oldPath: string): Promise<void> {
     if (!(file instanceof TFile) || file.extension.toLowerCase() !== "md") return;
-    const oldFolder = this.app.vault.getAbstractFileByPath(pageFolderPath(oldPath));
+    const previousPath = pageFolderPath(oldPath);
+    const oldFolder = this.app.vault.getAbstractFileByPath(previousPath);
     if (!(oldFolder instanceof TFolder)) return;
 
     const nextPath = pageFolderPath(file.path);
@@ -131,19 +145,28 @@ export default class NaitFlowPlugin extends Plugin {
     }
 
     try {
-      await this.app.vault.rename(oldFolder, nextPath);
+      await this.app.fileManager.renameFile(oldFolder, nextPath);
     } catch (error) {
       console.error("NaitFlow: failed to rename matching page folder", error);
       new Notice("NaitFlow: could not rename the matching page folder.", 8000);
+      return;
+    }
+    try {
+      await relocatePageMedia(this.app, previousPath, nextPath);
+    } catch (error) {
+      console.error("NaitFlow: failed to update page media paths", error);
+      new Notice(t("renameMediaFailed"), 8000);
     }
   }
 
-  private loadEmojiFont(): void {
-    if (!this.manifest.dir) return;
+  private loadEmojiFont(targetDocument: Document, targetWindow: Window): void {
+    if (!this.manifest.dir || this.emojiFontDocuments.has(targetDocument)) return;
     const fontPath = `${this.manifest.dir}/NotoColorEmoji.ttf`;
     const fontUrl = this.app.vault.adapter.getResourcePath(fontPath);
-    this.emojiFont = new FontFace("NaitFlow Noto Color Emoji", `url("${fontUrl}")`, { display: "block" });
-    document.fonts.add(this.emojiFont);
+    const FontFaceConstructor = (targetWindow as Window & typeof globalThis).FontFace;
+    this.emojiFont = new FontFaceConstructor("NaitFlow Noto Color Emoji", `url("${fontUrl}")`, { display: "block" });
+    targetDocument.fonts.add(this.emojiFont);
+    this.emojiFontDocuments.add(targetDocument);
     void this.emojiFont.load().catch((error) => console.error("NaitFlow: failed to load Noto Color Emoji", error));
   }
 
