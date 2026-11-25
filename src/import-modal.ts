@@ -1,7 +1,7 @@
 import { Modal, Notice, Platform, setIcon } from "obsidian";
 import type NaitFlowPlugin from "./main";
 import { t } from "./i18n";
-import { ImportFormat, NaitFlowImportPlan, prepareImport } from "./importer";
+import { ImportFormat, ImportResult, NaitFlowImportPlan, prepareImport } from "./importer";
 
 declare global {
   interface Window {
@@ -65,6 +65,7 @@ function chooseWebArchive(plugin: NaitFlowPlugin): void {
 
 async function openImportPreview(plugin: NaitFlowPlugin, file: File): Promise<void> {
   const notice = new Notice(t("importReading"), 0);
+  notice.containerEl.addClass("naitflow-import-reading-notice");
   try {
     const plan = await prepareImport(plugin.app, file);
     notice.hide();
@@ -107,17 +108,21 @@ class ImportPreviewModal extends Modal {
     const stats = this.contentEl.createDiv("naitflow-import-stats");
     this.addStat(stats, t("importPages"), this.plan.pagesCount);
     this.addStat(stats, t("importAttachments"), this.plan.attachmentsCount);
-    this.addStat(stats, t("importRenamed"), this.plan.renamedCount);
-    this.addStat(stats, t("importBrokenLinks"), this.plan.unresolvedLinksCount);
 
     const warnings = this.warnings();
-    if (warnings.length) {
+    const hasRemoteCovers = this.plan.format === "notion-html" && this.plan.remoteCoversCount > 0;
+    if (warnings.length || hasRemoteCovers) {
       const list = this.contentEl.createDiv("naitflow-import-warnings");
       for (const warning of warnings) {
         const row = list.createDiv("naitflow-import-warning");
         const icon = row.createSpan("naitflow-import-warning-icon");
         setIcon(icon, "triangle-alert");
         row.createSpan({ text: warning });
+      }
+      if (hasRemoteCovers) {
+        const details = list.createEl("details", { cls: "naitflow-import-warning naitflow-import-cover-details" });
+        details.createEl("summary", { text: t("importRemoteCovers", { count: this.plan.remoteCoversCount }) });
+        details.createDiv({ text: t("importRemoteCoversDetails") });
       }
     }
 
@@ -148,7 +153,6 @@ class ImportPreviewModal extends Modal {
     if (this.plan.format !== "notion-html") warnings.push(t("importVisualMissing"));
     if (this.plan.renamedCount > 0) warnings.push(t("importDuplicatesWarning", { count: this.plan.renamedCount }));
     if (this.plan.unresolvedLinksCount > 0) warnings.push(t("importBrokenLinksWarning", { count: this.plan.unresolvedLinksCount }));
-    if (this.plan.format === "notion-html" && this.plan.coversCount > 0) warnings.push(t("importRemoteCovers", { count: this.plan.coversCount }));
     return warnings;
   }
 
@@ -179,7 +183,7 @@ class ImportPreviewModal extends Modal {
       this.plugin.refreshUi();
       this.running = false;
       this.finished = true;
-      this.renderSuccess(result.destination, result.pages, result.attachments);
+      this.renderSuccess(result);
     } catch (caught) {
       this.running = false;
       console.error("NaitFlow: import failed", caught);
@@ -192,13 +196,14 @@ class ImportPreviewModal extends Modal {
     }
   }
 
-  private renderSuccess(destination: string, pages: number, attachments: number): void {
+  private renderSuccess({ destination, pages, attachments, covers }: ImportResult): void {
     this.contentEl.empty();
     const success = this.contentEl.createDiv("naitflow-import-success");
     const icon = success.createSpan("naitflow-import-success-icon");
     setIcon(icon, "circle-check-big");
     success.createEl("h3", { text: t("importComplete") });
     success.createEl("p", { text: t("importCompleteSummary", { pages, attachments }) });
+    if (covers) success.createEl("p", { text: t("importCoverSummary", covers) });
     success.createEl("code", { text: destination });
     const close = success.createEl("button", { cls: "mod-cta", text: t("close") });
     close.onclick = () => this.close();

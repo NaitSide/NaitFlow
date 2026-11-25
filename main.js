@@ -22,7 +22,7 @@ __export(main_exports, {
   default: () => NaitFlowPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian19 = require("obsidian");
+var import_obsidian21 = require("obsidian");
 
 // src/cover-picker.ts
 var import_obsidian4 = require("obsidian");
@@ -33,6 +33,75 @@ var import_obsidian2 = require("obsidian");
 // src/i18n.ts
 var import_obsidian = require("obsidian");
 var EN = {
+  buildinImport: "From Buildin (API)",
+  buildinImportDesc: "Import a Markdown archive and restore covers and icons through the API.",
+  buildinZipStage: "1. Import ZIP archive",
+  buildinZipStageDesc: "Text, photos, files",
+  buildinZipNoArchive: "No archive selected",
+  buildinZipInvalid: "Choose a Buildin ZIP archive with .md files (Markdown).",
+  buildinZipProgress: "Importing ZIP: {current}/{total} notes and attachments",
+  buildinZipComplete: "ZIP imported. Notes: {pages}. Attachments: {attachments}.",
+  buildinAwaitZip: "Available after the ZIP import finishes.",
+  buildinAwaitIntegration: "Connect the integration to restore covers and icons.",
+  buildinArtworkStage: "2. Restore covers and icons through the API",
+  buildinArtworkSourceHelp: "Enter a link to a page from this archive to verify the integration\u2019s access.",
+  buildinPageNotInArchive: "This page is missing from the imported ZIP. Enter a link to a page from that ZIP.",
+  buildinArtworkStart: "Restore appearance",
+  buildinArtworkApplying: "Restoring covers and icons\u2026",
+  buildinAppearanceProgress: "Appearance {current}/{total}: {title}",
+  buildinArtworkResult: "Appearance restored. Icons: {icons}. Covers: {covers}. Errors: {count}.",
+  buildinArtworkComplete: "Appearance restoration complete",
+  buildinArtworkCounts: "Icons: {icons}. Covers: {covers}.",
+  buildinArtworkErrorCount: "Errors: {count}",
+  buildinArtworkErrors: "View errors",
+  buildinArtworkPageError: "Could not restore the cover and icon. {reason}",
+  buildinArtworkItemError: "{role}. {reason}",
+  buildinArtworkProgress: "Notes processed: {current}/{total}",
+  buildinArtworkWriteError: "Could not save the appearance in Obsidian.",
+  buildinNoteMissing: "The imported note was moved, replaced, or deleted.",
+  buildinImportCancelled: "The operation was interrupted when the dialog closed.",
+  buildinSaveStateError: "Could not save the import history in NaitFlow settings.",
+  buildinCreateStep: "Choose New integration \u2192 External application.",
+  buildinAccessStep: "Configure the integration",
+  buildinApplicationName: "Application name",
+  buildinRedirectStep: "Redirect URI",
+  buildinCopyAddress: "Copy",
+  buildinReadOnlyStep: "Read content",
+  buildinCreateApplication: "Click Create application.",
+  buildinConnectStep: "Connect the integration",
+  buildinClientId: "Client ID",
+  buildinClientSecret: "Client Secret",
+  buildinAuthorize: "Connect integration",
+  buildinCheckPage: "Check page",
+  buildinCredentialsRequired: "Enter the Client ID and Client Secret from your Buildin integration.",
+  buildinAuthorizing: "Waiting for authorization in the browser\u2026",
+  buildinAuthorized: "Integration connected. Enter a Buildin page link and click Check page.",
+  buildinChecking: "Reading the Buildin page\u2026",
+  buildinInvalidPage: "Enter a Buildin page link or its ID.",
+  buildinPageChecked: "\u2713 Page checked",
+  buildinIconNotImported: "Icon could not be downloaded",
+  buildinCoverNotImported: "Cover could not be downloaded",
+  buildinImportLog: "Import log",
+  buildinImportLogEmpty: "Requests and import steps will appear here.",
+  buildinMediaUnavailable: "could not download",
+  buildinMediaHttp: "image server returned HTTP {status}",
+  buildinMediaNoUrl: "Buildin did not provide a usable image URL",
+  buildinMediaTimeout: "download timed out",
+  buildinMediaFormat: "server did not return a supported image",
+  buildinMediaSize: "image exceeds 20 MB",
+  buildinDesktopOnly: "Buildin authorization is available in desktop Obsidian.",
+  buildinNetworkError: "Could not reach Buildin.",
+  buildinHttpError: "Buildin returned HTTP {status}. Check the integration and page access.",
+  buildinRateLimited: "Buildin is temporarily limiting requests (HTTP 429). See the import log.",
+  buildinRetryWaiting: "Retry in {seconds} s.",
+  buildinInvalidResponse: "Buildin returned an unexpected response.",
+  buildinOAuthDenied: "Buildin authorization was not completed.",
+  buildinOAuthTimeout: "Authorization expired. Try again.",
+  buildinOAuthReturn: "Authorization code received. You can return to Obsidian.",
+  buildinPortError: "Could not open port 8765. Close any other Buildin authorization window and try again.",
+  buildinBrowserError: "Could not open the browser for Buildin authorization.",
+  buildinSourcePage: "Buildin page link",
+  otherSettings: "Other settings",
   notionImport: "From Notion (API)",
   notionLimitations: "Import details",
   notionImportDesc: "Transfer a page and its subpages directly, with icons, covers, and attachments.",
@@ -148,7 +217,9 @@ var EN = {
   importVisualMissing: "Page icons and covers are not included in this export format.",
   importDuplicatesWarning: "{count} duplicate page name(s) will receive a numeric suffix.",
   importBrokenLinksWarning: "{count} link(s) point to files that are missing from the archive.",
-  importRemoteCovers: "{count} Notion cover(s) are stored as external links.",
+  importRemoteCovers: "External covers: {count}",
+  importRemoteCoversDetails: "NaitFlow will try to save these images in the import folder. An internet connection is required. If a download fails, the original link stays in the note.",
+  importCoverSummary: "Covers saved locally: {saved}. Kept as links: {linked}.",
   importComplete: "Import complete",
   importCompleteSummary: "Imported {pages} page(s) and {attachments} attachment(s).",
   importUnknownFormat: "NaitFlow: this ZIP is not a supported Notion or Buildin AI export.",
@@ -177,6 +248,12 @@ var EN = {
   movePagePlaceholder: "Choose destination folder\u2026",
   movePageFailed: "NaitFlow: could not move page \u2014 {error}",
   movePageInvalid: "A page cannot be moved into its own folder.",
+  movePageConflict: "A page or folder with that name already exists there.",
+  movePageBusy: "Another page is being moved. Try again when it finishes.",
+  movePageRollbackFailed: "NaitFlow: the page folder could not be moved and the note could not be put back. Check both locations.",
+  movePageMetadataFailed: "NaitFlow: the page moved, but some page references or media paths could not be updated.",
+  subpageLinkFailed: "NaitFlow: could not add the subpage link to the parent note.",
+  pageOrderSaveFailed: "NaitFlow: could not save the page order.",
   copyPath: "Copy path",
   showInExplorer: "Show in File Explorer",
   showInExplorerFailed: "NaitFlow: could not open File Explorer.",
@@ -247,6 +324,10 @@ var EN = {
   symbols: "Symbols",
   flags: "Flags",
   myCovers: "My covers",
+  nasaSpaceXGallery: "NASA & SpaceX",
+  nasaSpaceXCover: "NASA & SpaceX cover {number}",
+  buildinCoverGallery: "Buildin AI",
+  buildinGalleryCover: "Buildin AI cover {number}",
   colorGradient: "Color & gradient",
   pluginFolderMissing: "plugin folder not found",
   builtInCoverFailed: "NaitFlow: could not install built-in cover \u2014 {error}",
@@ -272,6 +353,75 @@ var EN = {
   artemisSlsLaunch: "Artemis II \u2014 SLS launch"
 };
 var RU = {
+  buildinImport: "\u0418\u0437 Buildin (API)",
+  buildinImportDesc: "\u0418\u043C\u043F\u043E\u0440\u0442 Markdown-\u0430\u0440\u0445\u0438\u0432\u0430 \u0441 \u0432\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u0438\u0435\u043C \u043E\u0431\u043B\u043E\u0436\u0435\u043A \u0438 \u0438\u043A\u043E\u043D\u043E\u043A \u0447\u0435\u0440\u0435\u0437 API.",
+  buildinZipStage: "1. \u0418\u043C\u043F\u043E\u0440\u0442 ZIP-\u0430\u0440\u0445\u0438\u0432\u0430",
+  buildinZipStageDesc: "\u0422\u0435\u043A\u0441\u0442, \u0444\u043E\u0442\u043E, \u0444\u0430\u0439\u043B\u044B",
+  buildinZipNoArchive: "\u0410\u0440\u0445\u0438\u0432 \u043D\u0435 \u0432\u044B\u0431\u0440\u0430\u043D",
+  buildinZipInvalid: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 ZIP-\u0430\u0440\u0445\u0438\u0432 Buildin \u0441 .md-\u0444\u0430\u0439\u043B\u0430\u043C\u0438 (Markdown).",
+  buildinZipProgress: "\u0418\u043C\u043F\u043E\u0440\u0442 ZIP: {current}/{total} \u0437\u0430\u043C\u0435\u0442\u043E\u043A \u0438 \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0439",
+  buildinZipComplete: "ZIP \u0438\u043C\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D. \u0417\u0430\u043C\u0435\u0442\u043E\u043A: {pages}. \u0412\u043B\u043E\u0436\u0435\u043D\u0438\u0439: {attachments}.",
+  buildinAwaitZip: "\u042D\u0442\u0430\u043F \u0441\u0442\u0430\u043D\u0435\u0442 \u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D \u043F\u043E\u0441\u043B\u0435 \u0438\u043C\u043F\u043E\u0440\u0442\u0430 ZIP.",
+  buildinAwaitIntegration: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u0435 \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044E \u0434\u043B\u044F \u0434\u043E\u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 \u043E\u0431\u043B\u043E\u0436\u0435\u043A \u0438 \u0438\u043A\u043E\u043D\u043E\u043A.",
+  buildinArtworkStage: "2. \u0417\u0430\u0433\u0440\u0443\u0437\u043A\u0430 \u043E\u0431\u043B\u043E\u0436\u0435\u043A \u0438 \u0438\u043A\u043E\u043D\u043E\u043A \u0447\u0435\u0440\u0435\u0437 API",
+  buildinArtworkSourceHelp: "\u0423\u043A\u0430\u0436\u0438\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0438\u0437 \u0430\u0440\u0445\u0438\u0432\u0430, \u0447\u0442\u043E\u0431\u044B \u043F\u0440\u043E\u0432\u0435\u0440\u0438\u0442\u044C \u0434\u043E\u0441\u0442\u0443\u043F \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438.",
+  buildinPageNotInArchive: "\u042D\u0442\u043E\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u043D\u0435\u0442 \u0432 \u0438\u043C\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u043C \u0430\u0440\u0445\u0438\u0432\u0435. \u0423\u043A\u0430\u0436\u0438\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0438\u0437 \u044D\u0442\u043E\u0433\u043E ZIP.",
+  buildinArtworkStart: "\u0414\u043E\u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043E\u0444\u043E\u0440\u043C\u043B\u0435\u043D\u0438\u0435",
+  buildinArtworkApplying: "\u0414\u043E\u0437\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043C \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u0438 \u0438\u043A\u043E\u043D\u043A\u0438\u2026",
+  buildinAppearanceProgress: "\u041E\u0444\u043E\u0440\u043C\u043B\u0435\u043D\u0438\u0435 {current}/{total}: {title}",
+  buildinArtworkResult: "\u0414\u043E\u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430. \u0418\u043A\u043E\u043D\u043E\u043A: {icons}. \u041E\u0431\u043B\u043E\u0436\u0435\u043A: {covers}. \u041E\u0448\u0438\u0431\u043E\u043A: {count}.",
+  buildinArtworkComplete: "\u0414\u043E\u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0430 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430",
+  buildinArtworkCounts: "\u0418\u043A\u043E\u043D\u043E\u043A: {icons}. \u041E\u0431\u043B\u043E\u0436\u0435\u043A: {covers}.",
+  buildinArtworkErrorCount: "\u041E\u0448\u0438\u0431\u043E\u043A: {count}",
+  buildinArtworkErrors: "\u041F\u043E\u0441\u043C\u043E\u0442\u0440\u0435\u0442\u044C \u043E\u0448\u0438\u0431\u043A\u0438",
+  buildinArtworkPageError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0432\u043E\u0441\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u043E\u0431\u043B\u043E\u0436\u043A\u0443 \u0438 \u0438\u043A\u043E\u043D\u043A\u0443. {reason}",
+  buildinArtworkItemError: "{role}. {reason}",
+  buildinArtworkProgress: "\u041E\u0431\u0440\u0430\u0431\u043E\u0442\u0430\u043D\u043E \u0437\u0430\u043C\u0435\u0442\u043E\u043A: {current}/{total}",
+  buildinArtworkWriteError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u043E\u0444\u043E\u0440\u043C\u043B\u0435\u043D\u0438\u0435 \u0432 Obsidian.",
+  buildinNoteMissing: "\u0418\u043C\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0437\u0430\u043C\u0435\u0442\u043A\u0430 \u043F\u0435\u0440\u0435\u043C\u0435\u0449\u0435\u043D\u0430, \u0437\u0430\u043C\u0435\u043D\u0435\u043D\u0430 \u0438\u043B\u0438 \u0443\u0434\u0430\u043B\u0435\u043D\u0430.",
+  buildinImportCancelled: "\u041E\u043F\u0435\u0440\u0430\u0446\u0438\u044F \u043F\u0440\u0435\u0440\u0432\u0430\u043D\u0430 \u043F\u0440\u0438 \u0437\u0430\u043A\u0440\u044B\u0442\u0438\u0438 \u043E\u043A\u043D\u0430.",
+  buildinSaveStateError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0438\u0441\u0442\u043E\u0440\u0438\u044E \u0438\u043C\u043F\u043E\u0440\u0442\u0430 \u0432 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430\u0445 NaitFlow.",
+  buildinCreateStep: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \xAB\u041D\u043E\u0432\u0430\u044F \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044F\xBB \u2192 \xAB\u0412\u043D\u0435\u0448\u043D\u0435\u0435 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435\xBB.",
+  buildinAccessStep: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0430 \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438",
+  buildinApplicationName: "\u0418\u043C\u044F \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F",
+  buildinRedirectStep: "URI \u043F\u0435\u0440\u0435\u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F",
+  buildinCopyAddress: "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C",
+  buildinReadOnlyStep: "\u0427\u0438\u0442\u0430\u0442\u044C \u0441\u043E\u0434\u0435\u0440\u0436\u0438\u043C\u043E\u0435",
+  buildinCreateApplication: "\u041D\u0430\u0436\u043C\u0438\u0442\u0435 \xAB\u0421\u043E\u0437\u0434\u0430\u0442\u044C \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435\xBB.",
+  buildinConnectStep: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u0435 \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438",
+  buildinClientId: "ID \u043A\u043B\u0438\u0435\u043D\u0442\u0430",
+  buildinClientSecret: "\u0421\u0435\u043A\u0440\u0435\u0442 \u043A\u043B\u0438\u0435\u043D\u0442\u0430",
+  buildinAuthorize: "\u041F\u043E\u0434\u043A\u043B\u044E\u0447\u0438\u0442\u044C \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044E",
+  buildinCheckPage: "\u041F\u0440\u043E\u0432\u0435\u0440\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443",
+  buildinCredentialsRequired: "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 ID \u0438 \u0441\u0435\u043A\u0440\u0435\u0442 \u043A\u043B\u0438\u0435\u043D\u0442\u0430 \u0438\u0437 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043A \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 Buildin.",
+  buildinAuthorizing: "\u041E\u0436\u0438\u0434\u0430\u0435\u043C \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044E \u0432 \u0431\u0440\u0430\u0443\u0437\u0435\u0440\u0435\u2026",
+  buildinAuthorized: "\u0418\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044F \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0430. \u0423\u043A\u0430\u0436\u0438\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 Buildin \u0438 \u043D\u0430\u0436\u043C\u0438\u0442\u0435 \xAB\u041F\u0440\u043E\u0432\u0435\u0440\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443\xBB.",
+  buildinChecking: "\u0427\u0442\u0435\u043D\u0438\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B Buildin\u2026",
+  buildinInvalidPage: "\u0423\u043A\u0430\u0436\u0438\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 Buildin \u0438\u043B\u0438 \u0435\u0451 ID.",
+  buildinPageChecked: "\u2713 \u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u043F\u0440\u043E\u0432\u0435\u0440\u0435\u043D\u0430",
+  buildinIconNotImported: "\u0418\u043A\u043E\u043D\u043A\u0443 \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u0430\u0447\u0430\u0442\u044C",
+  buildinCoverNotImported: "\u041E\u0431\u043B\u043E\u0436\u043A\u0443 \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u0430\u0447\u0430\u0442\u044C",
+  buildinImportLog: "\u0416\u0443\u0440\u043D\u0430\u043B \u0438\u043C\u043F\u043E\u0440\u0442\u0430",
+  buildinImportLogEmpty: "\u0417\u0434\u0435\u0441\u044C \u043F\u043E\u044F\u0432\u044F\u0442\u0441\u044F \u0437\u0430\u043F\u0440\u043E\u0441\u044B \u0438 \u0448\u0430\u0433\u0438 \u0438\u043C\u043F\u043E\u0440\u0442\u0430.",
+  buildinMediaUnavailable: "\u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u0430\u0447\u0430\u0442\u044C",
+  buildinMediaHttp: "\u0441\u0435\u0440\u0432\u0435\u0440 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F \u0432\u0435\u0440\u043D\u0443\u043B HTTP {status}",
+  buildinMediaNoUrl: "Buildin \u043D\u0435 \u043F\u0435\u0440\u0435\u0434\u0430\u043B \u043F\u0440\u0438\u0433\u043E\u0434\u043D\u044B\u0439 \u0430\u0434\u0440\u0435\u0441 \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u044F",
+  buildinMediaTimeout: "\u0432\u0440\u0435\u043C\u044F \u0441\u043A\u0430\u0447\u0438\u0432\u0430\u043D\u0438\u044F \u0438\u0441\u0442\u0435\u043A\u043B\u043E",
+  buildinMediaFormat: "\u0441\u0435\u0440\u0432\u0435\u0440 \u043D\u0435 \u0432\u0435\u0440\u043D\u0443\u043B \u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0435 \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u043C\u043E\u0433\u043E \u0444\u043E\u0440\u043C\u0430\u0442\u0430",
+  buildinMediaSize: "\u0438\u0437\u043E\u0431\u0440\u0430\u0436\u0435\u043D\u0438\u0435 \u0431\u043E\u043B\u044C\u0448\u0435 20 \u041C\u0411",
+  buildinDesktopOnly: "\u0410\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F Buildin \u0434\u043E\u0441\u0442\u0443\u043F\u043D\u0430 \u0432 \u043D\u0430\u0441\u0442\u043E\u043B\u044C\u043D\u043E\u043C Obsidian.",
+  buildinNetworkError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u0432\u044F\u0437\u0430\u0442\u044C\u0441\u044F \u0441 Buildin.",
+  buildinHttpError: "Buildin \u0432\u0435\u0440\u043D\u0443\u043B HTTP {status}. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0438\u043D\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044E \u0438 \u0434\u043E\u0441\u0442\u0443\u043F \u043A \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0435.",
+  buildinRateLimited: "Buildin \u0432\u0440\u0435\u043C\u0435\u043D\u043D\u043E \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0438\u043B \u0447\u0430\u0441\u0442\u043E\u0442\u0443 \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432 (HTTP 429). \u0421\u043C. \u0436\u0443\u0440\u043D\u0430\u043B \u0438\u043C\u043F\u043E\u0440\u0442\u0430.",
+  buildinRetryWaiting: "\u041F\u043E\u0432\u0442\u043E\u0440 \u0447\u0435\u0440\u0435\u0437 {seconds} \u0441.",
+  buildinInvalidResponse: "Buildin \u0432\u0435\u0440\u043D\u0443\u043B \u043D\u0435\u043E\u0436\u0438\u0434\u0430\u043D\u043D\u044B\u0439 \u043E\u0442\u0432\u0435\u0442.",
+  buildinOAuthDenied: "\u0410\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F Buildin \u043D\u0435 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0430.",
+  buildinOAuthTimeout: "\u0412\u0440\u0435\u043C\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u0438 \u0438\u0441\u0442\u0435\u043A\u043B\u043E. \u041F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u0435\u0449\u0451 \u0440\u0430\u0437.",
+  buildinOAuthReturn: "\u041A\u043E\u0434 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u0438 \u043F\u043E\u043B\u0443\u0447\u0435\u043D. \u041C\u043E\u0436\u043D\u043E \u0432\u0435\u0440\u043D\u0443\u0442\u044C\u0441\u044F \u0432 Obsidian.",
+  buildinPortError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u043F\u043E\u0440\u0442 8765. \u0417\u0430\u043A\u0440\u043E\u0439\u0442\u0435 \u0434\u0440\u0443\u0433\u043E\u0435 \u043E\u043A\u043D\u043E \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u0438 Buildin \u0438 \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u0441\u043D\u043E\u0432\u0430.",
+  buildinBrowserError: "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u0431\u0440\u0430\u0443\u0437\u0435\u0440 \u0434\u043B\u044F \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u0438 Buildin.",
+  buildinSourcePage: "\u0421\u0441\u044B\u043B\u043A\u0430 \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 Buildin",
+  otherSettings: "\u041E\u0441\u0442\u0430\u043B\u044C\u043D\u044B\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438",
   notionImport: "\u0418\u0437 Notion (API)",
   notionLimitations: "\u041F\u043E\u0434\u0440\u043E\u0431\u043D\u043E\u0441\u0442\u0438 \u0438\u043C\u043F\u043E\u0440\u0442\u0430",
   notionImportDesc: "\u041F\u0435\u0440\u0435\u043D\u043E\u0441 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0438 \u043F\u043E\u0434\u0441\u0442\u0440\u0430\u043D\u0438\u0446 \u043D\u0430\u043F\u0440\u044F\u043C\u0443\u044E: \u0441 \u0438\u043A\u043E\u043D\u043A\u0430\u043C\u0438, \u043E\u0431\u043B\u043E\u0436\u043A\u0430\u043C\u0438 \u0438 \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u044F\u043C\u0438.",
@@ -387,7 +537,9 @@ var RU = {
   importVisualMissing: "\u0418\u043A\u043E\u043D\u043A\u0438 \u0438 \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u0441\u0442\u0440\u0430\u043D\u0438\u0446 \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044E\u0442 \u0432 \u044D\u0442\u043E\u043C \u0444\u043E\u0440\u043C\u0430\u0442\u0435 \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0430.",
   importDuplicatesWarning: "\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0441 \u043E\u0434\u0438\u043D\u0430\u043A\u043E\u0432\u044B\u043C\u0438 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u044F\u043C\u0438 \u043F\u043E\u043B\u0443\u0447\u0430\u0442 \u0447\u0438\u0441\u043B\u043E\u0432\u043E\u0439 \u0441\u0443\u0444\u0444\u0438\u043A\u0441: {count}.",
   importBrokenLinksWarning: "\u0421\u0441\u044B\u043B\u043A\u0438 \u0432\u0435\u0434\u0443\u0442 \u043D\u0430 \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u0435 \u0432 \u0430\u0440\u0445\u0438\u0432\u0435 \u0444\u0430\u0439\u043B\u044B: {count}.",
-  importRemoteCovers: "\u041E\u0431\u043B\u043E\u0436\u043A\u0438 Notion \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B \u043A\u0430\u043A \u0432\u043D\u0435\u0448\u043D\u0438\u0435 \u0441\u0441\u044B\u043B\u043A\u0438: {count}.",
+  importRemoteCovers: "\u0412\u043D\u0435\u0448\u043D\u0438\u0435 \u043E\u0431\u043B\u043E\u0436\u043A\u0438: {count}",
+  importRemoteCoversDetails: "\u041F\u0440\u0438 \u0438\u043C\u043F\u043E\u0440\u0442\u0435 NaitFlow \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0435\u0442 \u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u0432 \u043F\u0430\u043F\u043A\u0443 \u0438\u043C\u043F\u043E\u0440\u0442\u0430. \u0414\u043B\u044F \u044D\u0442\u043E\u0433\u043E \u043D\u0443\u0436\u0435\u043D \u0438\u043D\u0442\u0435\u0440\u043D\u0435\u0442. \u0415\u0441\u043B\u0438 \u043E\u0431\u043B\u043E\u0436\u043A\u0430 \u043D\u0435 \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u0441\u044F, \u0432 \u0437\u0430\u043C\u0435\u0442\u043A\u0435 \u043E\u0441\u0442\u0430\u043D\u0435\u0442\u0441\u044F \u0438\u0441\u0445\u043E\u0434\u043D\u0430\u044F \u0441\u0441\u044B\u043B\u043A\u0430.",
+  importCoverSummary: "\u041E\u0431\u043B\u043E\u0436\u043A\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B \u043B\u043E\u043A\u0430\u043B\u044C\u043D\u043E: {saved}. \u041E\u0441\u0442\u0430\u043B\u0438\u0441\u044C \u043F\u043E \u0441\u0441\u044B\u043B\u043A\u0430\u043C: {linked}.",
   importComplete: "\u0418\u043C\u043F\u043E\u0440\u0442 \u0437\u0430\u0432\u0435\u0440\u0448\u0451\u043D",
   importCompleteSummary: "\u0418\u043C\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043E \u0441\u0442\u0440\u0430\u043D\u0438\u0446: {pages}; \u0432\u043B\u043E\u0436\u0435\u043D\u0438\u0439: {attachments}.",
   importUnknownFormat: "NaitFlow: \u044D\u0442\u043E\u0442 ZIP \u043D\u0435 \u043F\u043E\u0445\u043E\u0436 \u043D\u0430 \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u043C\u044B\u0439 \u044D\u043A\u0441\u043F\u043E\u0440\u0442 Notion \u0438\u043B\u0438 Buildin AI.",
@@ -443,6 +595,10 @@ var RU = {
   symbols: "\u0421\u0438\u043C\u0432\u043E\u043B\u044B",
   flags: "\u0424\u043B\u0430\u0433\u0438",
   myCovers: "\u041C\u043E\u0438 \u043E\u0431\u043B\u043E\u0436\u043A\u0438",
+  nasaSpaceXGallery: "NASA & SpaceX",
+  nasaSpaceXCover: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430 NASA & SpaceX {number}",
+  buildinCoverGallery: "Buildin AI",
+  buildinGalleryCover: "\u041E\u0431\u043B\u043E\u0436\u043A\u0430 Buildin AI {number}",
   colorGradient: "\u0426\u0432\u0435\u0442 \u0438 \u0433\u0440\u0430\u0434\u0438\u0435\u043D\u0442",
   pluginFolderMissing: "\u043A\u0430\u0442\u0430\u043B\u043E\u0433 \u043F\u043B\u0430\u0433\u0438\u043D\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D",
   builtInCoverFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u044C \u0432\u0441\u0442\u0440\u043E\u0435\u043D\u043D\u0443\u044E \u043E\u0431\u043B\u043E\u0436\u043A\u0443 \u2014 {error}",
@@ -478,6 +634,12 @@ var RU = {
   movePagePlaceholder: "\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u0430\u043F\u043A\u0443 \u043D\u0430\u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F\u2026",
   movePageFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u2014 {error}",
   movePageInvalid: "\u041D\u0435\u043B\u044C\u0437\u044F \u043F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0432 \u0435\u0451 \u0441\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u0443\u044E \u043F\u0430\u043F\u043A\u0443.",
+  movePageConflict: "\u0412 \u044D\u0442\u043E\u043C \u043C\u0435\u0441\u0442\u0435 \u0443\u0436\u0435 \u0435\u0441\u0442\u044C \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u0438\u043B\u0438 \u043F\u0430\u043F\u043A\u0430 \u0441 \u0442\u0430\u043A\u0438\u043C \u0438\u043C\u0435\u043D\u0435\u043C.",
+  movePageBusy: "\u0421\u0435\u0439\u0447\u0430\u0441 \u043F\u0435\u0440\u0435\u043C\u0435\u0449\u0430\u0435\u0442\u0441\u044F \u0434\u0440\u0443\u0433\u0430\u044F \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430. \u041F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u043F\u043E\u0441\u043B\u0435 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0438\u044F.",
+  movePageRollbackFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u0435\u0440\u0435\u043C\u0435\u0441\u0442\u0438\u0442\u044C \u043F\u0430\u043F\u043A\u0443 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B \u0438 \u0432\u0435\u0440\u043D\u0443\u0442\u044C \u0437\u0430\u043C\u0435\u0442\u043A\u0443 \u043E\u0431\u0440\u0430\u0442\u043D\u043E. \u041F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u043E\u0431\u0430 \u043C\u0435\u0441\u0442\u0430.",
+  movePageMetadataFailed: "NaitFlow: \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u043F\u0435\u0440\u0435\u043C\u0435\u0449\u0435\u043D\u0430, \u043D\u043E \u043D\u0435\u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0441\u0441\u044B\u043B\u043A\u0438 \u043D\u0430 \u0440\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0435 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B, \u043E\u0431\u043B\u043E\u0436\u043A\u0438 \u0438\u043B\u0438 \u0438\u043A\u043E\u043D\u043A\u0438 \u043D\u0435 \u043E\u0431\u043D\u043E\u0432\u0438\u043B\u0438\u0441\u044C.",
+  subpageLinkFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u043F\u043E\u0434\u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0443 \u0432 \u0440\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u0441\u043A\u0443\u044E \u0437\u0430\u043C\u0435\u0442\u043A\u0443.",
+  pageOrderSaveFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u043F\u043E\u0440\u044F\u0434\u043E\u043A \u0441\u0442\u0440\u0430\u043D\u0438\u0446.",
   copyPath: "\u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u043F\u0443\u0442\u044C",
   showInExplorer: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C \u0432 \u041F\u0440\u043E\u0432\u043E\u0434\u043D\u0438\u043A\u0435",
   showInExplorerFailed: "NaitFlow: \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043E\u0442\u043A\u0440\u044B\u0442\u044C \u041F\u0440\u043E\u0432\u043E\u0434\u043D\u0438\u043A.",
@@ -958,6 +1120,8 @@ function errorMessage(error) {
 
 // src/cover-picker.ts
 var NASA_ARCHIVE_COVER_ROOT = "presets/covers/nasa";
+var NASA_SPACEX_COVER_ROOT = "presets/covers/nasa-spacex";
+var BUILDIN_COVER_ROOT = "presets/covers/buildin-ai";
 var ARTEMIS_COVER_ROOT = "presets/covers/artemis-ii";
 var WEBB_COVER_ROOT = "presets/covers/webb";
 var MET_HUDSON_COVER_ROOT = "presets/covers/met-hudson";
@@ -1001,6 +1165,14 @@ var NASA_ARCHIVE_COVERS = [
   { file: "nasa-sls-night-launch.jpg", title: t("nightSlsLaunch") },
   { file: "nasa-blue-marble.jpg", title: "Blue Marble" }
 ];
+var NASA_SPACEX_COVERS = Array.from({ length: 16 }, (_, index) => ({
+  file: `photo${index + 1}.jpeg`,
+  title: t("nasaSpaceXCover", { number: index + 1 })
+}));
+var BUILDIN_COVERS = Array.from({ length: 9 }, (_, index) => ({
+  file: `flowus${index + 3}.png`,
+  title: t("buildinGalleryCover", { number: index + 3 })
+}));
 var MET_HUDSON_COVERS = [
   { file: "hudson-river-scene-kensett.jpg", title: "Hudson River Scene \u2014 John Frederick Kensett" },
   { file: "river-scene-durand.jpg", title: "River Scene \u2014 Asher Brown Durand" },
@@ -1108,6 +1280,8 @@ var CoverPickerModal = class extends import_obsidian4.Modal {
     this.renderBuiltInGroup(parent, "Artemis II", "https://www.nasa.gov/mission/artemis-ii/", ARTEMIS_COVER_ROOT, ARTEMIS_COVERS);
     this.renderBuiltInGroup(parent, "James Webb Telescope", "https://science.nasa.gov/mission/webb/", WEBB_COVER_ROOT, WEBB_COVERS);
     this.renderBuiltInGroup(parent, "NASA Archive", "https://www.flickr.com/photos/nasacommons/", NASA_ARCHIVE_COVER_ROOT, NASA_ARCHIVE_COVERS);
+    this.renderBuiltInGroup(parent, t("nasaSpaceXGallery"), "https://buildin.ai/", NASA_SPACEX_COVER_ROOT, NASA_SPACEX_COVERS);
+    this.renderBuiltInGroup(parent, t("buildinCoverGallery"), "https://buildin.ai/", BUILDIN_COVER_ROOT, BUILDIN_COVERS);
     this.renderBuiltInGroup(parent, "The MET Museum \xB7 Japanese Prints", "https://www.metmuseum.org/art/collection", MET_JAPANESE_COVER_ROOT, MET_JAPANESE_COVERS);
     this.renderBuiltInGroup(parent, "The MET Museum \xB7 Hudson River School", "https://www.metmuseum.org/art/collection", MET_HUDSON_COVER_ROOT, MET_HUDSON_COVERS);
   }
@@ -10661,8 +10835,13 @@ var LoadedArchive = class _LoadedArchive {
   readers = [];
   static async open(file) {
     const archive = new _LoadedArchive();
-    await archive.readZip(file);
-    return archive;
+    try {
+      await archive.readZip(file);
+      return archive;
+    } catch (error) {
+      await archive.close();
+      throw error;
+    }
   }
   async close() {
     await Promise.all(this.readers.map(async (reader) => {
@@ -10688,6 +10867,7 @@ var LoadedArchive = class _LoadedArchive {
     }
   }
 };
+var BUILDIN_ID_FIELD = "naitflow-buildin-id";
 var ImportDownloadError = class extends Error {
   constructor(reason, status) {
     super(`notion-media-${reason}`);
@@ -10695,14 +10875,58 @@ var ImportDownloadError = class extends Error {
     this.status = status;
   }
 };
+var coverExtensions = /* @__PURE__ */ new Map([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
+  ["image/gif", "gif"],
+  ["image/avif", "avif"],
+  ["image/svg+xml", "svg"],
+  ["image/bmp", "bmp"],
+  ["image/x-icon", "ico"],
+  ["image/vnd.microsoft.icon", "ico"]
+]);
+async function downloadImportImage(source2, options) {
+  let timer;
+  try {
+    const url = new URL(source2);
+    if (url.username || url.password || !/^https?:$/.test(url.protocol)) return { kind: "url" };
+    const response = await Promise.race([
+      (0, import_obsidian5.requestUrl)({ url: url.href, throw: false }),
+      new Promise((resolve) => {
+        timer = setTimeout(resolve, 8e3);
+      })
+    ]);
+    if (!response) return { kind: "timeout" };
+    if (response.status !== 200) return { kind: "http", status: response.status };
+    const contentType = Object.entries(response.headers).find(([key]) => key.toLowerCase() === "content-type")?.[1].split(";")[0]?.trim().toLowerCase() ?? "";
+    const bytes = response.arrayBuffer;
+    let extension2 = coverExtensions.get(contentType);
+    if (options?.detectRasterFormat && (!contentType || contentType === "application/octet-stream" || contentType === "binary/octet-stream")) {
+      const header = new Uint8Array(bytes, 0, Math.min(8, bytes.byteLength));
+      if (header[0] === 255 && header[1] === 216 && header[2] === 255) extension2 = "jpg";
+      if ([137, 80, 78, 71, 13, 10, 26, 10].every((byte, index) => header[index] === byte)) extension2 = "png";
+    }
+    if (!extension2 || !bytes.byteLength) {
+      return { kind: "format", contentType: /^[a-z0-9.+-]{1,40}\/[a-z0-9.+-]{1,50}$/.test(contentType) ? contentType : "", byteLength: bytes.byteLength };
+    }
+    if (bytes.byteLength > 20 * 1024 * 1024) return { kind: "size" };
+    return { kind: "saved", bytes, extension: extension2 };
+  } catch {
+    return { kind: "network" };
+  } finally {
+    clearTimeout(timer);
+  }
+}
 var NaitFlowImportPlan = class {
   constructor(app, archive, format, sourceName, pages, attachments, renamedCount, unresolvedLinksCount, checkActive = () => {
-  }) {
+  }, recordBuildinIds = false) {
     this.app = app;
     this.archive = archive;
     this.pages = pages;
     this.attachments = attachments;
     this.checkActive = checkActive;
+    this.recordBuildinIds = recordBuildinIds;
     this.format = format;
     this.sourceName = sourceName;
     this.pagesCount = pages.length;
@@ -10710,14 +10934,21 @@ var NaitFlowImportPlan = class {
     this.renamedCount = renamedCount;
     this.unresolvedLinksCount = unresolvedLinksCount;
     this.iconsCount = pages.filter((page) => page.icon).length;
-    this.coversCount = pages.filter((page) => page.cover).length;
-    this.defaultDestination = uniqueImportName(app, "_import");
+    this.remoteCoversCount = pages.filter((page) => /^https?:\/\//i.test(page.cover ?? "")).length;
+    const destination = format === "notion-api" ? "_import" : `_import_${format.replace("-", "_")}`;
+    this.defaultDestination = uniqueImportName(app, destination);
     for (const page of pages) {
       this.pageById.set(page.sourceId, page);
       this.pageBySourcePath.set(sourceKey(page.sourcePath), page);
     }
     for (const attachment of attachments) {
-      this.attachmentBySourcePath.set(sourceKey(attachment.sourcePath), attachment);
+      const key = sourceKey(attachment.sourcePath);
+      if (!this.attachmentBySourcePath.has(key)) this.attachmentBySourcePath.set(key, attachment);
+      if (attachment.owner) {
+        const owned = this.attachmentsByPage.get(attachment.owner) ?? /* @__PURE__ */ new Map();
+        owned.set(key, attachment);
+        this.attachmentsByPage.set(attachment.owner, owned);
+      }
     }
   }
   format;
@@ -10728,10 +10959,11 @@ var NaitFlowImportPlan = class {
   renamedCount;
   unresolvedLinksCount;
   iconsCount;
-  coversCount;
+  remoteCoversCount;
   pageById = /* @__PURE__ */ new Map();
   pageBySourcePath = /* @__PURE__ */ new Map();
   attachmentBySourcePath = /* @__PURE__ */ new Map();
+  attachmentsByPage = /* @__PURE__ */ new Map();
   async close() {
     await this.archive.close();
   }
@@ -10741,6 +10973,21 @@ var NaitFlowImportPlan = class {
     if (!requestedName) throw new Error("destination-empty");
     if (this.format === "notion-api") return this.executeNotion(requestedName, onProgress);
     const destination = uniqueImportName(this.app, requestedName);
+    const created = this.recordBuildinIds ? [] : void 0;
+    try {
+      return await this.executeArchive(destination, onProgress, created);
+    } catch (error) {
+      for (const item of created?.reverse() ?? []) {
+        if (this.app.vault.getAbstractFileByPath(item.path) !== item || item instanceof import_obsidian5.TFolder && item.children.length) continue;
+        try {
+          await this.app.vault.delete(item);
+        } catch {
+        }
+      }
+      throw error;
+    }
+  }
+  async executeArchive(destination, onProgress, created) {
     const folders = /* @__PURE__ */ new Set([destination]);
     for (const page of this.pages) {
       const target = (0, import_obsidian5.normalizePath)(`${destination}/${page.targetPath}`);
@@ -10752,29 +10999,81 @@ var NaitFlowImportPlan = class {
       const parent = dirname(target);
       if (parent) folders.add(parent);
     }
-    for (const folder of [...folders].sort((a, b) => pathDepth(a) - pathDepth(b))) {
-      await ensureFolder(this.app, folder);
+    if (created) {
+      for (const folder of folders) {
+        const parent = dirname(folder);
+        if (parent) folders.add(parent);
+      }
     }
-    await this.app.vault.create(`${destination}.md`, "");
+    for (const folder of [...folders].sort((a, b) => pathDepth(a) - pathDepth(b))) {
+      this.checkActive();
+      if (created) created.push(await this.app.vault.createFolder(folder));
+      else await ensureFolder(this.app, folder);
+    }
+    this.checkActive();
+    const root = await this.app.vault.create(`${destination}.md`, "");
+    created?.push(root);
     const total = this.pages.length + this.attachments.length;
     let current = 0;
+    const downloadedCovers = /* @__PURE__ */ new Map();
+    const attachmentPaths = new Set(this.attachments.map(({ targetPath }) => sourceKey(targetPath)));
+    let savedCovers = 0;
+    let linkedCovers = 0;
     for (const page of this.pages) {
+      this.checkActive();
       onProgress({ current, total, label: page.title });
       const body = this.format === "notion-html" ? this.convertHtml(page, destination) : this.convertMarkdown(page, destination);
       const targetPath = (0, import_obsidian5.normalizePath)(`${destination}/${page.targetPath}`);
-      const created = await this.app.vault.create(targetPath, body);
-      await this.applyPageMeta(created, page, destination);
+      const file = await this.app.vault.create(targetPath, body);
+      created?.push(file);
+      let localCover;
+      if (this.format === "notion-html" && page.cover && /^https?:\/\//i.test(page.cover)) {
+        const cached = downloadedCovers.get(page.cover);
+        const image = cached ? { kind: "saved", bytes: await this.app.vault.readBinary(cached.file), extension: cached.extension } : downloadedCovers.has(page.cover) ? void 0 : await downloadImportImage(page.cover);
+        if (image?.kind === "saved") {
+          const folder = page.filesFolder ?? `${page.targetFolderPath}/_files`;
+          const name = `_cover.${image.extension}`;
+          let target = `${folder}/${name}`;
+          for (let suffix = 2; attachmentPaths.has(sourceKey(target)); suffix++) {
+            target = `${folder}/${appendFilenameSuffix(name, suffix)}`;
+          }
+          localCover = (0, import_obsidian5.normalizePath)(`${destination}/${target}`);
+          await ensureFolder(this.app, dirname(localCover));
+          const file2 = await this.app.vault.createBinary(localCover, image.bytes);
+          if (!cached) downloadedCovers.set(page.cover, { file: file2, extension: image.extension });
+          savedCovers++;
+        } else {
+          downloadedCovers.set(page.cover, void 0);
+          linkedCovers++;
+        }
+      }
+      await this.applyPageMeta(file, page, destination, localCover);
       current += 1;
       onProgress({ current, total, label: page.title });
     }
     for (const attachment of this.attachments) {
+      this.checkActive();
       onProgress({ current, total, label: basename(attachment.targetPath) });
       const targetPath = (0, import_obsidian5.normalizePath)(`${destination}/${attachment.targetPath}`);
-      await this.app.vault.createBinary(targetPath, await attachment.source.readBinary());
+      const bytes = await attachment.source.readBinary();
+      this.checkActive();
+      const file = await this.app.vault.createBinary(targetPath, bytes);
+      created?.push(file);
       current += 1;
       onProgress({ current, total, label: basename(attachment.targetPath) });
     }
-    return { destination, pages: this.pages.length, attachments: this.attachments.length };
+    this.checkActive();
+    const buildinNotes = this.recordBuildinIds ? this.pages.map((page) => ({
+      id: page.sourceId,
+      path: (0, import_obsidian5.normalizePath)(`${destination}/${page.targetPath}`)
+    })) : void 0;
+    return {
+      destination,
+      pages: this.pages.length,
+      attachments: this.attachments.length,
+      ...buildinNotes ? { buildinNotes } : {},
+      ...this.remoteCoversCount && this.format === "notion-html" ? { covers: { saved: savedCovers, linked: linkedCovers } } : {}
+    };
   }
   async executeNotion(destination, onProgress) {
     const rootId = this.pages[0]?.sourceId;
@@ -10867,15 +11166,17 @@ var NaitFlowImportPlan = class {
   convertMarkdown(page, destination) {
     let markdown = page.rawContent.replace(/\r\n?/g, "\n");
     if (this.format === "notion-md") markdown = removeMatchingTitle(markdown, page.title);
-    return rewriteOutsideFences(markdown, (chunk) => chunk.replace(
-      /(!?)\[([^\]]*)\]\(([^)\n]+)\)/g,
-      (original, embed2, label, rawTarget) => {
-        const target = cleanMarkdownTarget(rawTarget);
-        const resolved = this.resolveTarget(page, target);
-        if (!resolved) return original;
-        return renderResolvedLink(resolved, destination, label, embed2 === "!");
+    return rewriteOutsideFences(markdown, (chunk) => {
+      let result = "";
+      let copied = 0;
+      for (const link2 of markdownLinks(chunk)) {
+        const resolved = this.resolveTarget(page, cleanMarkdownTarget(link2.target));
+        if (!resolved) continue;
+        result += chunk.slice(copied, link2.from) + renderResolvedLink(resolved, destination, plainLinkLabel(link2.label), link2.embed, page.filesFolder);
+        copied = link2.to;
       }
-    )).trimEnd() + "\n";
+      return result + chunk.slice(copied);
+    }).trimEnd() + "\n";
   }
   convertHtml(page, destination) {
     const document2 = new DOMParser().parseFromString(page.rawContent, "text/html");
@@ -10888,11 +11189,12 @@ var NaitFlowImportPlan = class {
       tokens.set(token, value);
       return token;
     };
+    for (const icon of body.querySelectorAll(".link-to-page a[href] img.icon")) icon.remove();
     for (const image of Array.from(body.querySelectorAll("img[src]"))) {
       const source2 = image.getAttribute("src") ?? "";
       const resolved = this.resolveTarget(page, source2);
       if (!resolved) continue;
-      const replacement = document2.createTextNode(makeToken(renderResolvedLink(resolved, destination, image.alt, true)));
+      const replacement = document2.createTextNode(makeToken(renderResolvedLink(resolved, destination, image.alt, true, page.filesFolder)));
       const linked = image.closest("a");
       (linked ?? image).replaceWith(replacement);
     }
@@ -10901,46 +11203,53 @@ var NaitFlowImportPlan = class {
       const resolved = this.resolveTarget(page, href);
       if (!resolved) continue;
       const label = (link2.textContent ?? "").trim();
-      link2.replaceWith(document2.createTextNode(makeToken(renderResolvedLink(resolved, destination, label, false))));
+      link2.replaceWith(document2.createTextNode(makeToken(renderResolvedLink(resolved, destination, label, false, page.filesFolder))));
+    }
+    for (const span of body.querySelectorAll("span[style]")) {
+      if (span.style.borderBottomWidth !== "0.05em" || span.style.borderBottomStyle !== "solid") continue;
+      span.before(makeToken("<u>"));
+      span.after(makeToken("</u>"));
     }
     let markdown = (0, import_obsidian5.htmlToMarkdown)(body.innerHTML).replace(/\r\n?/g, "\n");
     for (const [token, value] of tokens) markdown = markdown.split(token).join(value);
     return markdown.trim() + "\n";
   }
   resolveTarget(page, rawTarget) {
-    const target = stripQueryAndHash(decodeSourcePath(rawTarget));
-    const id = knownIdInTarget(this.format === "notion-api" ? target.replace(/-/g, "") : target, this.pageById);
+    const target = decodeSourcePath(stripQueryAndHash(rawTarget));
+    const id = this.format === "buildin-md" ? buildinLinkId(target) : knownIdInTarget(this.format === "notion-api" ? target.replace(/-/g, "") : target, this.pageById);
     if (isExternalTarget(target)) {
-      const linkedPage2 = id ? this.pageById.get(id) : void 0;
-      return linkedPage2 ? { kind: "page", targetPath: linkedPage2.targetPath, page: linkedPage2 } : null;
+      const linkedPage = id ? this.pageById.get(id) : void 0;
+      return linkedPage ? { kind: "page", targetPath: linkedPage.targetPath, page: linkedPage } : null;
+    }
+    for (const path of sourceLinkKeys(page.sourcePath, rawTarget)) {
+      const linkedPage = this.pageBySourcePath.get(path);
+      if (linkedPage) return { kind: "page", targetPath: linkedPage.targetPath, page: linkedPage };
+      const attachment = this.attachmentsByPage.get(page)?.get(path) ?? this.attachmentBySourcePath.get(path);
+      if (attachment) return { kind: "attachment", targetPath: attachment.targetPath };
     }
     if (target.startsWith("#")) return null;
-    const resolvedPath = target.startsWith("/") ? normalizeSourcePath(target.slice(1)) : normalizeSourcePath(`${dirname(page.sourcePath)}/${target}`);
-    const linkedPage = this.pageBySourcePath.get(sourceKey(resolvedPath));
-    if (linkedPage) return { kind: "page", targetPath: linkedPage.targetPath, page: linkedPage };
-    const attachment = this.attachmentBySourcePath.get(sourceKey(resolvedPath));
-    if (attachment) return { kind: "attachment", targetPath: attachment.targetPath };
     const linkedPageById = id ? this.pageById.get(id) : void 0;
     if (linkedPageById) return { kind: "page", targetPath: linkedPageById.targetPath, page: linkedPageById };
     return null;
   }
-  async applyPageMeta(file, page, destination) {
+  async applyPageMeta(file, page, destination, localCover) {
     let cover = page.cover;
     if (cover && !isExternalTarget(cover)) {
       const resolved = this.resolveTarget(page, cover);
       if (resolved?.kind === "attachment") cover = (0, import_obsidian5.normalizePath)(`${destination}/${resolved.targetPath}`);
     }
+    cover = localCover ?? cover;
     let icon = page.icon;
-    if (page.notionMeta?.icon) {
-      icon = page.notionMeta.icon;
-      if (icon.startsWith("image:")) {
-        const resolved = this.resolveTarget(page, icon.slice(6));
-        icon = resolved ? `image:${(0, import_obsidian5.normalizePath)(`${destination}/${resolved.targetPath}`)}` : void 0;
-      }
+    if (icon?.startsWith("image:")) {
+      const source2 = icon.slice(6);
+      const resolved = this.resolveTarget(page, source2);
+      if (resolved?.kind === "attachment") icon = `image:${(0, import_obsidian5.normalizePath)(`${destination}/${resolved.targetPath}`)}`;
+      else if (this.format !== "notion-html" || !/^https?:\/\//i.test(source2)) icon = void 0;
     }
-    if (!icon && !cover && !page.notionMeta) return;
+    if (!icon && !cover && !page.notionMeta && !this.recordBuildinIds) return;
     await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-      if (icon) frontmatter[FIELDS.icon] = page.notionMeta ? icon : `emoji:${icon}`;
+      if (this.recordBuildinIds) frontmatter[BUILDIN_ID_FIELD] = page.sourceId;
+      if (icon) frontmatter[FIELDS.icon] = icon;
       if (cover) frontmatter[FIELDS.cover] = cover;
       if (cover && page.coverY !== void 0) frontmatter[FIELDS.coverY] = page.coverY;
       if (page.notionMeta) {
@@ -10976,17 +11285,37 @@ async function prepareNotionSources(app, files, metadata, close, checkActive) {
     checkActive
   );
 }
-async function prepareImport(app, file) {
+function prepareImport(app, file) {
+  return prepareArchive(app, file);
+}
+function prepareBuildinImport(app, file, signal) {
+  return prepareArchive(app, file, signal);
+}
+async function prepareArchive(app, file, buildinSignal) {
+  buildinSignal?.throwIfAborted();
   const archive = await LoadedArchive.open(file);
   try {
     const format = detectFormat(archive.files);
+    if (buildinSignal && format !== "buildin-md") throw new Error("buildin-archive-format");
     const pages = await readPages(archive.files, format);
+    buildinSignal?.throwIfAborted();
     if (!pages.length) throw new Error("pages-not-found");
     if (format === "buildin-md") applyBuildinLinkTitles(pages);
     const renamedCount = assignTargets(pages, format);
     const attachments = assignAttachments(archive.files, pages, format);
     const unresolvedLinksCount = countUnresolvedLinks(pages, attachments, format);
-    return new NaitFlowImportPlan(app, archive, format, file.name, pages, attachments, renamedCount, unresolvedLinksCount);
+    return new NaitFlowImportPlan(
+      app,
+      archive,
+      format,
+      file.name,
+      pages,
+      attachments,
+      renamedCount,
+      unresolvedLinksCount,
+      () => buildinSignal?.throwIfAborted(),
+      Boolean(buildinSignal)
+    );
   } catch (error) {
     await archive.close();
     throw error;
@@ -11030,10 +11359,10 @@ async function readPages(files, format) {
 function applyBuildinLinkTitles(pages) {
   const byId = new Map(pages.map((page) => [page.sourceId, page]));
   for (const sourcePage of pages) {
-    for (const match of sourcePage.rawContent.matchAll(/!?\[([^\]]+)\]\(([^)\n]+)\)/g)) {
-      const label = plainLinkLabel(match[1] ?? "");
-      const target = match[2] ?? "";
-      const id = knownIdInTarget(target, byId);
+    for (const link2 of markdownLinks(sourcePage.rawContent)) {
+      if (link2.embed) continue;
+      const label = plainLinkLabel(link2.label);
+      const id = buildinLinkId(decodeSourcePath(stripQueryAndHash(cleanMarkdownTarget(link2.target))));
       const page = id ? byId.get(id) : void 0;
       if (page && label) page.title = sanitizePageName(label);
     }
@@ -11074,21 +11403,74 @@ function assignAttachments(files, pages, format) {
   const pageExtensions = /* @__PURE__ */ new Set(["md", "html"]);
   const pageSources = new Set(pages.map((page) => sourceKey(page.sourcePath)));
   const owners = [...pages].sort((a, b) => b.sourceFolderPath.length - a.sourceFolderPath.length);
+  const references = /* @__PURE__ */ new Map();
+  const coverNames = /* @__PURE__ */ new Map();
   const usedNames = /* @__PURE__ */ new Map();
+  let sharedFolder = "\u0412\u043B\u043E\u0436\u0435\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B";
+  if (format !== "notion-api") {
+    const reserved = /* @__PURE__ */ new Set();
+    for (const page of pages) {
+      reserved.add(sourceKey(page.targetPath));
+      for (let folder = page.targetFolderPath; folder; folder = dirname(folder)) {
+        reserved.add(sourceKey(folder));
+      }
+    }
+    const allocate = (parent) => {
+      const base = parent ? `${parent}/_files` : "_files";
+      let folder = base;
+      for (let suffix = 2; reserved.has(sourceKey(folder)); suffix++) folder = `${base} ${suffix}`;
+      reserved.add(sourceKey(folder));
+      return folder;
+    };
+    sharedFolder = allocate("");
+    const filesByKey = new Map(files.map((file) => [sourceKey(file.path), file]));
+    for (const page of pages) {
+      page.filesFolder = allocate(page.targetFolderPath);
+      const targets = format === "notion-html" ? htmlTargets(page.rawContent) : markdownTargets(page.rawContent).map(cleanMarkdownTarget);
+      if (page.cover) {
+        targets.push(page.cover);
+        if (format === "notion-html" && !isExternalTarget(page.cover)) {
+          const coverKey = sourceLinkKeys(page.sourcePath, page.cover).find((path) => filesByKey.has(path));
+          const source2 = coverKey && !pageSources.has(coverKey) ? filesByKey.get(coverKey) : void 0;
+          if (source2) {
+            const original = sanitizeAttachmentName(decodeSourceSegment(source2.name), format);
+            const name = `_cover${original.match(/(\.[^.]+)$/)?.[1] ?? ""}`;
+            coverNames.set(page, { source: source2, name });
+            usedNames.set(page.filesFolder, /* @__PURE__ */ new Set([name.toLocaleLowerCase()]));
+          }
+        }
+      }
+      if (page.icon?.startsWith("image:")) targets.push(page.icon.slice(6));
+      for (const target of targets) {
+        if (isExternalTarget(target)) continue;
+        const key = sourceLinkKeys(page.sourcePath, target).find((path) => filesByKey.has(path));
+        if (!key || pageSources.has(key)) continue;
+        const referencedBy = references.get(key) ?? /* @__PURE__ */ new Set();
+        referencedBy.add(page);
+        references.set(key, referencedBy);
+      }
+    }
+  }
   const attachments = [];
   for (const source2 of files) {
     if (pageSources.has(sourceKey(source2.path))) continue;
     if (pageExtensions.has(source2.extension) && basename(source2.path).toLocaleLowerCase() === "index.html") continue;
-    const owner = owners.find((page) => sourceKey(source2.path).startsWith(`${sourceKey(page.sourceFolderPath)}/`));
-    const folder = owner ? `${owner.targetFolderPath}/\u0412\u043B\u043E\u0436\u0435\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B` : "\u0412\u043B\u043E\u0436\u0435\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B";
-    const originalName = sanitizeAttachmentName(decodeSourceSegment(source2.name), format);
-    const used = usedNames.get(folder) ?? /* @__PURE__ */ new Set();
-    let name = originalName;
-    let suffix = 2;
-    while (used.has(name.toLocaleLowerCase())) name = appendFilenameSuffix(originalName, suffix++);
-    used.add(name.toLocaleLowerCase());
-    usedNames.set(folder, used);
-    attachments.push({ source: source2, sourcePath: source2.path, targetPath: normalizeSourcePath(`${folder}/${name}`) });
+    const referencedBy = references.get(sourceKey(source2.path));
+    const inferred = owners.find((page) => sourceKey(source2.path).startsWith(`${sourceKey(page.sourceFolderPath)}/`));
+    for (const owner of referencedBy ?? [inferred]) {
+      const folder = owner?.filesFolder ?? (owner ? `${owner.targetFolderPath}/\u0412\u043B\u043E\u0436\u0435\u043D\u043D\u044B\u0435 \u0444\u0430\u0439\u043B\u044B` : sharedFolder);
+      const originalName = sanitizeAttachmentName(decodeSourceSegment(source2.name), format);
+      const used = usedNames.get(folder) ?? /* @__PURE__ */ new Set();
+      const cover = owner && coverNames.get(owner);
+      let name = cover && cover.source === source2 ? cover.name : originalName;
+      if (!cover || cover.source !== source2) {
+        let suffix = 2;
+        while (used.has(name.toLocaleLowerCase())) name = appendFilenameSuffix(originalName, suffix++);
+      }
+      used.add(name.toLocaleLowerCase());
+      usedNames.set(folder, used);
+      attachments.push({ source: source2, sourcePath: source2.path, targetPath: normalizeSourcePath(`${folder}/${name}`), owner });
+    }
   }
   return attachments;
 }
@@ -11101,7 +11483,8 @@ function countUnresolvedLinks(pages, attachments, format) {
   for (const page of pages) {
     const targets = format === "notion-html" ? htmlTargets(page.rawContent) : markdownTargets(page.rawContent);
     for (const rawTarget of targets) {
-      const target = stripQueryAndHash(decodeSourcePath(cleanMarkdownTarget(rawTarget)));
+      const source2 = format === "notion-html" ? rawTarget : cleanMarkdownTarget(rawTarget);
+      const target = decodeSourcePath(stripQueryAndHash(source2));
       const id = knownIdInTarget(target, pageById);
       if (isExternalTarget(target)) {
         if (format === "buildin-md" && /^https?:\/\/(?:www\.)?buildin\.ai\//i.test(target)) {
@@ -11111,17 +11494,19 @@ function countUnresolvedLinks(pages, attachments, format) {
         continue;
       }
       if (target.startsWith("#")) continue;
-      const resolved = target.startsWith("/") ? normalizeSourcePath(target.slice(1)) : normalizeSourcePath(`${dirname(page.sourcePath)}/${target}`);
-      if (!knownPaths.has(sourceKey(resolved)) && !id) count += 1;
+      if (!sourceLinkKeys(page.sourcePath, source2).some((path) => knownPaths.has(path)) && !id) count += 1;
     }
   }
   return count;
 }
 function readHtmlMeta(page) {
   const document2 = new DOMParser().parseFromString(page.rawContent, "text/html");
+  if (!document2.querySelector("div.page-body")) throw new Error(`page-body-missing:${page.sourcePath}`);
   const emoji = document2.querySelector(".page-header-icon [data-emoji]")?.getAttribute("data-emoji")?.trim();
+  const image = document2.querySelector(".page-header-icon img.icon[src]")?.getAttribute("src")?.trim();
   const cover = document2.querySelector("img.page-cover-image");
-  if (emoji) page.icon = emoji;
+  if (emoji) page.icon = `emoji:${emoji}`;
+  else if (image) page.icon = `image:${image}`;
   if (cover?.src) page.cover = cover.getAttribute("src") ?? cover.src;
   const position = cover?.style.objectPosition ?? "";
   const y = position.match(/(-?\d+(?:\.\d+)?)%\s*$/)?.[1];
@@ -11130,10 +11515,29 @@ function readHtmlMeta(page) {
 function markdownTargets(markdown) {
   const targets = [];
   rewriteOutsideFences(markdown, (chunk) => {
-    for (const match of chunk.matchAll(/!?\[[^\]]*\]\(([^)\n]+)\)/g)) targets.push(match[1] ?? "");
+    for (const link2 of markdownLinks(chunk)) targets.push(link2.target);
     return chunk;
   });
   return targets;
+}
+function* markdownLinks(markdown) {
+  const opening = /(!?)\[([^\]\n]*)\]\([ \t]*/g;
+  for (let match = opening.exec(markdown); match; match = opening.exec(markdown)) {
+    const start = opening.lastIndex;
+    let end = start;
+    let depth = 1;
+    let inAngleDestination = markdown[start] === "<";
+    for (; end < markdown.length && markdown[end] !== "\n"; end++) {
+      const char = markdown[end];
+      if (char === "\\" && /[()<>\\]/.test(markdown[end + 1] ?? "")) end++;
+      else if (inAngleDestination) inAngleDestination = char !== ">";
+      else if (char === "(") depth++;
+      else if (char === ")" && --depth === 0) break;
+    }
+    if (depth !== 0 || end === start) continue;
+    opening.lastIndex = end + 1;
+    yield { from: match.index, to: end + 1, label: match[2], target: markdown.slice(start, end), embed: match[1] === "!" };
+  }
 }
 function htmlTargets(html2) {
   const document2 = new DOMParser().parseFromString(html2, "text/html");
@@ -11141,18 +11545,25 @@ function htmlTargets(html2) {
   if (!body) return [];
   return [
     ...Array.from(body.querySelectorAll("a[href]"), (element) => element.getAttribute("href") ?? ""),
-    ...Array.from(body.querySelectorAll("img[src]"), (element) => element.getAttribute("src") ?? "")
+    ...Array.from(body.querySelectorAll("img[src]")).filter((element) => !element.matches(".link-to-page a[href] img.icon")).map((element) => element.getAttribute("src") ?? "")
   ];
 }
-function renderResolvedLink(target, destination, rawLabel, embed2) {
+function renderResolvedLink(target, destination, label, embed2, filesFolder, useMarkdown = false) {
   const fullPath = (0, import_obsidian5.normalizePath)(`${destination}/${target.targetPath}`);
+  label = label.trim() || target.page?.targetTitle || "";
+  const local = target.kind === "attachment" && filesFolder && target.targetPath.startsWith(`${filesFolder}/`);
+  if (local || useMarkdown || /[#[\]]/.test(fullPath)) {
+    const parent = local ? dirname(dirname(filesFolder)) : "";
+    const path = local ? `./${target.targetPath.slice(parent ? parent.length + 1 : 0)}` : fullPath;
+    const url = path.split("/").map((segment) => encodeURIComponent(segment).replace(/\(/g, "%28").replace(/\)/g, "%29")).join("/");
+    const text = label.replace(/[\\[\]]/g, "\\$&");
+    return `${target.kind === "attachment" && embed2 ? "!" : ""}[${text || basename(fullPath)}](${url})`;
+  }
   if (target.kind === "attachment") {
-    const label2 = plainLinkLabel(rawLabel);
     if (embed2) return `![[${fullPath}]]`;
-    return label2 ? `[[${fullPath}|${escapeWikiAlias(label2)}]]` : `[[${fullPath}]]`;
+    return label ? `[[${fullPath}|${escapeWikiAlias(label)}]]` : `[[${fullPath}]]`;
   }
   const pagePath = fullPath.replace(/\.md$/i, "");
-  const label = plainLinkLabel(rawLabel) || target.page?.targetTitle || "";
   return label ? `[[${pagePath}|${escapeWikiAlias(label)}]]` : `[[${pagePath}]]`;
 }
 function rewriteOutsideFences(markdown, rewrite) {
@@ -11206,6 +11617,12 @@ function isNotionPartZip(path) {
 }
 function buildinId(value) {
   return value.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\.[^.]+)?$/i)?.[1]?.toLocaleLowerCase();
+}
+function buildinLinkId(target) {
+  if (isExternalTarget(target) && !/^https?:\/\/(?:www\.)?buildin\.ai\//i.test(target)) return;
+  const name = basename(target.replace(/\/$/, ""));
+  if (!name.includes(".") || /\.md$/i.test(name)) return buildinId(name);
+  return void 0;
 }
 function notionId(value) {
   return value.match(/([0-9a-f]{32})(?:\.[^.]+)?$/i)?.[1]?.toLocaleLowerCase();
@@ -11266,13 +11683,21 @@ function appendFilenameSuffix(name, suffix) {
   return `${stem} ${suffix}${ext}`;
 }
 function cleanMarkdownTarget(value) {
-  const trimmed = value.trim();
+  const trimmed = value.trim().replace(/\s+["'][^"']*["']\s*$/, "");
   const unwrapped = trimmed.startsWith("<") && trimmed.endsWith(">") ? trimmed.slice(1, -1) : trimmed;
-  return unwrapped.replace(/\s+["'][^"']*["']\s*$/, "");
+  return unwrapped.replace(/\\([()<>])/g, "$1");
 }
 function stripQueryAndHash(value) {
   if (value.startsWith("#")) return value;
   return value.replace(/[?#].*$/, "");
+}
+function sourceLinkKeys(sourcePath, target) {
+  const relativeKey = (value) => {
+    const decoded = decodeSourcePath(value);
+    return sourceKey(decoded.startsWith("/") ? decoded : `${dirname(sourcePath)}/${decoded}`);
+  };
+  const clean = stripQueryAndHash(target);
+  return clean === target ? [relativeKey(target)] : [relativeKey(target), relativeKey(clean)];
 }
 function isExternalTarget(value) {
   return /^(?:https?:|mailto:|obsidian:|data:)/i.test(value);
@@ -11366,6 +11791,7 @@ function chooseWebArchive(plugin) {
 }
 async function openImportPreview(plugin, file) {
   const notice = new import_obsidian6.Notice(t("importReading"), 0);
+  notice.containerEl.addClass("naitflow-import-reading-notice");
   try {
     const plan = await prepareImport(plugin.app, file);
     notice.hide();
@@ -11404,16 +11830,20 @@ var ImportPreviewModal = class extends import_obsidian6.Modal {
     const stats = this.contentEl.createDiv("naitflow-import-stats");
     this.addStat(stats, t("importPages"), this.plan.pagesCount);
     this.addStat(stats, t("importAttachments"), this.plan.attachmentsCount);
-    this.addStat(stats, t("importRenamed"), this.plan.renamedCount);
-    this.addStat(stats, t("importBrokenLinks"), this.plan.unresolvedLinksCount);
     const warnings = this.warnings();
-    if (warnings.length) {
+    const hasRemoteCovers = this.plan.format === "notion-html" && this.plan.remoteCoversCount > 0;
+    if (warnings.length || hasRemoteCovers) {
       const list = this.contentEl.createDiv("naitflow-import-warnings");
       for (const warning of warnings) {
         const row = list.createDiv("naitflow-import-warning");
         const icon = row.createSpan("naitflow-import-warning-icon");
         (0, import_obsidian6.setIcon)(icon, "triangle-alert");
         row.createSpan({ text: warning });
+      }
+      if (hasRemoteCovers) {
+        const details = list.createEl("details", { cls: "naitflow-import-warning naitflow-import-cover-details" });
+        details.createEl("summary", { text: t("importRemoteCovers", { count: this.plan.remoteCoversCount }) });
+        details.createDiv({ text: t("importRemoteCoversDetails") });
       }
     }
     const destination = this.contentEl.createDiv("naitflow-import-destination");
@@ -11440,7 +11870,6 @@ var ImportPreviewModal = class extends import_obsidian6.Modal {
     if (this.plan.format !== "notion-html") warnings.push(t("importVisualMissing"));
     if (this.plan.renamedCount > 0) warnings.push(t("importDuplicatesWarning", { count: this.plan.renamedCount }));
     if (this.plan.unresolvedLinksCount > 0) warnings.push(t("importBrokenLinksWarning", { count: this.plan.unresolvedLinksCount }));
-    if (this.plan.format === "notion-html" && this.plan.coversCount > 0) warnings.push(t("importRemoteCovers", { count: this.plan.coversCount }));
     return warnings;
   }
   async startImport(destination, input, cancel, start, error) {
@@ -11464,7 +11893,7 @@ var ImportPreviewModal = class extends import_obsidian6.Modal {
       this.plugin.refreshUi();
       this.running = false;
       this.finished = true;
-      this.renderSuccess(result.destination, result.pages, result.attachments);
+      this.renderSuccess(result);
     } catch (caught) {
       this.running = false;
       console.error("NaitFlow: import failed", caught);
@@ -11476,13 +11905,14 @@ var ImportPreviewModal = class extends import_obsidian6.Modal {
       progress.remove();
     }
   }
-  renderSuccess(destination, pages, attachments) {
+  renderSuccess({ destination, pages, attachments, covers }) {
     this.contentEl.empty();
     const success = this.contentEl.createDiv("naitflow-import-success");
     const icon = success.createSpan("naitflow-import-success-icon");
     (0, import_obsidian6.setIcon)(icon, "circle-check-big");
     success.createEl("h3", { text: t("importComplete") });
     success.createEl("p", { text: t("importCompleteSummary", { pages, attachments }) });
+    if (covers) success.createEl("p", { text: t("importCoverSummary", covers) });
     success.createEl("code", { text: destination });
     const close = success.createEl("button", { cls: "mod-cta", text: t("close") });
     close.onclick = () => this.close();
@@ -13098,7 +13528,9 @@ function openSubpage(app, event, target, source2) {
   if (event.type === "auxclick" && event.button !== 1) return;
   event.preventDefault();
   event.stopPropagation();
-  void app.workspace.openLinkText(target.path, source2, import_obsidian13.Keymap.isModEvent(event) || event.button === 1);
+  const newLeaf = import_obsidian13.Keymap.isModEvent(event) || event.button === 1;
+  if (target.path.includes("#")) void app.workspace.getLeaf(newLeaf).openFile(target);
+  else void app.workspace.openLinkText(target.path, source2, newLeaf);
 }
 var SubpageLink = class extends import_view3.WidgetType {
   constructor(app, target, source2, icon) {
@@ -13139,6 +13571,19 @@ function standaloneLinks(doc) {
     }
   }
   return links;
+}
+async function addSubpageLink(app, parent, child) {
+  const markdown = app.fileManager.generateMarkdownLink(child, parent.path, void 0, child.basename);
+  await app.vault.process(parent, (content) => {
+    for (const [from, link2] of standaloneLinks(content)) {
+      const lineEnd = content.indexOf("\n", from);
+      const line = content.slice(from, lineEnd < 0 ? void 0 : lineEnd).trim();
+      if (line === markdown || findSubpage(app, link2.target, parent.path, link2.encoded) === child) return content;
+    }
+    const newline = content.includes("\r\n") ? "\r\n" : "\n";
+    const separator = !content || content.endsWith(newline + newline) ? "" : content.endsWith(newline) ? newline : newline + newline;
+    return content + separator + markdown + newline;
+  });
 }
 function readingPageLinks(paragraph) {
   const links = [];
@@ -13530,26 +13975,49 @@ var ConfirmTrashActionModal = class extends import_obsidian14.Modal {
 
 // src/page-tree.ts
 var VIEW_TYPE_NAITFLOW = "naitflow-pages";
-function buildPageTree(app) {
+function buildPageTree(app, order = []) {
   const files = app.vault.getMarkdownFiles();
   const byPath = new Map(files.map((file) => [file.path, { file, children: [] }]));
+  const parents = /* @__PURE__ */ new Map();
+  for (const node of byPath.values()) {
+    const parent = getFolderPage(app, node.file.parent, byPath) ?? getLegacyParent(app, node.file, byPath);
+    if (parent && parent !== node) parents.set(node, parent);
+  }
   const roots = [];
   for (const node of byPath.values()) {
-    const parent = getPhysicalParent(app, node.file, byPath) ?? getLegacyParent(app, node.file, byPath);
-    if (parent && parent !== node) parent.children.push(node);
-    else roots.push(node);
+    let parent = parents.get(node);
+    if (!parent) {
+      for (let folder = node.file.parent?.parent; folder && !parent; folder = folder.parent) {
+        const candidate = getFolderPage(app, folder, byPath);
+        if (!candidate) continue;
+        const seen = /* @__PURE__ */ new Set([node]);
+        let ancestor = candidate;
+        while (ancestor && !seen.has(ancestor)) {
+          seen.add(ancestor);
+          ancestor = parents.get(ancestor);
+        }
+        if (!ancestor) {
+          parent = candidate;
+          parents.set(node, parent);
+        }
+      }
+    }
+    if (parent) {
+      node.parent = parent;
+      parent.children.push(node);
+    } else roots.push(node);
   }
+  const ranks = new Map(order.map((path, index) => [path, index]));
   const sort = (items) => {
-    items.sort((a, b) => displayName(a.file).localeCompare(displayName(b.file), localeCode()));
+    items.sort((a, b) => (ranks.get(a.file.path) ?? order.length) - (ranks.get(b.file.path) ?? order.length) || displayName(a.file).localeCompare(displayName(b.file), localeCode()));
     items.forEach((item) => sort(item.children));
   };
   sort(roots);
   return roots;
 }
-function getPhysicalParent(app, file, nodes) {
-  const folderPath = file.parent?.path;
-  if (!folderPath) return void 0;
-  const parentFile = app.vault.getAbstractFileByPath(`${folderPath}.md`);
+function getFolderPage(app, folder, nodes) {
+  if (!folder?.path) return void 0;
+  const parentFile = app.vault.getAbstractFileByPath(`${folder.path}.md`);
   return parentFile instanceof import_obsidian15.TFile ? nodes.get(parentFile.path) : void 0;
 }
 function getLegacyParent(app, file, nodes) {
@@ -13566,6 +14034,11 @@ var NaitFlowTreeView = class extends import_obsidian15.ItemView {
   expanded = /* @__PURE__ */ new Set();
   treeResizeObserver;
   treeFooter;
+  draggedPage;
+  dragSourceRow;
+  dropRow;
+  renderAfterDrag = false;
+  dropPending = false;
   getViewType() {
     return VIEW_TYPE_NAITFLOW;
   }
@@ -13581,11 +14054,16 @@ var NaitFlowTreeView = class extends import_obsidian15.ItemView {
     this.render();
   }
   async onClose() {
+    this.clearPageDrag();
     this.treeResizeObserver?.disconnect();
     this.treeFooter?.remove();
     this.containerEl.removeClass("naitflow-tree-host");
   }
   render() {
+    if (this.draggedPage) {
+      this.renderAfterDrag = true;
+      return;
+    }
     const root = this.contentEl;
     root.empty();
     root.addClass("naitflow-tree");
@@ -13594,9 +14072,9 @@ var NaitFlowTreeView = class extends import_obsidian15.ItemView {
     const add = header.createEl("button", { attr: { "aria-label": t("newPage") } });
     (0, import_obsidian15.setIcon)(add, "plus");
     add.onclick = () => void this.createPage();
-    const nodes = this.buildTree();
+    const nodes = buildPageTree(this.app, this.plugin.settings.pageOrder);
     const list = root.createDiv("naitflow-tree-list");
-    for (const node of nodes) this.renderNode(list, node, 0);
+    for (const node of nodes) this.renderNode(list, node, nodes, 0);
     if (!nodes.length) list.createDiv({ cls: "naitflow-empty", text: t("createFirstPage") });
     this.renderTrashFooter();
     this.syncScrollbarState();
@@ -13626,10 +14104,7 @@ var NaitFlowTreeView = class extends import_obsidian15.ItemView {
       row.classList.toggle("is-active", row.dataset.path === activePath);
     });
   }
-  buildTree() {
-    return buildPageTree(this.app);
-  }
-  renderNode(parent, node, depth) {
+  renderNode(parent, node, siblings, depth) {
     const row = parent.createDiv("naitflow-tree-row");
     row.dataset.path = node.file.path;
     row.style.setProperty("--naitflow-depth", String(depth));
@@ -13649,27 +14124,124 @@ var NaitFlowTreeView = class extends import_obsidian15.ItemView {
     const title = row.createEl("button", { cls: "naitflow-tree-title" });
     title.createSpan({ cls: "naitflow-tree-title-label", text: displayName(node.file) });
     title.onclick = () => void this.app.workspace.getLeaf(false).openFile(node.file);
-    const more = row.createEl("button", { cls: "naitflow-tree-more", attr: { "aria-label": t("pageMenu") } });
-    (0, import_obsidian15.setIcon)(more, "ellipsis");
-    more.onclick = (event) => {
-      event.stopPropagation();
-      this.openPageMenu(event, node.file);
-    };
+    this.bindPageDrag(row, title, node, siblings);
     const add = row.createEl("button", { cls: "naitflow-tree-add", attr: { "aria-label": t("nestedPage") } });
     (0, import_obsidian15.setIcon)(add, "plus");
+    (0, import_obsidian15.setTooltip)(add, t("addSubpage"), { placement: "bottom", classes: ["naitflow-tree-action-tooltip"], gap: 6, delay: 800 });
     add.onclick = (event) => {
       event.stopPropagation();
       void this.createPage(node.file);
     };
+    const more = row.createEl("button", { cls: "naitflow-tree-more", attr: { "aria-label": t("pageMenu") } });
+    (0, import_obsidian15.setIcon)(more, "ellipsis");
+    (0, import_obsidian15.setTooltip)(more, t("pageMenu"), { placement: "bottom", classes: ["naitflow-tree-action-tooltip"], gap: 6, delay: 800 });
+    more.onclick = (event) => {
+      event.stopPropagation();
+      this.openPageMenu(event, node.file);
+    };
     row.oncontextmenu = (event) => this.openPageMenu(event, node.file);
     if (isExpanded) {
       const children = parent.createDiv("naitflow-tree-children");
-      for (const child of node.children) this.renderNode(children, child, depth + 1);
+      for (const child of node.children) this.renderNode(children, child, node.children, depth + 1);
       const addChild = children.createEl("button", { cls: "naitflow-tree-add-child" });
       addChild.style.setProperty("--naitflow-depth", String(depth + 1));
       (0, import_obsidian15.setIcon)(addChild, "plus");
       addChild.createSpan({ text: t("addSubpage") });
       addChild.onclick = () => void this.createPage(node.file);
+    }
+  }
+  bindPageDrag(row, title, node, siblings) {
+    title.draggable = true;
+    title.ondragstart = (event) => {
+      if (!event.dataTransfer || this.dropPending) {
+        event.preventDefault();
+        return;
+      }
+      event.stopPropagation();
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("application/x-naitflow-page", "");
+      this.draggedPage = node;
+      this.dragSourceRow = row;
+      row.classList.add("is-drag-source");
+    };
+    title.ondragend = () => this.finishPageDrag();
+    row.ondragover = (event) => {
+      const position = this.pageDropPosition(event, row, node);
+      if (!position) {
+        this.markPageDrop();
+        return;
+      }
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+      this.markPageDrop(row, position);
+    };
+    row.ondragleave = (event) => {
+      if (this.dropRow === row && !row.contains(event.relatedTarget)) this.markPageDrop();
+    };
+    row.ondrop = (event) => {
+      const moving = this.draggedPage;
+      const position = this.pageDropPosition(event, row, node);
+      if (!moving || !position) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.finishPageDrag();
+      void this.dropPage(moving, node, siblings, position);
+    };
+  }
+  pageDropPosition(event, row, target) {
+    if (!this.draggedPage) return;
+    for (let node = target; node; node = node.parent) {
+      if (node === this.draggedPage) return;
+    }
+    const rect = row.getBoundingClientRect();
+    const offset = (event.clientY - rect.top) / rect.height;
+    return offset < 0.25 ? "before" : offset > 0.75 ? "after" : "inside";
+  }
+  markPageDrop(row, position) {
+    if (this.dropRow && this.dropRow !== row) delete this.dropRow.dataset.pageDrop;
+    this.dropRow = row;
+    if (row && position) row.dataset.pageDrop = position;
+  }
+  clearPageDrag() {
+    this.dragSourceRow?.classList.remove("is-drag-source");
+    this.dragSourceRow = void 0;
+    this.draggedPage = void 0;
+    this.markPageDrop();
+  }
+  finishPageDrag() {
+    this.clearPageDrag();
+    if (this.renderAfterDrag) {
+      this.renderAfterDrag = false;
+      this.render();
+    }
+  }
+  async dropPage(moving, target, siblings, position) {
+    const parent = position === "inside" ? target : target.parent;
+    const group = position === "inside" ? target.children : siblings;
+    const files = group.filter((node) => node !== moving).map((node) => node.file);
+    const index = position === "inside" ? files.length : files.indexOf(target.file) + Number(position === "after");
+    files.splice(index, 0, moving.file);
+    this.dropPending = true;
+    try {
+      const vault = this.app.vault;
+      if (vault.getAbstractFileByPath(moving.file.path) !== moving.file || vault.getAbstractFileByPath(target.file.path) !== target.file) throw new Error(t("movePageInvalid"));
+      if (parent !== moving.parent) {
+        await this.plugin.movePage(moving.file, parent?.file);
+      } else if (position === "inside") {
+        await this.plugin.linkSubpage(target.file, moving.file);
+      }
+      if (position === "inside") this.expanded.add(target.file.path);
+    } catch (error) {
+      new import_obsidian15.Notice(t("movePageFailed", { error: String(error) }));
+      this.dropPending = false;
+      return;
+    }
+    try {
+      await this.plugin.savePageOrder(files);
+    } catch {
+      new import_obsidian15.Notice(t("pageOrderSaveFailed"));
+    } finally {
+      this.dropPending = false;
     }
   }
   async createPage(parent) {
@@ -13711,7 +14283,7 @@ var NaitFlowTreeView = class extends import_obsidian15.ItemView {
     menu.addItem((item) => item.setTitle(t("openInNewWindow")).setIcon("external-link").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("window"))));
     menu.addSeparator();
     menu.addItem((item) => item.setTitle(t("renamePage")).setIcon("pencil").onClick(() => new RenamePagePopover(this.app, file).open(event)));
-    menu.addItem((item) => item.setTitle(t("movePage")).setIcon("folder-input").onClick(() => new MovePagePopover(this.app, file).open(event)));
+    menu.addItem((item) => item.setTitle(t("movePage")).setIcon("folder-input").onClick(() => new MovePagePopover(this.app, this.plugin, file).open(event)));
     menu.addItem((item) => item.setTitle(t("duplicatePage")).setIcon("copy").onClick(() => void this.duplicatePage(file)));
     menu.addItem((item) => item.setTitle(t("addBookmark")).setIcon("bookmark-plus").onClick(() => void this.addBookmark(file)));
     menu.addSeparator();
@@ -13926,8 +14498,9 @@ var RenamePagePopover = class {
   }
 };
 var MovePagePopover = class {
-  constructor(app, file) {
+  constructor(app, plugin, file) {
     this.app = app;
+    this.plugin = plugin;
     this.file = file;
   }
   expanded = /* @__PURE__ */ new Set();
@@ -13965,7 +14538,7 @@ var MovePagePopover = class {
     list.empty();
     const normalizedQuery = query.trim().toLocaleLowerCase(localeCode());
     if (!normalizedQuery) list.createDiv({ cls: "naitflow-move-heading", text: t("movePageSuggested") });
-    const nodes = this.filterNodes(buildPageTree(this.app), normalizedQuery);
+    const nodes = this.filterNodes(buildPageTree(this.app, this.plugin.settings.pageOrder), normalizedQuery);
     if (!nodes.length) {
       list.createDiv({ cls: "naitflow-move-empty", text: t("nothingFound") });
       return;
@@ -14010,14 +14583,8 @@ var MovePagePopover = class {
     return filter(nodes);
   }
   async moveToPage(destination) {
-    await this.moveToFolder(pageFolderPath(destination.path));
-  }
-  async moveToFolder(folderPath) {
     try {
-      if (folderPath) await ensureFolder(this.app, folderPath);
-      const nextPath = (0, import_obsidian15.normalizePath)(folderPath ? `${folderPath}/${this.file.name}` : this.file.name);
-      if (nextPath === this.file.path) return;
-      await this.app.fileManager.renameFile(this.file, nextPath);
+      await this.plugin.movePage(this.file, destination);
       this.close();
     } catch (error) {
       new import_obsidian15.Notice(t("movePageFailed", { error: String(error) }));
@@ -14032,7 +14599,7 @@ var MovePagePopover = class {
 };
 
 // src/settings.ts
-var import_obsidian18 = require("obsidian");
+var import_obsidian20 = require("obsidian");
 
 // src/notion-import-settings.ts
 var import_obsidian17 = require("obsidian");
@@ -14673,6 +15240,853 @@ function notionImportError(error) {
   return t(keys[code] ?? "notionRequestError");
 }
 
+// src/buildin-import-settings.ts
+var import_obsidian19 = require("obsidian");
+
+// src/buildin-page-import.ts
+var import_obsidian18 = require("obsidian");
+var BUILDIN_PAGE_ID = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
+function buildinPageId(input) {
+  const value = input.trim();
+  if (BUILDIN_PAGE_ID.test(value)) return value.toLowerCase();
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:" || !["buildin.ai", "www.buildin.ai"].includes(url.hostname)) return;
+    const id = url.pathname.split("/").filter(Boolean).pop();
+    return id && BUILDIN_PAGE_ID.test(id) ? id.toLowerCase() : void 0;
+  } catch {
+    return;
+  }
+}
+async function restoreBuildinAppearance(app, destination, notes, options) {
+  const { signal, log, onProgress } = options;
+  const result = { icons: 0, covers: 0, failures: [] };
+  const recordFailure = (path, message) => {
+    result.failures.push({ path, message });
+    log(`${path}
+${message}`);
+  };
+  const folder = (0, import_obsidian18.normalizePath)(destination + "/_buildin_appearance");
+  for (const [index, note] of notes.entries()) {
+    signal.throwIfAborted();
+    onProgress(index, notes.length);
+    const title = note.path.split("/").pop().slice(0, -3);
+    log(t("buildinAppearanceProgress", { current: index + 1, total: notes.length, title }));
+    const file = app.vault.getAbstractFileByPath(note.path);
+    let properties;
+    try {
+      if (file instanceof import_obsidian18.TFile) {
+        const info = (0, import_obsidian18.getFrontMatterInfo)(await app.vault.read(file));
+        if (info.exists) properties = asRecord((0, import_obsidian18.parseYaml)(info.frontmatter));
+      }
+    } catch {
+      signal.throwIfAborted();
+    }
+    if (!(file instanceof import_obsidian18.TFile) || properties?.[BUILDIN_ID_FIELD] !== note.id) {
+      recordFailure(note.path, t("buildinArtworkPageError", { reason: t("buildinNoteMissing") }));
+      continue;
+    }
+    let page;
+    try {
+      page = await options.readPage(note.id);
+    } catch (error) {
+      signal.throwIfAborted();
+      recordFailure(note.path, t("buildinArtworkPageError", { reason: error instanceof Error ? error.message : t("buildinNetworkError") }));
+      continue;
+    }
+    signal.throwIfAborted();
+    const values = {};
+    for (const role of ["icon", "cover"]) {
+      const roleLabel = t(role === "icon" ? "buildinIconNotImported" : "buildinCoverNotImported");
+      try {
+        const emoji = role === "icon" ? asRecord(page.icon)?.emoji : void 0;
+        if (typeof emoji === "string" && emoji.trim()) {
+          values.icon = "emoji:" + emoji.trim();
+          continue;
+        }
+        const image = await downloadMedia(page[role], role, signal, (key) => options.resolveMediaKey(note.id, key), role === "cover" ? { adapter: app.vault.adapter, pluginDir: options.pluginDir } : void 0);
+        signal.throwIfAborted();
+        if (image.kind === "absent") continue;
+        if (image.kind !== "saved") {
+          if (role === "icon" && image.kind === "url") log(`${note.path}
+${describeBuildinIcon(page.icon)}`);
+          if (image.kind === "format") log(`${note.path}
+${role}.response ${JSON.stringify({ contentType: image.contentType, bytes: image.byteLength })}`);
+          recordFailure(note.path, t("buildinArtworkItemError", { role: roleLabel, reason: mediaError(image) }));
+          continue;
+        }
+        const path = await saveAppearanceImage(app, folder, note.id, role, image, signal);
+        values[role] = role === "icon" ? "image:" + path : path;
+      } catch {
+        signal.throwIfAborted();
+        recordFailure(note.path, t("buildinArtworkItemError", { role: roleLabel, reason: t("buildinArtworkWriteError") }));
+      }
+    }
+    signal.throwIfAborted();
+    const { icon, cover } = values;
+    if (!icon && !cover) continue;
+    try {
+      if (app.vault.getAbstractFileByPath(note.path) !== file) throw new Error();
+      if (icon && properties[FIELDS.icon] !== icon || cover && properties[FIELDS.cover] !== cover) {
+        await app.fileManager.processFrontMatter(file, (fm) => {
+          if (fm[BUILDIN_ID_FIELD] !== note.id) throw new Error();
+          if (icon) fm[FIELDS.icon] = icon;
+          if (cover) fm[FIELDS.cover] = cover;
+        });
+      }
+      if (icon) result.icons++;
+      if (cover) result.covers++;
+    } catch {
+      recordFailure(note.path, t("buildinArtworkPageError", { reason: t("buildinArtworkWriteError") }));
+    }
+  }
+  signal.throwIfAborted();
+  onProgress(notes.length, notes.length);
+  return result;
+}
+async function saveAppearanceImage(app, folder, id, role, image, signal) {
+  const digest = await crypto.subtle.digest("SHA-256", image.bytes);
+  const key = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  signal.throwIfAborted();
+  await ensureFolder(app, folder);
+  const stem = folder + "/" + id + "-" + role + "-" + key;
+  for (let index = 1; ; index++) {
+    signal.throwIfAborted();
+    const path = stem + (index === 1 ? "" : "-" + index) + "." + image.extension;
+    const existing = app.vault.getAbstractFileByPath(path);
+    if (!existing) {
+      await app.vault.createBinary(path, image.bytes);
+      return path;
+    }
+    if (existing instanceof import_obsidian18.TFile) {
+      const bytes = new Uint8Array(await app.vault.readBinary(existing));
+      const incoming = new Uint8Array(image.bytes);
+      if (bytes.length === incoming.length && bytes.every((byte, offset) => byte === incoming[offset])) return path;
+    }
+  }
+}
+function mediaError(value) {
+  if (value.kind === "http") return t("buildinMediaHttp", { status: value.status });
+  if (value.kind === "resolve-error") return value.reason;
+  const key = {
+    url: "buildinMediaNoUrl",
+    network: "buildinMediaUnavailable",
+    timeout: "buildinMediaTimeout",
+    format: "buildinMediaFormat",
+    size: "buildinMediaSize"
+  };
+  return t(key[value.kind]);
+}
+function asRecord(value) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value : void 0;
+}
+function mediaReferences(value, role) {
+  const record = asRecord(value);
+  const type = typeof record?.type === "string" ? record.type : void 0;
+  const references = /* @__PURE__ */ new Set();
+  if (typeof value === "string") references.add(value);
+  const fields = role === "icon" ? ["url", "file_url", "src", "path"] : ["url", "file_url", "src"];
+  for (const key of /* @__PURE__ */ new Set([type, "", "file", "external", "image"])) {
+    if (key === void 0) continue;
+    const payload = key ? record?.[key] : record;
+    if (role === "icon" && typeof payload === "string") references.add(payload);
+    const entry = asRecord(payload);
+    for (const field of fields) {
+      const address = entry?.[field];
+      if (typeof address === "string") references.add(address);
+    }
+  }
+  return references;
+}
+function iconSchema(value, depth = 0) {
+  if (Array.isArray(value)) return "array";
+  const record = asRecord(value);
+  if (!record || depth === 2) return value === null ? "null" : typeof value;
+  return Object.fromEntries(Object.entries(record).filter(([key]) => /^[a-z][a-z0-9_-]{0,39}$/i.test(key)).slice(0, 12).map(([key, field]) => [key, iconSchema(field, depth + 1)]));
+}
+function describeBuildinIcon(value) {
+  const refs = [...mediaReferences(value, "icon")].slice(0, 8).map((raw) => {
+    const reference = raw.trim();
+    if (!reference) return "empty";
+    if (/^data:/i.test(reference)) return "data URL";
+    if (/^blob:/i.test(reference)) return "blob URL";
+    const kind = /^https:/i.test(reference) ? "HTTPS" : /^http:/i.test(reference) ? "HTTP" : reference.startsWith("//") ? "scheme-relative" : /^[a-z][a-z0-9+.-]*:/i.test(reference) ? "custom scheme" : "relative";
+    const path = (reference.split(/[?#]/, 1)[0] ?? "").replace(/^(?:https?:)?\/\/[^/]*/i, "");
+    const family = /^\/?(?:assets\/)?(byte-icon|emoji|icon|s3|attachment|uploads)(?:\/|:)/i.exec(path)?.[1]?.toLowerCase();
+    const extension2 = /\.(svg|png|jpe?g|webp|gif|ico)$/i.exec(path)?.[1]?.toLowerCase();
+    return { kind, family, extension: extension2, segments: path.split("/").filter(Boolean).length };
+  });
+  return `icon.schema ${JSON.stringify(iconSchema(value))}
+icon.references ${JSON.stringify(refs)}`;
+}
+async function downloadMedia(value, role, signal, resolveKey, presets) {
+  if (!value) return { kind: "absent" };
+  const candidates = mediaReferences(value, role);
+  let failure = { kind: "url" };
+  for (const candidate of candidates) {
+    signal.throwIfAborted();
+    const reference = role === "icon" ? candidate.trim().replace(/^\/(?=s3\/)/, "") : candidate.trim();
+    let address = reference;
+    const builtinIcon = role === "icon" && /^\/?(?:assets\/)?(byte-icon\/(?:light|dark)\/[a-z0-9-]+\/[a-z0-9-]+\.svg)$/i.exec(reference);
+    const shortIcon = role === "icon" && asRecord(value)?.type === "external" && /^\/?((?:grey|gray|blue|green|red|orange|yellow|pink|purple|brown|black|white)\/[a-z0-9-]+\.svg)$/i.exec(reference);
+    const fileIconKey = role === "icon" && asRecord(value)?.type === "file" && /^[^:/\\?#\s\u0000-\u001f]+(?:\/[^:\/\\?#\u0000-\u001f]+)+$/.test(reference) && !reference.split("/").some((part) => part === "." || part === "..");
+    const preset = presets && /^cover\/((?:flowus|photo|emoji|graphs|img)[0-9]+)$/.exec(reference);
+    if (builtinIcon) {
+      address = `https://cdn2.buildin.ai/assets/${builtinIcon[1]}`;
+    } else if (shortIcon) {
+      address = `https://cdn2.buildin.ai/assets/byte-icon/light/${shortIcon[1].replace(/^gray\//i, "grey/")}`;
+    } else if (role === "icon" && /^\/\/(?:cdn2\.buildin\.ai|buildin-static\.flowus\.space)\//i.test(reference)) {
+      address = `https:${reference}`;
+    } else if (preset) {
+      const name = preset[1];
+      if (presets.pluginDir && /^(?:flowus|photo)/.test(name)) {
+        const isPhoto = name.startsWith("photo");
+        const extension2 = isPhoto ? "jpeg" : "png";
+        const group = isPhoto ? "nasa-spacex" : "buildin-ai";
+        const path = (0, import_obsidian18.normalizePath)(`${presets.pluginDir}/presets/covers/${group}/${name}.${extension2}`);
+        try {
+          const bytes = await presets.adapter.readBinary(path);
+          if (bytes.byteLength) {
+            return { kind: "saved", bytes, extension: extension2 };
+          }
+        } catch {
+        }
+      }
+      address = `https://buildin-static.flowus.space/${reference}`;
+    } else if (resolveKey && (fileIconKey || /^s3\/[^/\s]+\/[^\r\n]+$/.test(reference))) {
+      try {
+        address = await resolveKey(reference);
+      } catch (error) {
+        signal.throwIfAborted();
+        failure = { kind: "resolve-error", reason: error instanceof Error ? error.message : t("buildinNetworkError") };
+        continue;
+      }
+    }
+    if (!address || !/^https:\/\//i.test(address)) continue;
+    try {
+      const url = new URL(address);
+      if (url.username || url.password || !/\.[a-z]{2,}$/i.test(url.hostname) || /\.(?:local|localhost|internal|test)$/i.test(url.hostname)) continue;
+      const result = await downloadImportImage(url.href, { detectRasterFormat: true });
+      if (result.kind === "saved") return result;
+      failure = result;
+    } catch {
+      continue;
+    }
+  }
+  return failure;
+}
+
+// src/buildin-import-settings.ts
+var BUILDIN_API = "https://api.buildin.ai";
+var CALLBACK_PORT = 8765;
+var REDIRECT_URI = `http://127.0.0.1:${CALLBACK_PORT}/callback`;
+var BUILDIN_RATE_RETRIES = 3;
+var BUILDIN_MAX_RETRY_DELAY = 3e5;
+var DEFAULT_DESTINATION = "_import_buildin_md_api";
+var BuildinImportModal = class extends import_obsidian19.Modal {
+  constructor(app, pluginDir, state, save, refresh, closed) {
+    super(app);
+    this.pluginDir = pluginDir;
+    this.state = state;
+    this.save = save;
+    this.refresh = refresh;
+    this.closed = closed;
+  }
+  lifetime = new AbortController();
+  token = "";
+  checkedId;
+  archive;
+  busy;
+  archivePicker;
+  archiveName;
+  destination;
+  chooseButton;
+  zipButton;
+  zipStatus;
+  apiPanel;
+  clientId;
+  secret;
+  source;
+  authorizeButton;
+  inspectButton;
+  artworkButton;
+  apiStatus;
+  report;
+  importLog;
+  onOpen() {
+    const cleared = this.clearMissingZip();
+    const { signal } = this.lifetime;
+    this.modalEl.addClass("naitflow-modal", "naitflow-notion-modal", "naitflow-buildin-modal");
+    this.containerEl.addEventListener("click", (event) => {
+      if (!event.composedPath().includes(this.modalEl)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }, { capture: true, signal });
+    this.setTitle(t("buildinImport"));
+    const panel = this.contentEl.createDiv("naitflow-notion-panel");
+    const zipStage = panel.createEl("section", { cls: "naitflow-buildin-stage" });
+    zipStage.createEl("h3", { text: t("buildinZipStage") });
+    const zip = zipStage.createDiv("naitflow-buildin-import-form");
+    zip.createDiv({ cls: "naitflow-notion-help", text: t("buildinZipStageDesc") });
+    const pickerRow = zip.createDiv("naitflow-buildin-picker");
+    this.archivePicker = pickerRow.createEl("input", { type: "file", attr: { accept: ".zip,application/zip" } });
+    this.archivePicker.hidden = true;
+    this.chooseButton = new import_obsidian19.ButtonComponent(pickerRow).setButtonText(t("importChooseArchive")).onClick(() => this.archivePicker.click());
+    this.archiveName = pickerRow.createSpan({ cls: "naitflow-notion-help", attr: { "aria-live": "polite" } });
+    this.archivePicker.addEventListener("change", () => {
+      const archive = this.archivePicker.files?.[0];
+      this.archivePicker.value = "";
+      if (!archive) return;
+      this.archive = archive;
+      this.showZipResult();
+      this.syncControls();
+    }, { signal });
+    this.destination = this.field(zip, t("importDestination"));
+    this.destination.value = this.state.zip?.destination ?? DEFAULT_DESTINATION;
+    this.zipButton = new import_obsidian19.ButtonComponent(zip).setButtonText(t("importZip")).setCta().onClick(() => void this.importZip());
+    this.zipStatus = zip.createDiv({ cls: "naitflow-notion-status", attr: { role: "status" } });
+    this.showZipResult();
+    const api = panel.createEl("section", { cls: "naitflow-buildin-stage" });
+    api.createEl("h3", { text: t("buildinArtworkStage") });
+    this.apiPanel = api.createDiv();
+    const steps = this.apiPanel.createEl("ol", { cls: "naitflow-notion-help naitflow-buildin-steps" });
+    const create = steps.createEl("li");
+    create.createEl("a", {
+      cls: "naitflow-buildin-step-title",
+      text: t("notionCreateIntegration"),
+      href: "https://buildin.ai/dev/integrations",
+      attr: { target: "_blank", rel: "noopener noreferrer" }
+    });
+    create.createDiv({ text: t("buildinCreateStep") });
+    const access = steps.createEl("li");
+    access.createEl("strong", { cls: "naitflow-buildin-step-title", text: t("buildinAccessStep") });
+    const checklist = access.createEl("ul", { cls: "naitflow-buildin-checklist" });
+    this.copyableStep(checklist, t("buildinApplicationName"), "NaitFlow");
+    this.copyableStep(checklist, t("buildinRedirectStep"), REDIRECT_URI);
+    const permission = checklist.createEl("li").createEl("label", { cls: "naitflow-buildin-permission" });
+    const checkbox = permission.createEl("input", { type: "checkbox" });
+    checkbox.checked = true;
+    checkbox.disabled = true;
+    permission.createSpan({ text: t("buildinReadOnlyStep") });
+    checklist.createEl("li", { text: t("buildinCreateApplication") });
+    const connect = steps.createEl("li");
+    connect.createEl("strong", { cls: "naitflow-buildin-step-title", text: t("buildinConnectStep") });
+    this.clientId = this.field(connect, t("buildinClientId"));
+    this.secret = this.field(connect, t("buildinClientSecret"), "password");
+    this.authorizeButton = new import_obsidian19.ButtonComponent(connect).setButtonText(t("buildinAuthorize")).onClick(() => void this.authorize());
+    const form = this.apiPanel.createDiv("naitflow-buildin-import-form");
+    this.source = this.field(form, t("buildinSourcePage"));
+    this.source.placeholder = "https://buildin.ai/\u2026";
+    this.source.value = this.state.checkedId ? `https://buildin.ai/${this.state.checkedId}` : "";
+    form.createDiv({ text: t("buildinArtworkSourceHelp"), cls: "naitflow-notion-help" });
+    this.source.addEventListener("input", () => {
+      this.checkedId = void 0;
+      this.syncControls();
+      this.apiStatus.setText(t("buildinAuthorized"));
+    }, { signal });
+    const actions = form.createDiv("naitflow-notion-actions");
+    this.inspectButton = new import_obsidian19.ButtonComponent(actions).setButtonText(t("buildinCheckPage")).onClick(() => void this.inspect());
+    this.artworkButton = new import_obsidian19.ButtonComponent(actions).setButtonText(t("buildinArtworkStart")).setCta().onClick(() => void this.restoreArtwork());
+    this.apiStatus = api.createDiv({ cls: "naitflow-notion-status naitflow-buildin-import-form", attr: { role: "status" } });
+    if (!this.state.zip) this.apiStatus.setText(t("buildinAwaitZip"));
+    else if (!import_obsidian19.Platform.isDesktopApp) this.apiStatus.setText(t("buildinDesktopOnly"));
+    this.report = api.createDiv({ cls: "naitflow-buildin-import-form naitflow-notion-help naitflow-buildin-report", attr: { "aria-live": "polite" } });
+    this.showReport();
+    const log = panel.createEl("details", { cls: "naitflow-buildin-stage" });
+    log.createEl("summary", { text: t("buildinImportLog") });
+    this.importLog = log.createEl("textarea", {
+      cls: "naitflow-buildin-cover-log",
+      attr: { readonly: "", rows: "5", spellcheck: "false", placeholder: t("buildinImportLogEmpty"), "aria-label": t("buildinImportLog") }
+    });
+    this.importLog.value = this.state.log.join("\n");
+    this.syncControls();
+    if (cleared) void this.persist();
+  }
+  clearMissingZip() {
+    const zip = this.state.zip;
+    if (!zip) return false;
+    const { vault } = this.app;
+    if (vault.getAbstractFileByPath(zip.destination) instanceof import_obsidian19.TFolder && vault.getAbstractFileByPath(`${zip.destination}.md`) instanceof import_obsidian19.TFile && zip.notes.some(({ path }) => vault.getAbstractFileByPath(path) instanceof import_obsidian19.TFile)) return false;
+    delete this.state.zip;
+    delete this.state.checkedId;
+    delete this.state.report;
+    return true;
+  }
+  onClose() {
+    if (this.busy) this.log(t("buildinImportCancelled"));
+    this.lifetime.abort();
+    this.secret.value = "";
+    this.token = "";
+    this.archive = void 0;
+    this.contentEl.empty();
+    void this.save().catch(() => {
+    });
+    this.closed();
+  }
+  copyableStep(list, label, value) {
+    const row = list.createEl("li").createDiv("naitflow-buildin-address");
+    row.createSpan({ text: label });
+    row.createEl("code", { text: value });
+    const copy = new import_obsidian19.ButtonComponent(row).setButtonText(t("buildinCopyAddress"));
+    copy.onClick(async () => {
+      try {
+        const view = copy.buttonEl.ownerDocument.defaultView ?? window;
+        await view.navigator.clipboard.writeText(value);
+        if (!this.lifetime.signal.aborted) copy.setButtonText(t("copied"));
+      } catch {
+        if (!this.lifetime.signal.aborted) copy.setButtonText(t("copyFailed"));
+      }
+    });
+  }
+  field(parent, label, type = "text") {
+    const row = parent.createEl("label", { cls: "naitflow-notion-field" });
+    row.createSpan({ text: label });
+    return row.createEl("input", { type, attr: { spellcheck: "false", autocomplete: "off" } });
+  }
+  syncControls() {
+    const active2 = Boolean(this.busy);
+    const api = Boolean(this.state.zip && import_obsidian19.Platform.isDesktopApp);
+    this.chooseButton.setDisabled(active2);
+    this.archiveName.setText(this.archive?.name ?? this.state.zip?.archiveName ?? t("buildinZipNoArchive"));
+    this.destination.disabled = active2;
+    this.zipButton.setDisabled(active2 || !this.archive);
+    this.zipButton.setButtonText(t(this.busy === "zip" ? "importing" : "importZip"));
+    this.apiPanel.inert = !api;
+    this.clientId.disabled = !api || Boolean(this.token) || active2;
+    this.secret.disabled = this.clientId.disabled;
+    this.authorizeButton.setDisabled(this.clientId.disabled);
+    this.source.disabled = !api || !this.token || active2;
+    this.inspectButton.setDisabled(this.source.disabled);
+    this.artworkButton.setDisabled(this.source.disabled || !this.checkedId);
+    this.artworkButton.setButtonText(t(this.busy === "artwork" ? "buildinArtworkApplying" : "buildinArtworkStart"));
+  }
+  async importZip() {
+    if (this.busy || !this.archive) return;
+    const archive = this.archive;
+    const { signal } = this.lifetime;
+    this.busy = "zip";
+    this.syncControls();
+    const destination = this.destination.value;
+    this.zipStatus.removeClass("is-ready", "is-error");
+    this.setStatus(this.zipStatus, t("importReading"));
+    let plan;
+    try {
+      try {
+        plan = await prepareBuildinImport(this.app, archive, signal);
+      } catch {
+        signal.throwIfAborted();
+        const message = t("buildinZipInvalid");
+        this.zipStatus.empty();
+        this.zipStatus.addClass("is-error");
+        const icon = this.zipStatus.createSpan({ cls: "naitflow-buildin-status-icon", attr: { "aria-hidden": "true" } });
+        (0, import_obsidian19.setIcon)(icon, "circle-x");
+        this.zipStatus.createSpan({ text: message });
+        this.log(message);
+        return;
+      }
+      this.zipStatus.empty();
+      const updateProgress = this.createProgress(this.zipStatus);
+      let lastLogged = -1;
+      const result = await plan.execute(destination, ({ current, total }) => {
+        const progress = t("buildinZipProgress", { current, total });
+        updateProgress(current, total, progress);
+        if (current !== lastLogged && (current % 10 === 0 || current === total)) {
+          this.log(progress);
+          lastLogged = current;
+        }
+      });
+      this.state.zip = { archiveName: archive.name, destination: result.destination, attachments: result.attachments, notes: result.buildinNotes };
+      this.state.checkedId = void 0;
+      this.state.report = void 0;
+      this.archive = void 0;
+      this.checkedId = void 0;
+      this.source.value = "";
+      this.destination.value = result.destination;
+      this.showZipResult();
+      this.showReport();
+      this.log(this.zipStatus.textContent ?? "");
+      this.apiStatus.setText(t(!import_obsidian19.Platform.isDesktopApp ? "buildinDesktopOnly" : this.token ? "buildinAuthorized" : "buildinAwaitIntegration"));
+      this.refresh();
+    } catch (error) {
+      if (!signal.aborted) {
+        const message = error instanceof Error ? error.message : "";
+        const status = message === "destination-empty" ? t("importDestinationEmpty") : t("importFailed");
+        this.setStatus(this.zipStatus, status);
+      }
+    } finally {
+      await plan?.close();
+      this.finish();
+      await this.persist();
+    }
+  }
+  showZipResult() {
+    this.zipStatus.empty();
+    this.zipStatus.removeClass("is-error");
+    const zip = this.state.zip;
+    this.zipStatus.toggleClass("is-ready", Boolean(zip));
+    if (!zip) return;
+    const icon = this.zipStatus.createSpan("naitflow-buildin-status-icon");
+    (0, import_obsidian19.setIcon)(icon, "circle-check-big");
+    this.zipStatus.createSpan({ text: t("buildinZipComplete", { pages: zip.notes.length, attachments: zip.attachments }) });
+  }
+  async authorize() {
+    if (this.busy || !this.state.zip || this.token || !import_obsidian19.Platform.isDesktopApp) return;
+    const clientId = this.clientId.value.trim();
+    const clientSecret = this.secret.value.trim();
+    if (!clientId || !clientSecret) {
+      this.setStatus(this.apiStatus, t("buildinCredentialsRequired"));
+      return;
+    }
+    const { signal } = this.lifetime;
+    this.busy = "oauth";
+    this.syncControls();
+    this.setStatus(this.apiStatus, t("buildinAuthorizing"));
+    try {
+      const code = await receiveBuildinCode(clientId, signal);
+      signal.throwIfAborted();
+      const payload = await buildinJson("/oauth/token", { signal, log: this.log, form: new URLSearchParams({
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: REDIRECT_URI,
+        client_id: clientId,
+        client_secret: clientSecret
+      }) });
+      if (typeof payload.access_token !== "string" || !payload.access_token) throw new Error(t("buildinInvalidResponse"));
+      signal.throwIfAborted();
+      this.token = payload.access_token;
+      this.setStatus(this.apiStatus, t("buildinAuthorized"));
+    } catch (error) {
+      this.apiError(error);
+    } finally {
+      this.secret.value = "";
+      this.finish();
+      await this.persist();
+    }
+  }
+  async inspect() {
+    const zip = this.state.zip;
+    if (this.busy || !zip || !this.token) return;
+    this.checkedId = void 0;
+    this.syncControls();
+    const id = buildinPageId(this.source.value);
+    if (!id) {
+      this.setStatus(this.apiStatus, t("buildinInvalidPage"));
+      return;
+    }
+    if (!zip.notes.some((note) => note.id === id)) {
+      this.setStatus(this.apiStatus, t("buildinPageNotInArchive"));
+      return;
+    }
+    const options = this.readOptions();
+    this.busy = "check";
+    this.syncControls();
+    this.setStatus(this.apiStatus, t("buildinChecking"));
+    try {
+      const page = await this.readPage(id, options);
+      options.signal.throwIfAborted();
+      this.log(describeBuildinIcon(page.icon));
+      this.checkedId = id;
+      this.state.checkedId = id;
+      this.setStatus(this.apiStatus, t("buildinPageChecked"));
+    } catch (error) {
+      this.apiError(error);
+    } finally {
+      this.finish();
+      await this.persist();
+    }
+  }
+  async restoreArtwork() {
+    const zip = this.state.zip;
+    const id = this.checkedId;
+    if (this.busy || !zip || !id || !this.token || buildinPageId(this.source.value) !== id) return;
+    const options = this.readOptions();
+    this.busy = "artwork";
+    this.syncControls();
+    this.setStatus(this.apiStatus, t("buildinArtworkApplying"));
+    this.report.hidden = true;
+    const updateProgress = this.createProgress(this.apiStatus);
+    let unauthorized = false;
+    try {
+      const { icons, covers, failures } = await restoreBuildinAppearance(this.app, zip.destination, zip.notes, {
+        signal: options.signal,
+        pluginDir: this.pluginDir,
+        log: this.log,
+        onProgress: (current, total) => updateProgress(current, total, t("buildinArtworkProgress", { current, total })),
+        readPage: async (pageId) => {
+          try {
+            if (unauthorized) throw new BuildinHttpError(401);
+            return await this.readPage(pageId, options);
+          } catch (error) {
+            if (error instanceof BuildinHttpError && error.status === 401) unauthorized = true;
+            throw error;
+          }
+        },
+        resolveMediaKey: async (pageId, key) => {
+          const query = new URLSearchParams({ block_id: pageId, oss_name: key });
+          const payload = await buildinJson(`/v2/files/download-url?${query}`, options);
+          const file = payload.file;
+          return typeof file?.url === "string" ? file.url.trim() : void 0;
+        }
+      });
+      options.signal.throwIfAborted();
+      this.state.report = { icons, covers, failures };
+      this.showReport();
+      if (unauthorized) this.apiError(new BuildinHttpError(401));
+      else this.apiStatus.empty();
+      this.log(t("buildinArtworkResult", { icons, covers, count: failures.length }));
+      this.refresh();
+    } catch (error) {
+      this.apiError(error);
+    } finally {
+      this.report.hidden = false;
+      this.finish();
+      await this.persist();
+    }
+  }
+  createProgress(parent) {
+    const row = parent.createDiv("naitflow-import-progress");
+    const track = row.createDiv({ cls: "naitflow-import-progress-track", attr: { "aria-hidden": "true" } });
+    const bar = track.createDiv("naitflow-import-progress-bar");
+    const label = row.createDiv("naitflow-import-progress-label");
+    return (current, total, text) => {
+      bar.style.width = `${total ? Math.round(current / total * 100) : 0}%`;
+      label.setText(text);
+    };
+  }
+  showReport() {
+    this.report.empty();
+    const report = this.state.report;
+    if (!report) return;
+    const { failures } = report;
+    const legacyCounts = "summary" in report ? /^\D+(\d+)\D+(\d+)\D+(\d+)\D*$/.exec(report.summary) : null;
+    const counts = "icons" in report ? report : legacyCounts && { icons: Number(legacyCounts[1]), covers: Number(legacyCounts[2]) };
+    const heading2 = this.report.createDiv("naitflow-notion-status is-ready");
+    const icon = heading2.createSpan({ cls: "naitflow-buildin-status-icon", attr: { "aria-hidden": "true" } });
+    (0, import_obsidian19.setIcon)(icon, "circle-check-big");
+    heading2.createSpan({ text: t("buildinArtworkComplete") });
+    if (counts) this.report.createDiv({ text: t("buildinArtworkCounts", { icons: counts.icons, covers: counts.covers }) });
+    if (failures.length) {
+      this.report.createDiv({ cls: "naitflow-buildin-report-error", text: t("buildinArtworkErrorCount", { count: failures.length }) });
+      const detail = this.report.createEl("details", { cls: "naitflow-buildin-report-errors" });
+      detail.createEl("summary", { text: t("buildinArtworkErrors") });
+      const list = detail.createEl("ul");
+      for (const failure of failures) {
+        if (typeof failure === "string") list.createEl("li", { text: failure });
+        else {
+          const item = list.createEl("li");
+          item.createEl("strong", { text: failure.path });
+          item.createDiv({ text: failure.message });
+        }
+      }
+    }
+  }
+  readOptions() {
+    return { token: this.token, log: this.log, signal: this.lifetime.signal, cooldown: { until: 0 } };
+  }
+  async readPage(id, options) {
+    const page = await buildinJson(`/v2/pages/${id}`, options);
+    if (typeof page.id !== "string" || page.id.toLowerCase() !== id) throw new Error(t("buildinInvalidResponse"));
+    return page;
+  }
+  apiError(error) {
+    if (this.lifetime.signal.aborted) return;
+    if (error instanceof BuildinHttpError && error.status === 401) {
+      this.token = "";
+      this.checkedId = void 0;
+    }
+    this.setStatus(this.apiStatus, error instanceof Error ? error.message : t("buildinNetworkError"));
+  }
+  finish() {
+    this.busy = void 0;
+    if (!this.lifetime.signal.aborted) this.syncControls();
+  }
+  async persist() {
+    try {
+      await this.save();
+    } catch {
+      if (!this.lifetime.signal.aborted) this.setStatus(this.apiStatus, t("buildinSaveStateError"));
+    }
+  }
+  setStatus(element, text) {
+    element.setText(text);
+    this.log(text);
+  }
+  log = (line) => {
+    if (this.lifetime.signal.aborted) return;
+    this.state.log.push(line);
+    if (this.state.log.length > 3e3) this.state.log.splice(0, this.state.log.length - 3e3);
+    const field = this.importLog;
+    const atBottom = field.scrollHeight - field.scrollTop - field.clientHeight < 8;
+    field.value = this.state.log.join("\n");
+    if (atBottom) field.scrollTop = field.scrollHeight;
+  };
+};
+var BuildinHttpError = class extends Error {
+  constructor(status) {
+    super(status === 429 ? t("buildinRateLimited") : t("buildinHttpError", { status }));
+    this.status = status;
+  }
+};
+async function buildinJson(path, options) {
+  const method = options.form ? "POST" : "GET";
+  const endpoint = `${method} ${path.split("?", 1)[0]}`;
+  const { signal, cooldown, log } = options;
+  for (let attempt = 0; ; attempt++) {
+    signal?.throwIfAborted();
+    if (signal && cooldown) {
+      for (let delay = cooldown.until - Date.now(); delay > 0; delay = cooldown.until - Date.now()) {
+        await waitForBuildinRetry(delay, signal);
+      }
+    }
+    signal?.throwIfAborted();
+    log?.(endpoint);
+    let response;
+    try {
+      response = await (0, import_obsidian19.requestUrl)({
+        url: BUILDIN_API + path,
+        method,
+        body: options.form?.toString(),
+        contentType: options.form ? "application/x-www-form-urlencoded" : void 0,
+        headers: options.token ? { Authorization: `Bearer ${options.token}` } : void 0,
+        throw: false
+      });
+    } catch {
+      signal?.throwIfAborted();
+      log?.(`\u2192 ${endpoint} \xB7 ${t("buildinNetworkError")}`);
+      throw new Error(t("buildinNetworkError"));
+    }
+    signal?.throwIfAborted();
+    const header = Object.entries(response.headers ?? {}).find(([name]) => name.toLowerCase() === "retry-after")?.[1]?.trim();
+    const retryAfter = header && /^(?:\d{1,10}|[a-z]{3}, \d{2} [a-z]{3} \d{4} \d{2}:\d{2}:\d{2} GMT)$/i.test(header) ? header : void 0;
+    const headerLog = retryAfter ? ` \xB7 Retry-After: ${retryAfter}` : "";
+    log?.(`\u2192 HTTP ${response.status} ${endpoint}${headerLog}`);
+    if (response.status === 429 && method === "GET" && signal && cooldown && attempt < BUILDIN_RATE_RETRIES) {
+      const indicatedDelay = retryAfter && /^\d+$/.test(retryAfter) ? Number(retryAfter) * 1e3 : retryAfter ? Date.parse(retryAfter) - Date.now() : 0;
+      const delay = Math.max(Number.isFinite(indicatedDelay) ? indicatedDelay : 0, 1e3 * 2 ** attempt);
+      if (delay <= BUILDIN_MAX_RETRY_DELAY) {
+        const now = Date.now();
+        cooldown.until = Math.max(cooldown.until, now + delay);
+        log?.(`\u2192 ${t("buildinRetryWaiting", { seconds: Math.ceil((cooldown.until - now) / 1e3) })} ${endpoint}`);
+        continue;
+      }
+    }
+    if (response.status < 200 || response.status >= 300) {
+      if (response.status === 403 && method === "GET" && path.startsWith("/v2/pages/")) {
+        try {
+          log?.(`buildin.page.forbidden ${JSON.stringify(describeForbiddenPage(response.json))}`);
+        } catch {
+          log?.("buildin.page.forbidden non-json");
+        }
+      }
+      throw new BuildinHttpError(response.status);
+    }
+    try {
+      const json = response.json;
+      const payload = json.data ?? json;
+      if (payload && typeof payload === "object" && !Array.isArray(payload)) return payload;
+    } catch {
+    }
+    throw new Error(t("buildinInvalidResponse"));
+  }
+}
+function describeForbiddenPage(value) {
+  const body = value;
+  const diagnostic = {};
+  if (body?.code === "forbidden") diagnostic.code = "forbidden";
+  if (typeof body?.request_id === "string" && /^req_[a-z0-9_-]{3,80}$/i.test(body.request_id)) {
+    diagnostic.requestId = body.request_id;
+  }
+  const message = typeof body?.message === "string" ? body.message : "";
+  if (/\bscope\b|\bpages\.read\b/i.test(message)) diagnostic.detail = "scope";
+  else if (/\b(?:plan|subscription|workspace capability)\b/i.test(message)) diagnostic.detail = "workspace capability";
+  else if (/\b(?:page|resource|block)\b.*\b(?:access|permission|denied)\b|\b(?:access|permission)\b.*\b(?:page|resource|block)\b/i.test(message)) {
+    diagnostic.detail = "resource access";
+  }
+  return diagnostic;
+}
+function waitForBuildinRetry(ms, signal) {
+  signal.throwIfAborted();
+  return new Promise((resolve, reject) => {
+    const cancel = () => {
+      clearTimeout(timer);
+      reject(signal.reason);
+    };
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", cancel);
+      resolve();
+    }, ms);
+    signal.addEventListener("abort", cancel, { once: true });
+  });
+}
+async function receiveBuildinCode(clientId, signal) {
+  if (!import_obsidian19.Platform.isDesktopApp || !window.require) throw new Error(t("buildinDesktopOnly"));
+  let http;
+  let openBrowser;
+  try {
+    http = window.require("node:http");
+    const electron = window.require("electron");
+    if (!electron.shell) throw new Error();
+    openBrowser = electron.shell.openExternal.bind(electron.shell);
+  } catch {
+    throw new Error(t("buildinDesktopOnly"));
+  }
+  signal.throwIfAborted();
+  const state = crypto.randomUUID();
+  const authorize = new URL("/oauth/authorize", BUILDIN_API);
+  authorize.search = new URLSearchParams({
+    client_id: clientId,
+    response_type: "code",
+    redirect_uri: REDIRECT_URI,
+    scope: "pages.read blocks.read",
+    state
+  }).toString();
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (error, code) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      signal.removeEventListener("abort", abort);
+      server.close();
+      if (code) resolve(code);
+      else {
+        if (error) server.closeAllConnections?.();
+        reject(error ?? new Error(t("buildinOAuthDenied")));
+      }
+    };
+    const abort = () => {
+      finish(new Error(t("cancel")));
+    };
+    const timer = window.setTimeout(() => finish(new Error(t("buildinOAuthTimeout"))), 18e4);
+    const server = http.createServer((request, response) => {
+      const query = request.url?.startsWith("/callback?") ? new URLSearchParams(request.url.slice(10)) : void 0;
+      if (request.method !== "GET" || query?.get("state") !== state) {
+        response.writeHead(404, { Connection: "close" }).end();
+        return;
+      }
+      const code = query.get("code");
+      response.writeHead(200, {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Cache-Control": "no-store",
+        "Referrer-Policy": "no-referrer",
+        Connection: "close"
+      });
+      response.end(t(code ? "buildinOAuthReturn" : "buildinOAuthDenied"));
+      finish(void 0, code ?? void 0);
+    });
+    server.on("error", () => finish(new Error(t("buildinPortError"))));
+    signal.addEventListener("abort", abort, { once: true });
+    server.listen(CALLBACK_PORT, "127.0.0.1", () => {
+      if (settled) {
+        server.close();
+        return;
+      }
+      void openBrowser(authorize.href).catch(() => finish(new Error(t("buildinBrowserError"))));
+    });
+  });
+}
+
 // src/settings.ts
 var DEFAULT_SETTINGS = {
   assetsFolder: "Assets/NaitFlow",
@@ -14680,35 +16094,54 @@ var DEFAULT_SETTINGS = {
   recentEmoji: [],
   recentIcons: [],
   openTreeOnStartup: true,
+  pageOrder: [],
   trashRecords: []
 };
-var NaitFlowSettingTab = class extends import_obsidian18.PluginSettingTab {
+var NaitFlowSettingTab = class extends import_obsidian20.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
-    plugin.register(() => this.notionImport?.dispose());
+    plugin.register(() => this.hide());
   }
   notionImport;
+  buildinImport;
   display() {
-    this.notionImport?.dispose();
+    this.hide();
     this.containerEl.empty();
     this.containerEl.createEl("h2", { text: "NaitFlow" });
     this.containerEl.createEl("p", { cls: "naitflow-settings-intro", text: t("settingsIntro") });
     this.containerEl.createEl("h3", { text: t("importData") });
-    new import_obsidian18.Setting(this.containerEl).setName(t("importFormats")).setDesc(t("importFormatsDesc")).addButton((button) => button.setButtonText(t("importZip")).setCta().onClick(() => this.plugin.openImporter()));
+    new import_obsidian20.Setting(this.containerEl).setName(t("importFormats")).setDesc(t("importFormatsDesc")).addButton((button) => button.setButtonText(t("importZip")).setCta().onClick(() => this.plugin.openImporter()));
     this.notionImport = new NotionImportSettings(this.plugin, this.containerEl);
-    new import_obsidian18.Setting(this.containerEl).setName(t("mediaFolder")).setDesc(t("mediaFolderDesc")).addText((text) => text.setValue(this.plugin.settings.assetsFolder).onChange(async (value) => {
+    new import_obsidian20.Setting(this.containerEl).setName(t("buildinImport")).setDesc(t("buildinImportDesc")).addButton((button) => button.setButtonText(t("importStart")).onClick(() => {
+      if (this.buildinImport) return;
+      const state = this.plugin.settings.buildinImport ??= { log: [] };
+      this.buildinImport = new BuildinImportModal(
+        this.app,
+        this.plugin.manifest.dir,
+        state,
+        () => this.plugin.saveSettings(),
+        () => this.plugin.refreshUi(),
+        () => {
+          this.buildinImport = void 0;
+          if (button.buttonEl.isConnected) button.buttonEl.focus();
+        }
+      );
+      this.buildinImport.open();
+    }));
+    this.containerEl.createEl("h3", { text: t("otherSettings") });
+    new import_obsidian20.Setting(this.containerEl).setName(t("mediaFolder")).setDesc(t("mediaFolderDesc")).addText((text) => text.setValue(this.plugin.settings.assetsFolder).onChange(async (value) => {
       this.plugin.settings.assetsFolder = value.trim() || DEFAULT_SETTINGS.assetsFolder;
       await this.plugin.saveSettings();
     }));
-    new import_obsidian18.Setting(this.containerEl).setName("Unsplash Access Key").setDesc(t("unsplashKeyDesc")).addText((text) => {
+    new import_obsidian20.Setting(this.containerEl).setName("Unsplash Access Key").setDesc(t("unsplashKeyDesc")).addText((text) => {
       text.inputEl.type = "password";
       text.setPlaceholder(t("unsplashKeyPlaceholder")).setValue(this.plugin.settings.unsplashAccessKey).onChange(async (value) => {
         this.plugin.settings.unsplashAccessKey = value.trim();
         await this.plugin.saveSettings();
       });
     });
-    new import_obsidian18.Setting(this.containerEl).setName(t("openTreeOnStartup")).addToggle((toggle) => toggle.setValue(this.plugin.settings.openTreeOnStartup).onChange(async (value) => {
+    new import_obsidian20.Setting(this.containerEl).setName(t("openTreeOnStartup")).addToggle((toggle) => toggle.setValue(this.plugin.settings.openTreeOnStartup).onChange(async (value) => {
       this.plugin.settings.openTreeOnStartup = value;
       await this.plugin.saveSettings();
     }));
@@ -14716,16 +16149,19 @@ var NaitFlowSettingTab = class extends import_obsidian18.PluginSettingTab {
   hide() {
     this.notionImport?.dispose();
     this.notionImport = void 0;
+    this.buildinImport?.close();
   }
 };
 
 // src/main.ts
-var NaitFlowPlugin = class extends import_obsidian19.Plugin {
+var NaitFlowPlugin = class extends import_obsidian21.Plugin {
   settings = { ...DEFAULT_SETTINGS, recentEmoji: [], recentIcons: [], trashRecords: [] };
   headers;
   slashMenu;
   emojiFont;
   emojiFontDocuments = /* @__PURE__ */ new WeakSet();
+  settingsSave = Promise.resolve();
+  movingPage;
   async onload() {
     await this.loadSettings();
     this.loadEmojiFont(document, window);
@@ -14760,14 +16196,15 @@ var NaitFlowPlugin = class extends import_obsidian19.Plugin {
     this.registerEvent(this.app.vault.on("create", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("delete", () => this.refreshUi()));
     this.registerEvent(this.app.vault.on("rename", (file, oldPath) => {
+      this.updatePageOrderPaths(file, oldPath);
       this.refreshUi();
-      void this.renamePairedFolder(file, oldPath);
+      if (file !== this.movingPage) void this.renamePairedFolder(file, oldPath);
     }));
     this.app.workspace.onLayoutReady(() => {
       this.headers.schedule();
       if (this.settings.openTreeOnStartup && !this.app.workspace.getLeavesOfType(VIEW_TYPE_NAITFLOW).length) void this.activateTree();
       const conflicts = ["iconic", "obsidian-icon-folder", "banners-reloaded", "pixel-banner"].filter((id) => this.isPluginEnabled(id));
-      if (conflicts.length) new import_obsidian19.Notice(t("pluginConflict"), 7e3);
+      if (conflicts.length) new import_obsidian21.Notice(t("pluginConflict"), 7e3);
     });
   }
   onunload() {
@@ -14814,9 +16251,97 @@ var NaitFlowPlugin = class extends import_obsidian19.Plugin {
   }
   async loadSettings() {
     this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    if (!Array.isArray(this.settings.pageOrder)) this.settings.pageOrder = [];
   }
   async saveSettings() {
-    await this.saveData(this.settings);
+    this.settingsSave = this.settingsSave.catch(() => {
+    }).then(() => this.saveData(this.settings));
+    await this.settingsSave;
+  }
+  async savePageOrder(siblings) {
+    const previous = this.settings.pageOrder;
+    const paths = siblings.map((file) => file.path);
+    const updated = new Set(paths);
+    const next = [...paths, ...previous.filter((path) => !updated.has(path))];
+    this.settings.pageOrder = next;
+    try {
+      await this.saveSettings();
+    } catch (error) {
+      if (this.settings.pageOrder === next) this.settings.pageOrder = previous;
+      throw error;
+    } finally {
+      this.refreshUi();
+    }
+  }
+  updatePageOrderPaths(file, oldPath) {
+    const previous = this.settings.pageOrder;
+    const next = previous.map(
+      (path) => path === oldPath || file instanceof import_obsidian21.TFolder && path.startsWith(`${oldPath}/`) ? file.path + path.slice(oldPath.length) : path
+    );
+    if (next.every((path, index) => path === previous[index])) return;
+    this.settings.pageOrder = next;
+    void this.saveSettings().catch(() => new import_obsidian21.Notice(t("pageOrderSaveFailed")));
+  }
+  async linkSubpage(parent, child) {
+    try {
+      await addSubpageLink(this.app, parent, child);
+    } catch {
+      new import_obsidian21.Notice(t("subpageLinkFailed"));
+    }
+  }
+  async movePage(file, parent) {
+    if (this.movingPage) throw new Error(t("movePageBusy"));
+    this.movingPage = file;
+    const from = file.path;
+    const fromFolder = pageFolderPath(from);
+    const folderPath = parent ? pageFolderPath(parent.path) : "";
+    const to = (0, import_obsidian21.normalizePath)(folderPath ? `${folderPath}/${file.name}` : file.name);
+    const toFolder = pageFolderPath(to);
+    const vault = this.app.vault;
+    try {
+      if (folderPath === fromFolder || folderPath.startsWith(`${fromFolder}/`)) throw new Error(t("movePageInvalid"));
+      if (vault.getAbstractFileByPath(from) !== file) throw new Error(t("movePageInvalid"));
+      if (parent && vault.getAbstractFileByPath(parent.path) !== parent) throw new Error(t("movePageInvalid"));
+      const legacyParent = readPageMeta(this.app, file).parent;
+      if (from === to) {
+        if (legacyParent) await setField(this.app, file, FIELDS.parent, null);
+        if (parent) await this.linkSubpage(parent, file);
+        return;
+      }
+      if (await vault.adapter.exists(to) || await vault.adapter.exists(toFolder)) throw new Error(t("movePageConflict"));
+      const paired = vault.getAbstractFileByPath(fromFolder);
+      const legacyChildren = vault.getMarkdownFiles().flatMap((child) => {
+        const reference = readPageMeta(this.app, child).parent;
+        const parent2 = reference ? this.app.metadataCache.getFirstLinkpathDest(reference, child.path) : null;
+        return parent2 && child !== file && (parent2 === file || parent2.path.startsWith(`${fromFolder}/`)) ? [{ child, parent: parent2 }] : [];
+      });
+      const needsFolder = Boolean(folderPath && !vault.getAbstractFileByPath(folderPath));
+      try {
+        if (folderPath) await ensureFolder(this.app, folderPath);
+        await this.app.fileManager.renameFile(file, to);
+        if (paired instanceof import_obsidian21.TFolder) await this.app.fileManager.renameFile(paired, toFolder);
+      } catch (error) {
+        try {
+          if (paired instanceof import_obsidian21.TFolder && paired.path === toFolder) await this.app.fileManager.renameFile(paired, fromFolder);
+          if (file.path === to) await this.app.fileManager.renameFile(file, from);
+        } catch {
+          new import_obsidian21.Notice(t("movePageRollbackFailed"), 8e3);
+        }
+        const created = needsFolder ? vault.getAbstractFileByPath(folderPath) : null;
+        if (created instanceof import_obsidian21.TFolder && !created.children.length) await vault.delete(created).catch(() => {
+        });
+        throw error;
+      }
+      const metadata = legacyChildren.map(({ child, parent: parent2 }) => setField(this.app, child, FIELDS.parent, pageFolderPath(parent2.path)));
+      if (legacyParent) metadata.push(setField(this.app, file, FIELDS.parent, null));
+      const updates = await Promise.allSettled(metadata);
+      if (paired instanceof import_obsidian21.TFolder) updates.push(...await Promise.allSettled([relocatePageMedia(this.app, fromFolder, toFolder)]));
+      if (updates.some((update) => update.status === "rejected")) new import_obsidian21.Notice(t("movePageMetadataFailed"), 8e3);
+      if (parent) await this.linkSubpage(parent, file);
+    } finally {
+      this.movingPage = void 0;
+      this.refreshUi();
+    }
   }
   async addTrashRecord(record) {
     this.settings.trashRecords = [record, ...this.settings.trashRecords.filter((item) => item.id !== record.id)].slice(0, 500);
@@ -14832,28 +16357,28 @@ var NaitFlowPlugin = class extends import_obsidian19.Plugin {
   }
   /** Keeps `Page.md` and its sibling `Page/` together after a native rename or move. */
   async renamePairedFolder(file, oldPath) {
-    if (!(file instanceof import_obsidian19.TFile) || file.extension.toLowerCase() !== "md") return;
+    if (!(file instanceof import_obsidian21.TFile) || file.extension.toLowerCase() !== "md") return;
     const previousPath = pageFolderPath(oldPath);
     const oldFolder = this.app.vault.getAbstractFileByPath(previousPath);
-    if (!(oldFolder instanceof import_obsidian19.TFolder)) return;
+    if (!(oldFolder instanceof import_obsidian21.TFolder)) return;
     const nextPath = pageFolderPath(file.path);
     const existing = this.app.vault.getAbstractFileByPath(nextPath);
     if (existing && existing !== oldFolder) {
-      new import_obsidian19.Notice("NaitFlow: the matching page folder was not renamed because the destination already exists.", 8e3);
+      new import_obsidian21.Notice("NaitFlow: the matching page folder was not renamed because the destination already exists.", 8e3);
       return;
     }
     try {
       await this.app.fileManager.renameFile(oldFolder, nextPath);
     } catch (error) {
       console.error("NaitFlow: failed to rename matching page folder", error);
-      new import_obsidian19.Notice("NaitFlow: could not rename the matching page folder.", 8e3);
+      new import_obsidian21.Notice("NaitFlow: could not rename the matching page folder.", 8e3);
       return;
     }
     try {
       await relocatePageMedia(this.app, previousPath, nextPath);
     } catch (error) {
       console.error("NaitFlow: failed to update page media paths", error);
-      new import_obsidian19.Notice(t("renameMediaFailed"), 8e3);
+      new import_obsidian21.Notice(t("renameMediaFailed"), 8e3);
     }
   }
   loadEmojiFont(targetDocument, targetWindow) {

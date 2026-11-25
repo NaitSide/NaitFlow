@@ -1,4 +1,4 @@
-import { App, FileSystemAdapter, ItemView, Menu, Notice, normalizePath, Platform, setIcon, TFile, TFolder, WorkspaceLeaf } from "obsidian";
+import { App, FileSystemAdapter, ItemView, Menu, Notice, normalizePath, Platform, setIcon, setTooltip, TFile, TFolder, WorkspaceLeaf } from "obsidian";
 import { displayName, ensureFolder, pageFolderPath, readPageMeta } from "./model";
 import { renderPageIcon } from "./icon-renderer";
 import { localeCode, t } from "./i18n";
@@ -10,29 +10,59 @@ export const VIEW_TYPE_NAITFLOW = "naitflow-pages";
 interface PageNode {
   file: TFile;
   children: PageNode[];
+  parent?: PageNode;
 }
 
-function buildPageTree(app: App): PageNode[] {
+type PageDropPosition = "before" | "inside" | "after";
+
+function buildPageTree(app: App, order: string[] = []): PageNode[] {
   const files = app.vault.getMarkdownFiles();
-  const byPath = new Map(files.map((file) => [file.path, { file, children: [] as PageNode[] }]));
+  const byPath = new Map<string, PageNode>(files.map((file) => [file.path, { file, children: [] }]));
+  const parents = new Map<PageNode, PageNode>();
+  for (const node of byPath.values()) {
+    const parent = getFolderPage(app, node.file.parent, byPath) ?? getLegacyParent(app, node.file, byPath);
+    if (parent && parent !== node) parents.set(node, parent);
+  }
   const roots: PageNode[] = [];
   for (const node of byPath.values()) {
-    const parent = getPhysicalParent(app, node.file, byPath) ?? getLegacyParent(app, node.file, byPath);
-    if (parent && parent !== node) parent.children.push(node);
+    let parent = parents.get(node);
+    if (!parent) {
+      // Imported archives can have wrapper folders without their own page.
+      for (let folder = node.file.parent?.parent; folder && !parent; folder = folder.parent) {
+        const candidate = getFolderPage(app, folder, byPath);
+        if (!candidate) continue;
+        // An existing legacy parent can point back into this folder.
+        const seen = new Set([node]);
+        let ancestor: PageNode | undefined = candidate;
+        while (ancestor && !seen.has(ancestor)) {
+          seen.add(ancestor);
+          ancestor = parents.get(ancestor);
+        }
+        if (!ancestor) {
+          parent = candidate;
+          parents.set(node, parent);
+        }
+      }
+    }
+    if (parent) {
+      node.parent = parent;
+      parent.children.push(node);
+    }
     else roots.push(node);
   }
+  const ranks = new Map(order.map((path, index) => [path, index]));
   const sort = (items: PageNode[]): void => {
-    items.sort((a, b) => displayName(a.file).localeCompare(displayName(b.file), localeCode()));
+    items.sort((a, b) => (ranks.get(a.file.path) ?? order.length) - (ranks.get(b.file.path) ?? order.length)
+      || displayName(a.file).localeCompare(displayName(b.file), localeCode()));
     items.forEach((item) => sort(item.children));
   };
   sort(roots);
   return roots;
 }
 
-function getPhysicalParent(app: App, file: TFile, nodes: Map<string, PageNode>): PageNode | undefined {
-  const folderPath = file.parent?.path;
-  if (!folderPath) return undefined;
-  const parentFile = app.vault.getAbstractFileByPath(`${folderPath}.md`);
+function getFolderPage(app: App, folder: TFolder | null, nodes: Map<string, PageNode>): PageNode | undefined {
+  if (!folder?.path) return undefined;
+  const parentFile = app.vault.getAbstractFileByPath(`${folder.path}.md`);
   return parentFile instanceof TFile ? nodes.get(parentFile.path) : undefined;
 }
 
@@ -47,6 +77,11 @@ export class NaitFlowTreeView extends ItemView {
   private readonly expanded = new Set<string>();
   private treeResizeObserver?: ResizeObserver;
   private treeFooter?: HTMLElement;
+  private draggedPage?: PageNode;
+  private dragSourceRow?: HTMLElement;
+  private dropRow?: HTMLElement;
+  private renderAfterDrag = false;
+  private dropPending = false;
 
   constructor(leaf: WorkspaceLeaf, private readonly plugin: NaitFlowPlugin) {
     super(leaf);
@@ -63,12 +98,17 @@ export class NaitFlowTreeView extends ItemView {
   }
 
   override async onClose(): Promise<void> {
+    this.clearPageDrag();
     this.treeResizeObserver?.disconnect();
     this.treeFooter?.remove();
     this.containerEl.removeClass("naitflow-tree-host");
   }
 
   render(): void {
+    if (this.draggedPage) {
+      this.renderAfterDrag = true;
+      return;
+    }
     const root = this.contentEl;
     root.empty();
     root.addClass("naitflow-tree");
@@ -78,9 +118,9 @@ export class NaitFlowTreeView extends ItemView {
     setIcon(add, "plus");
     add.onclick = () => void this.createPage();
 
-    const nodes = this.buildTree();
+    const nodes = buildPageTree(this.app, this.plugin.settings.pageOrder);
     const list = root.createDiv("naitflow-tree-list");
-    for (const node of nodes) this.renderNode(list, node, 0);
+    for (const node of nodes) this.renderNode(list, node, nodes, 0);
     if (!nodes.length) list.createDiv({ cls: "naitflow-empty", text: t("createFirstPage") });
     this.renderTrashFooter();
     this.syncScrollbarState();
@@ -114,11 +154,7 @@ export class NaitFlowTreeView extends ItemView {
     });
   }
 
-  private buildTree(): PageNode[] {
-    return buildPageTree(this.app);
-  }
-
-  private renderNode(parent: HTMLElement, node: PageNode, depth: number): void {
+  private renderNode(parent: HTMLElement, node: PageNode, siblings: PageNode[], depth: number): void {
     const row = parent.createDiv("naitflow-tree-row");
     row.dataset.path = node.file.path;
     row.style.setProperty("--naitflow-depth", String(depth));
@@ -139,28 +175,132 @@ export class NaitFlowTreeView extends ItemView {
     const title = row.createEl("button", { cls: "naitflow-tree-title" });
     title.createSpan({ cls: "naitflow-tree-title-label", text: displayName(node.file) });
     title.onclick = () => void this.app.workspace.getLeaf(false).openFile(node.file);
+    this.bindPageDrag(row, title, node, siblings);
+
+    const add = row.createEl("button", { cls: "naitflow-tree-add", attr: { "aria-label": t("nestedPage") } });
+    setIcon(add, "plus");
+    setTooltip(add, t("addSubpage"), { placement: "bottom", classes: ["naitflow-tree-action-tooltip"], gap: 6, delay: 800 });
+    add.onclick = (event) => { event.stopPropagation(); void this.createPage(node.file); };
 
     const more = row.createEl("button", { cls: "naitflow-tree-more", attr: { "aria-label": t("pageMenu") } });
     setIcon(more, "ellipsis");
+    setTooltip(more, t("pageMenu"), { placement: "bottom", classes: ["naitflow-tree-action-tooltip"], gap: 6, delay: 800 });
     more.onclick = (event) => {
       event.stopPropagation();
       this.openPageMenu(event, node.file);
     };
 
-    const add = row.createEl("button", { cls: "naitflow-tree-add", attr: { "aria-label": t("nestedPage") } });
-    setIcon(add, "plus");
-    add.onclick = (event) => { event.stopPropagation(); void this.createPage(node.file); };
-
     row.oncontextmenu = (event) => this.openPageMenu(event, node.file);
 
     if (isExpanded) {
       const children = parent.createDiv("naitflow-tree-children");
-      for (const child of node.children) this.renderNode(children, child, depth + 1);
+      for (const child of node.children) this.renderNode(children, child, node.children, depth + 1);
       const addChild = children.createEl("button", { cls: "naitflow-tree-add-child" });
       addChild.style.setProperty("--naitflow-depth", String(depth + 1));
       setIcon(addChild, "plus");
       addChild.createSpan({ text: t("addSubpage") });
       addChild.onclick = () => void this.createPage(node.file);
+    }
+  }
+
+  private bindPageDrag(row: HTMLElement, title: HTMLElement, node: PageNode, siblings: PageNode[]): void {
+    title.draggable = true;
+    title.ondragstart = (event) => {
+      if (!event.dataTransfer || this.dropPending) {
+        event.preventDefault();
+        return;
+      }
+      event.stopPropagation();
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("application/x-naitflow-page", "");
+      this.draggedPage = node;
+      this.dragSourceRow = row;
+      row.classList.add("is-drag-source");
+    };
+    title.ondragend = () => this.finishPageDrag();
+    row.ondragover = (event) => {
+      const position = this.pageDropPosition(event, row, node);
+      if (!position) {
+        this.markPageDrop();
+        return;
+      }
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
+      this.markPageDrop(row, position);
+    };
+    row.ondragleave = (event) => {
+      if (this.dropRow === row && !row.contains(event.relatedTarget as Node | null)) this.markPageDrop();
+    };
+    row.ondrop = (event) => {
+      const moving = this.draggedPage;
+      const position = this.pageDropPosition(event, row, node);
+      if (!moving || !position) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.finishPageDrag();
+      void this.dropPage(moving, node, siblings, position);
+    };
+  }
+
+  private pageDropPosition(event: DragEvent, row: HTMLElement, target: PageNode): PageDropPosition | undefined {
+    if (!this.draggedPage) return;
+    for (let node: PageNode | undefined = target; node; node = node.parent) {
+      if (node === this.draggedPage) return;
+    }
+    const rect = row.getBoundingClientRect();
+    const offset = (event.clientY - rect.top) / rect.height;
+    return offset < 0.25 ? "before" : offset > 0.75 ? "after" : "inside";
+  }
+
+  private markPageDrop(row?: HTMLElement, position?: PageDropPosition): void {
+    if (this.dropRow && this.dropRow !== row) delete this.dropRow.dataset.pageDrop;
+    this.dropRow = row;
+    if (row && position) row.dataset.pageDrop = position;
+  }
+
+  private clearPageDrag(): void {
+    this.dragSourceRow?.classList.remove("is-drag-source");
+    this.dragSourceRow = undefined;
+    this.draggedPage = undefined;
+    this.markPageDrop();
+  }
+
+  private finishPageDrag(): void {
+    this.clearPageDrag();
+    if (this.renderAfterDrag) {
+      this.renderAfterDrag = false;
+      this.render();
+    }
+  }
+
+  private async dropPage(moving: PageNode, target: PageNode, siblings: PageNode[], position: PageDropPosition): Promise<void> {
+    const parent = position === "inside" ? target : target.parent;
+    const group = position === "inside" ? target.children : siblings;
+    const files = group.filter((node) => node !== moving).map((node) => node.file);
+    const index = position === "inside" ? files.length : files.indexOf(target.file) + Number(position === "after");
+    files.splice(index, 0, moving.file);
+    this.dropPending = true;
+    try {
+      const vault = this.app.vault;
+      if (vault.getAbstractFileByPath(moving.file.path) !== moving.file
+        || vault.getAbstractFileByPath(target.file.path) !== target.file) throw new Error(t("movePageInvalid"));
+      if (parent !== moving.parent) {
+        await this.plugin.movePage(moving.file, parent?.file);
+      } else if (position === "inside") {
+        await this.plugin.linkSubpage(target.file, moving.file);
+      }
+      if (position === "inside") this.expanded.add(target.file.path);
+    } catch (error) {
+      new Notice(t("movePageFailed", { error: String(error) }));
+      this.dropPending = false;
+      return;
+    }
+    try {
+      await this.plugin.savePageOrder(files);
+    } catch {
+      new Notice(t("pageOrderSaveFailed"));
+    } finally {
+      this.dropPending = false;
     }
   }
 
@@ -206,7 +346,7 @@ export class NaitFlowTreeView extends ItemView {
     menu.addItem((item) => item.setTitle(t("openInNewWindow")).setIcon("external-link").onClick(() => void this.openInLeaf(file, this.app.workspace.getLeaf("window"))));
     menu.addSeparator();
     menu.addItem((item) => item.setTitle(t("renamePage")).setIcon("pencil").onClick(() => new RenamePagePopover(this.app, file).open(event)));
-    menu.addItem((item) => item.setTitle(t("movePage")).setIcon("folder-input").onClick(() => new MovePagePopover(this.app, file).open(event)));
+    menu.addItem((item) => item.setTitle(t("movePage")).setIcon("folder-input").onClick(() => new MovePagePopover(this.app, this.plugin, file).open(event)));
     menu.addItem((item) => item.setTitle(t("duplicatePage")).setIcon("copy").onClick(() => void this.duplicatePage(file)));
     menu.addItem((item) => item.setTitle(t("addBookmark")).setIcon("bookmark-plus").onClick(() => void this.addBookmark(file)));
     menu.addSeparator();
@@ -443,7 +583,7 @@ class MovePagePopover {
   private popover: HTMLElement | null = null;
   private outsideHandler: ((event: PointerEvent) => void) | null = null;
 
-  constructor(private readonly app: App, private readonly file: TFile) {}
+  constructor(private readonly app: App, private readonly plugin: NaitFlowPlugin, private readonly file: TFile) {}
 
   open(anchor: MouseEvent): void {
     this.close();
@@ -478,7 +618,7 @@ class MovePagePopover {
     list.empty();
     const normalizedQuery = query.trim().toLocaleLowerCase(localeCode());
     if (!normalizedQuery) list.createDiv({ cls: "naitflow-move-heading", text: t("movePageSuggested") });
-    const nodes = this.filterNodes(buildPageTree(this.app), normalizedQuery);
+    const nodes = this.filterNodes(buildPageTree(this.app, this.plugin.settings.pageOrder), normalizedQuery);
     if (!nodes.length) {
       list.createDiv({ cls: "naitflow-move-empty", text: t("nothingFound") });
       return;
@@ -526,15 +666,8 @@ class MovePagePopover {
   }
 
   private async moveToPage(destination: TFile): Promise<void> {
-    await this.moveToFolder(pageFolderPath(destination.path));
-  }
-
-  private async moveToFolder(folderPath: string): Promise<void> {
     try {
-      if (folderPath) await ensureFolder(this.app, folderPath);
-      const nextPath = normalizePath(folderPath ? `${folderPath}/${this.file.name}` : this.file.name);
-      if (nextPath === this.file.path) return;
-      await this.app.fileManager.renameFile(this.file, nextPath);
+      await this.plugin.movePage(this.file, destination);
       this.close();
     } catch (error) {
       new Notice(t("movePageFailed", { error: String(error) }));

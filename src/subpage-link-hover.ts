@@ -38,7 +38,9 @@ function openSubpage(app: App, event: MouseEvent, target: TFile, source: string)
   if (event.type === "auxclick" && event.button !== 1) return;
   event.preventDefault();
   event.stopPropagation();
-  void app.workspace.openLinkText(target.path, source, Keymap.isModEvent(event) || event.button === 1);
+  const newLeaf = Keymap.isModEvent(event) || event.button === 1;
+  if (target.path.includes("#")) void app.workspace.getLeaf(newLeaf).openFile(target);
+  else void app.workspace.openLinkText(target.path, source, newLeaf);
 }
 
 class SubpageLink extends WidgetType {
@@ -80,6 +82,20 @@ function standaloneLinks(doc: string): Map<number, { target: string; encoded: bo
     }
   }
   return links;
+}
+
+export async function addSubpageLink(app: App, parent: TFile, child: TFile): Promise<void> {
+  const markdown = app.fileManager.generateMarkdownLink(child, parent.path, undefined, child.basename);
+  await app.vault.process(parent, (content) => {
+    for (const [from, link] of standaloneLinks(content)) {
+      const lineEnd = content.indexOf("\n", from);
+      const line = content.slice(from, lineEnd < 0 ? undefined : lineEnd).trim();
+      if (line === markdown || findSubpage(app, link.target, parent.path, link.encoded) === child) return content;
+    }
+    const newline = content.includes("\r\n") ? "\r\n" : "\n";
+    const separator = !content || content.endsWith(newline + newline) ? "" : content.endsWith(newline) ? newline : newline + newline;
+    return content + separator + markdown + newline;
+  });
 }
 
 function readingPageLinks(paragraph: HTMLElement): HTMLElement[] {

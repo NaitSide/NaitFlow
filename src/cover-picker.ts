@@ -19,6 +19,8 @@ interface BuiltInCover {
 }
 
 const NASA_ARCHIVE_COVER_ROOT = "presets/covers/nasa";
+const NASA_SPACEX_COVER_ROOT = "presets/covers/nasa-spacex";
+const BUILDIN_COVER_ROOT = "presets/covers/buildin-ai";
 const ARTEMIS_COVER_ROOT = "presets/covers/artemis-ii";
 const WEBB_COVER_ROOT = "presets/covers/webb";
 const MET_HUDSON_COVER_ROOT = "presets/covers/met-hudson";
@@ -62,6 +64,14 @@ const NASA_ARCHIVE_COVERS: BuiltInCover[] = [
   { file: "nasa-sls-night-launch.jpg", title: t("nightSlsLaunch") },
   { file: "nasa-blue-marble.jpg", title: "Blue Marble" }
 ];
+const NASA_SPACEX_COVERS: BuiltInCover[] = Array.from({ length: 16 }, (_, index) => ({
+  file: `photo${index + 1}.jpeg`,
+  title: t("nasaSpaceXCover", { number: index + 1 })
+}));
+const BUILDIN_COVERS: BuiltInCover[] = Array.from({ length: 9 }, (_, index) => ({
+  file: `flowus${index + 3}.png`,
+  title: t("buildinGalleryCover", { number: index + 3 })
+}));
 const MET_HUDSON_COVERS: BuiltInCover[] = [
   { file: "hudson-river-scene-kensett.jpg", title: "Hudson River Scene — John Frederick Kensett" },
   { file: "river-scene-durand.jpg", title: "River Scene — Asher Brown Durand" },
@@ -171,6 +181,8 @@ export class CoverPickerModal extends Modal {
     this.renderBuiltInGroup(parent, "Artemis II", "https://www.nasa.gov/mission/artemis-ii/", ARTEMIS_COVER_ROOT, ARTEMIS_COVERS);
     this.renderBuiltInGroup(parent, "James Webb Telescope", "https://science.nasa.gov/mission/webb/", WEBB_COVER_ROOT, WEBB_COVERS);
     this.renderBuiltInGroup(parent, "NASA Archive", "https://www.flickr.com/photos/nasacommons/", NASA_ARCHIVE_COVER_ROOT, NASA_ARCHIVE_COVERS);
+    this.renderBuiltInGroup(parent, t("nasaSpaceXGallery"), "https://buildin.ai/", NASA_SPACEX_COVER_ROOT, NASA_SPACEX_COVERS);
+    this.renderBuiltInGroup(parent, t("buildinCoverGallery"), "https://buildin.ai/", BUILDIN_COVER_ROOT, BUILDIN_COVERS);
     this.renderBuiltInGroup(parent, "The MET Museum · Japanese Prints", "https://www.metmuseum.org/art/collection", MET_JAPANESE_COVER_ROOT, MET_JAPANESE_COVERS);
     this.renderBuiltInGroup(parent, "The MET Museum · Hudson River School", "https://www.metmuseum.org/art/collection", MET_HUDSON_COVER_ROOT, MET_HUDSON_COVERS);
   }

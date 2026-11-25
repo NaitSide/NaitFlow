@@ -1,4 +1,4 @@
-import { App, getFrontMatterInfo, htmlToMarkdown, normalizePath, parseYaml, TFile, TFolder } from "obsidian";
+import { App, getFrontMatterInfo, htmlToMarkdown, normalizePath, parseYaml, requestUrl, TAbstractFile, TFile, TFolder } from "obsidian";
 import { BlobReader, BlobWriter, configure, Entry, TextWriter, ZipReader } from "@zip.js/zip.js";
 import { ensureFolder, FIELDS } from "./model";
 
@@ -53,8 +53,13 @@ class LoadedArchive {
 
   static async open(file: Blob): Promise<LoadedArchive> {
     const archive = new LoadedArchive();
-    await archive.readZip(file);
-    return archive;
+    try {
+      await archive.readZip(file);
+      return archive;
+    } catch (error) {
+      await archive.close();
+      throw error;
+    }
   }
 
   async close(): Promise<void> {
@@ -95,6 +100,7 @@ interface ImportPage {
   targetTitle: string;
   targetPath: string;
   targetFolderPath: string;
+  filesFolder?: string;
   icon?: string;
   cover?: string;
   coverY?: number;
@@ -105,6 +111,7 @@ interface ImportAttachment {
   readonly source: ImportSource;
   readonly sourcePath: string;
   readonly targetPath: string;
+  readonly owner?: ImportPage;
 }
 
 interface ResolvedTarget {
@@ -123,12 +130,65 @@ export interface ImportResult {
   readonly destination: string;
   readonly pages: number;
   readonly attachments: number;
+  readonly covers?: { readonly saved: number; readonly linked: number };
   readonly attachmentFailures?: ReadonlyArray<{ path: string; error: ImportDownloadError }>;
+  readonly buildinNotes?: readonly BuildinImportedNote[];
 }
+
+export interface BuildinImportedNote {
+  readonly id: string;
+  readonly path: string;
+}
+
+export const BUILDIN_ID_FIELD = "naitflow-buildin-id";
 
 export class ImportDownloadError extends Error {
   constructor(readonly reason: "http" | "network" | "url" | "size" | "html" | "source", readonly status?: number) {
     super(`notion-media-${reason}`);
+  }
+}
+
+const coverExtensions: ReadonlyMap<string, string> = new Map([
+  ["image/jpeg", "jpg"], ["image/png", "png"], ["image/webp", "webp"],
+  ["image/gif", "gif"], ["image/avif", "avif"], ["image/svg+xml", "svg"],
+  ["image/bmp", "bmp"], ["image/x-icon", "ico"], ["image/vnd.microsoft.icon", "ico"]
+]);
+
+export type ImportImageResult =
+  | { kind: "saved"; bytes: ArrayBuffer; extension: string }
+  | { kind: "http"; status: number }
+  | { kind: "format"; contentType: string; byteLength: number }
+  | { kind: "network" | "timeout" | "size" | "url" };
+
+export async function downloadImportImage(source: string, options?: { detectRasterFormat?: boolean }): Promise<ImportImageResult> {
+  let timer: number | undefined;
+  try {
+    const url = new URL(source);
+    if (url.username || url.password || !/^https?:$/.test(url.protocol)) return { kind: "url" };
+    const response = await Promise.race([
+      requestUrl({ url: url.href, throw: false }),
+      new Promise<undefined>((resolve) => { timer = setTimeout(resolve, 8000); })
+    ]);
+    if (!response) return { kind: "timeout" };
+    if (response.status !== 200) return { kind: "http", status: response.status };
+    const contentType = Object.entries(response.headers)
+      .find(([key]) => key.toLowerCase() === "content-type")?.[1].split(";")[0]?.trim().toLowerCase() ?? "";
+    const bytes = response.arrayBuffer;
+    let extension = coverExtensions.get(contentType);
+    if (options?.detectRasterFormat && (!contentType || contentType === "application/octet-stream" || contentType === "binary/octet-stream")) {
+      const header = new Uint8Array(bytes, 0, Math.min(8, bytes.byteLength));
+      if (header[0] === 0xff && header[1] === 0xd8 && header[2] === 0xff) extension = "jpg";
+      if ([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a].every((byte, index) => header[index] === byte)) extension = "png";
+    }
+    if (!extension || !bytes.byteLength) {
+      return { kind: "format", contentType: /^[a-z0-9.+-]{1,40}\/[a-z0-9.+-]{1,50}$/.test(contentType) ? contentType : "", byteLength: bytes.byteLength };
+    }
+    if (bytes.byteLength > 20 * 1024 * 1024) return { kind: "size" };
+    return { kind: "saved", bytes, extension };
+  } catch {
+    return { kind: "network" };
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -141,11 +201,12 @@ export class NaitFlowImportPlan {
   readonly renamedCount: number;
   readonly unresolvedLinksCount: number;
   readonly iconsCount: number;
-  readonly coversCount: number;
+  readonly remoteCoversCount: number;
 
   private readonly pageById = new Map<string, ImportPage>();
   private readonly pageBySourcePath = new Map<string, ImportPage>();
   private readonly attachmentBySourcePath = new Map<string, ImportAttachment>();
+  private readonly attachmentsByPage = new Map<ImportPage, Map<string, ImportAttachment>>();
 
   constructor(
     private readonly app: App,
@@ -156,7 +217,8 @@ export class NaitFlowImportPlan {
     private readonly attachments: ImportAttachment[],
     renamedCount: number,
     unresolvedLinksCount: number,
-    private readonly checkActive: () => void = () => {}
+    private readonly checkActive: () => void = () => {},
+    private readonly recordBuildinIds = false
   ) {
     this.format = format;
     this.sourceName = sourceName;
@@ -165,14 +227,21 @@ export class NaitFlowImportPlan {
     this.renamedCount = renamedCount;
     this.unresolvedLinksCount = unresolvedLinksCount;
     this.iconsCount = pages.filter((page) => page.icon).length;
-    this.coversCount = pages.filter((page) => page.cover).length;
-    this.defaultDestination = uniqueImportName(app, "_import");
+    this.remoteCoversCount = pages.filter((page) => /^https?:\/\//i.test(page.cover ?? "")).length;
+    const destination = format === "notion-api" ? "_import" : `_import_${format.replace("-", "_")}`;
+    this.defaultDestination = uniqueImportName(app, destination);
     for (const page of pages) {
       this.pageById.set(page.sourceId, page);
       this.pageBySourcePath.set(sourceKey(page.sourcePath), page);
     }
     for (const attachment of attachments) {
-      this.attachmentBySourcePath.set(sourceKey(attachment.sourcePath), attachment);
+      const key = sourceKey(attachment.sourcePath);
+      if (!this.attachmentBySourcePath.has(key)) this.attachmentBySourcePath.set(key, attachment);
+      if (attachment.owner) {
+        const owned = this.attachmentsByPage.get(attachment.owner) ?? new Map<string, ImportAttachment>();
+        owned.set(key, attachment);
+        this.attachmentsByPage.set(attachment.owner, owned);
+      }
     }
   }
 
@@ -186,7 +255,19 @@ export class NaitFlowImportPlan {
     if (!requestedName) throw new Error("destination-empty");
     if (this.format === "notion-api") return this.executeNotion(requestedName, onProgress);
     const destination = uniqueImportName(this.app, requestedName);
+    const created = this.recordBuildinIds ? [] as TAbstractFile[] : undefined;
+    try {
+      return await this.executeArchive(destination, onProgress, created);
+    } catch (error) {
+      for (const item of created?.reverse() ?? []) {
+        if (this.app.vault.getAbstractFileByPath(item.path) !== item || (item instanceof TFolder && item.children.length)) continue;
+        try { await this.app.vault.delete(item); } catch { /* Preserve the original failure. */ }
+      }
+      throw error;
+    }
+  }
 
+  private async executeArchive(destination: string, onProgress: (progress: ImportProgress) => void, created?: TAbstractFile[]): Promise<ImportResult> {
     const folders = new Set<string>([destination]);
     for (const page of this.pages) {
       const target = normalizePath(`${destination}/${page.targetPath}`);
@@ -198,34 +279,85 @@ export class NaitFlowImportPlan {
       const parent = dirname(target);
       if (parent) folders.add(parent);
     }
-    for (const folder of [...folders].sort((a, b) => pathDepth(a) - pathDepth(b))) {
-      await ensureFolder(this.app, folder);
+    if (created) {
+      for (const folder of folders) {
+        const parent = dirname(folder);
+        if (parent) folders.add(parent);
+      }
     }
-    await this.app.vault.create(`${destination}.md`, "");
+    for (const folder of [...folders].sort((a, b) => pathDepth(a) - pathDepth(b))) {
+      this.checkActive();
+      if (created) created.push(await this.app.vault.createFolder(folder));
+      else await ensureFolder(this.app, folder);
+    }
+    this.checkActive();
+    const root = await this.app.vault.create(`${destination}.md`, "");
+    created?.push(root);
 
     const total = this.pages.length + this.attachments.length;
     let current = 0;
+    const downloadedCovers = new Map<string, { file: TFile; extension: string } | undefined>();
+    const attachmentPaths = new Set(this.attachments.map(({ targetPath }) => sourceKey(targetPath)));
+    let savedCovers = 0;
+    let linkedCovers = 0;
     for (const page of this.pages) {
+      this.checkActive();
       onProgress({ current, total, label: page.title });
       const body = this.format === "notion-html"
         ? this.convertHtml(page, destination)
         : this.convertMarkdown(page, destination);
       const targetPath = normalizePath(`${destination}/${page.targetPath}`);
-      const created = await this.app.vault.create(targetPath, body);
-      await this.applyPageMeta(created, page, destination);
+      const file = await this.app.vault.create(targetPath, body);
+      created?.push(file);
+      let localCover: string | undefined;
+      if (this.format === "notion-html" && page.cover && /^https?:\/\//i.test(page.cover)) {
+        const cached = downloadedCovers.get(page.cover);
+        const image = cached
+          ? { kind: "saved" as const, bytes: await this.app.vault.readBinary(cached.file), extension: cached.extension }
+          : downloadedCovers.has(page.cover) ? undefined : await downloadImportImage(page.cover);
+        if (image?.kind === "saved") {
+          const folder = page.filesFolder ?? `${page.targetFolderPath}/_files`;
+          const name = `_cover.${image.extension}`;
+          let target = `${folder}/${name}`;
+          for (let suffix = 2; attachmentPaths.has(sourceKey(target)); suffix++) {
+            target = `${folder}/${appendFilenameSuffix(name, suffix)}`;
+          }
+          localCover = normalizePath(`${destination}/${target}`);
+          await ensureFolder(this.app, dirname(localCover));
+          const file = await this.app.vault.createBinary(localCover, image.bytes);
+          if (!cached) downloadedCovers.set(page.cover, { file, extension: image.extension });
+          savedCovers++;
+        } else {
+          downloadedCovers.set(page.cover, undefined);
+          linkedCovers++;
+        }
+      }
+      await this.applyPageMeta(file, page, destination, localCover);
       current += 1;
       onProgress({ current, total, label: page.title });
     }
 
     for (const attachment of this.attachments) {
+      this.checkActive();
       onProgress({ current, total, label: basename(attachment.targetPath) });
       const targetPath = normalizePath(`${destination}/${attachment.targetPath}`);
-      await this.app.vault.createBinary(targetPath, await attachment.source.readBinary());
+      const bytes = await attachment.source.readBinary();
+      this.checkActive();
+      const file = await this.app.vault.createBinary(targetPath, bytes);
+      created?.push(file);
       current += 1;
       onProgress({ current, total, label: basename(attachment.targetPath) });
     }
 
-    return { destination, pages: this.pages.length, attachments: this.attachments.length };
+    this.checkActive();
+    const buildinNotes = this.recordBuildinIds ? this.pages.map((page) => ({
+      id: page.sourceId, path: normalizePath(`${destination}/${page.targetPath}`)
+    })) : undefined;
+    return {
+      destination, pages: this.pages.length, attachments: this.attachments.length,
+      ...(buildinNotes ? { buildinNotes } : {}),
+      ...(this.remoteCoversCount && this.format === "notion-html" ? { covers: { saved: savedCovers, linked: linkedCovers } } : {})
+    };
   }
 
   private async executeNotion(destination: string, onProgress: (progress: ImportProgress) => void): Promise<ImportResult> {
@@ -315,15 +447,17 @@ export class NaitFlowImportPlan {
   private convertMarkdown(page: ImportPage, destination: string): string {
     let markdown = page.rawContent.replace(/\r\n?/g, "\n");
     if (this.format === "notion-md") markdown = removeMatchingTitle(markdown, page.title);
-    return rewriteOutsideFences(markdown, (chunk) => chunk.replace(
-      /(!?)\[([^\]]*)\]\(([^)\n]+)\)/g,
-      (original: string, embed: string, label: string, rawTarget: string) => {
-        const target = cleanMarkdownTarget(rawTarget);
-        const resolved = this.resolveTarget(page, target);
-        if (!resolved) return original;
-        return renderResolvedLink(resolved, destination, label, embed === "!");
+    return rewriteOutsideFences(markdown, (chunk) => {
+      let result = "";
+      let copied = 0;
+      for (const link of markdownLinks(chunk)) {
+        const resolved = this.resolveTarget(page, cleanMarkdownTarget(link.target));
+        if (!resolved) continue;
+        result += chunk.slice(copied, link.from) + renderResolvedLink(resolved, destination, plainLinkLabel(link.label), link.embed, page.filesFolder);
+        copied = link.to;
       }
-    )).trimEnd() + "\n";
+      return result + chunk.slice(copied);
+    }).trimEnd() + "\n";
   }
 
   private convertHtml(page: ImportPage, destination: string): string {
@@ -338,11 +472,15 @@ export class NaitFlowImportPlan {
       return token;
     };
 
+    // Notion puts the page icon inside the anchor of a subpage block.
+    // Remove it before processing images so the anchor keeps its destination.
+    for (const icon of body.querySelectorAll(".link-to-page a[href] img.icon")) icon.remove();
+
     for (const image of Array.from(body.querySelectorAll<HTMLImageElement>("img[src]"))) {
       const source = image.getAttribute("src") ?? "";
       const resolved = this.resolveTarget(page, source);
       if (!resolved) continue;
-      const replacement = document.createTextNode(makeToken(renderResolvedLink(resolved, destination, image.alt, true)));
+      const replacement = document.createTextNode(makeToken(renderResolvedLink(resolved, destination, image.alt, true, page.filesFolder)));
       const linked = image.closest("a");
       (linked ?? image).replaceWith(replacement);
     }
@@ -352,7 +490,14 @@ export class NaitFlowImportPlan {
       const resolved = this.resolveTarget(page, href);
       if (!resolved) continue;
       const label = (link.textContent ?? "").trim();
-      link.replaceWith(document.createTextNode(makeToken(renderResolvedLink(resolved, destination, label, false))));
+      link.replaceWith(document.createTextNode(makeToken(renderResolvedLink(resolved, destination, label, false, page.filesFolder))));
+    }
+
+    for (const span of body.querySelectorAll<HTMLSpanElement>("span[style]")) {
+      // Notion's HTML exporter represents underlining as a thin bottom border.
+      if (span.style.borderBottomWidth !== "0.05em" || span.style.borderBottomStyle !== "solid") continue;
+      span.before(makeToken("<u>"));
+      span.after(makeToken("</u>"));
     }
 
     let markdown = htmlToMarkdown(body.innerHTML).replace(/\r\n?/g, "\n");
@@ -361,42 +506,43 @@ export class NaitFlowImportPlan {
   }
 
   private resolveTarget(page: ImportPage, rawTarget: string): ResolvedTarget | null {
-    const target = stripQueryAndHash(decodeSourcePath(rawTarget));
-    const id = knownIdInTarget(this.format === "notion-api" ? target.replace(/-/g, "") : target, this.pageById);
+    const target = decodeSourcePath(stripQueryAndHash(rawTarget));
+    const id = this.format === "buildin-md" ? buildinLinkId(target)
+      : knownIdInTarget(this.format === "notion-api" ? target.replace(/-/g, "") : target, this.pageById);
     if (isExternalTarget(target)) {
       const linkedPage = id ? this.pageById.get(id) : undefined;
       return linkedPage ? { kind: "page", targetPath: linkedPage.targetPath, page: linkedPage } : null;
     }
+    for (const path of sourceLinkKeys(page.sourcePath, rawTarget)) {
+      const linkedPage = this.pageBySourcePath.get(path);
+      if (linkedPage) return { kind: "page", targetPath: linkedPage.targetPath, page: linkedPage };
+      const attachment = this.attachmentsByPage.get(page)?.get(path) ?? this.attachmentBySourcePath.get(path);
+      if (attachment) return { kind: "attachment", targetPath: attachment.targetPath };
+    }
     if (target.startsWith("#")) return null;
-    const resolvedPath = target.startsWith("/")
-      ? normalizeSourcePath(target.slice(1))
-      : normalizeSourcePath(`${dirname(page.sourcePath)}/${target}`);
-    const linkedPage = this.pageBySourcePath.get(sourceKey(resolvedPath));
-    if (linkedPage) return { kind: "page", targetPath: linkedPage.targetPath, page: linkedPage };
-    const attachment = this.attachmentBySourcePath.get(sourceKey(resolvedPath));
-    if (attachment) return { kind: "attachment", targetPath: attachment.targetPath };
     const linkedPageById = id ? this.pageById.get(id) : undefined;
     if (linkedPageById) return { kind: "page", targetPath: linkedPageById.targetPath, page: linkedPageById };
     return null;
   }
 
-  private async applyPageMeta(file: TFile, page: ImportPage, destination: string): Promise<void> {
+  private async applyPageMeta(file: TFile, page: ImportPage, destination: string, localCover?: string): Promise<void> {
     let cover = page.cover;
     if (cover && !isExternalTarget(cover)) {
       const resolved = this.resolveTarget(page, cover);
       if (resolved?.kind === "attachment") cover = normalizePath(`${destination}/${resolved.targetPath}`);
     }
+    cover = localCover ?? cover;
     let icon = page.icon;
-    if (page.notionMeta?.icon) {
-      icon = page.notionMeta.icon;
-      if (icon.startsWith("image:")) {
-        const resolved = this.resolveTarget(page, icon.slice(6));
-        icon = resolved ? `image:${normalizePath(`${destination}/${resolved.targetPath}`)}` : undefined;
-      }
+    if (icon?.startsWith("image:")) {
+      const source = icon.slice(6);
+      const resolved = this.resolveTarget(page, source);
+      if (resolved?.kind === "attachment") icon = `image:${normalizePath(`${destination}/${resolved.targetPath}`)}`;
+      else if (this.format !== "notion-html" || !/^https?:\/\//i.test(source)) icon = undefined;
     }
-    if (!icon && !cover && !page.notionMeta) return;
+    if (!icon && !cover && !page.notionMeta && !this.recordBuildinIds) return;
     await this.app.fileManager.processFrontMatter(file, (frontmatter) => {
-      if (icon) frontmatter[FIELDS.icon] = page.notionMeta ? icon : `emoji:${icon}`;
+      if (this.recordBuildinIds) frontmatter[BUILDIN_ID_FIELD] = page.sourceId;
+      if (icon) frontmatter[FIELDS.icon] = icon;
       if (cover) frontmatter[FIELDS.cover] = cover;
       if (cover && page.coverY !== undefined) frontmatter[FIELDS.coverY] = page.coverY;
       if (page.notionMeta) {
@@ -428,17 +574,29 @@ export async function prepareNotionSources(
     countUnresolvedLinks(pages, attachments, "notion-api"), checkActive);
 }
 
-export async function prepareImport(app: App, file: File): Promise<NaitFlowImportPlan> {
+export function prepareImport(app: App, file: File): Promise<NaitFlowImportPlan> {
+  return prepareArchive(app, file);
+}
+
+export function prepareBuildinImport(app: App, file: File, signal: AbortSignal): Promise<NaitFlowImportPlan> {
+  return prepareArchive(app, file, signal);
+}
+
+async function prepareArchive(app: App, file: File, buildinSignal?: AbortSignal): Promise<NaitFlowImportPlan> {
+  buildinSignal?.throwIfAborted();
   const archive = await LoadedArchive.open(file);
   try {
     const format = detectFormat(archive.files);
+    if (buildinSignal && format !== "buildin-md") throw new Error("buildin-archive-format");
     const pages = await readPages(archive.files, format);
+    buildinSignal?.throwIfAborted();
     if (!pages.length) throw new Error("pages-not-found");
     if (format === "buildin-md") applyBuildinLinkTitles(pages);
     const renamedCount = assignTargets(pages, format);
     const attachments = assignAttachments(archive.files, pages, format);
     const unresolvedLinksCount = countUnresolvedLinks(pages, attachments, format);
-    return new NaitFlowImportPlan(app, archive, format, file.name, pages, attachments, renamedCount, unresolvedLinksCount);
+    return new NaitFlowImportPlan(app, archive, format, file.name, pages, attachments, renamedCount, unresolvedLinksCount,
+      () => buildinSignal?.throwIfAborted(), Boolean(buildinSignal));
   } catch (error) {
     await archive.close();
     throw error;
@@ -489,10 +647,10 @@ async function readPages(files: ImportSource[], format: ImportFormat): Promise<I
 function applyBuildinLinkTitles(pages: ImportPage[]): void {
   const byId = new Map(pages.map((page) => [page.sourceId, page]));
   for (const sourcePage of pages) {
-    for (const match of sourcePage.rawContent.matchAll(/!?\[([^\]]+)\]\(([^)\n]+)\)/g)) {
-      const label = plainLinkLabel(match[1] ?? "");
-      const target = match[2] ?? "";
-      const id = knownIdInTarget(target, byId);
+    for (const link of markdownLinks(sourcePage.rawContent)) {
+      if (link.embed) continue;
+      const label = plainLinkLabel(link.label);
+      const id = buildinLinkId(decodeSourcePath(stripQueryAndHash(cleanMarkdownTarget(link.target))));
       const page = id ? byId.get(id) : undefined;
       if (page && label) page.title = sanitizePageName(label);
     }
@@ -537,21 +695,74 @@ function assignAttachments(files: ImportSource[], pages: ImportPage[], format: I
   const pageExtensions = new Set(["md", "html"]);
   const pageSources = new Set(pages.map((page) => sourceKey(page.sourcePath)));
   const owners = [...pages].sort((a, b) => b.sourceFolderPath.length - a.sourceFolderPath.length);
+  const references = new Map<string, Set<ImportPage>>();
+  const coverNames = new Map<ImportPage, { source: ImportSource; name: string }>();
   const usedNames = new Map<string, Set<string>>();
+  let sharedFolder = "Вложенные файлы";
+  if (format !== "notion-api") {
+    const reserved = new Set<string>();
+    for (const page of pages) {
+      reserved.add(sourceKey(page.targetPath));
+      for (let folder = page.targetFolderPath; folder; folder = dirname(folder)) {
+        reserved.add(sourceKey(folder));
+      }
+    }
+    const allocate = (parent: string): string => {
+      const base = parent ? `${parent}/_files` : "_files";
+      let folder = base;
+      for (let suffix = 2; reserved.has(sourceKey(folder)); suffix++) folder = `${base} ${suffix}`;
+      reserved.add(sourceKey(folder));
+      return folder;
+    };
+    sharedFolder = allocate("");
+    const filesByKey = new Map(files.map((file) => [sourceKey(file.path), file]));
+    for (const page of pages) {
+      page.filesFolder = allocate(page.targetFolderPath);
+      const targets = format === "notion-html" ? htmlTargets(page.rawContent) : markdownTargets(page.rawContent).map(cleanMarkdownTarget);
+      if (page.cover) {
+        targets.push(page.cover);
+        if (format === "notion-html" && !isExternalTarget(page.cover)) {
+          const coverKey = sourceLinkKeys(page.sourcePath, page.cover).find((path) => filesByKey.has(path));
+          const source = coverKey && !pageSources.has(coverKey) ? filesByKey.get(coverKey) : undefined;
+          if (source) {
+            const original = sanitizeAttachmentName(decodeSourceSegment(source.name), format);
+            const name = `_cover${original.match(/(\.[^.]+)$/)?.[1] ?? ""}`;
+            coverNames.set(page, { source, name });
+            usedNames.set(page.filesFolder, new Set([name.toLocaleLowerCase()]));
+          }
+        }
+      }
+      if (page.icon?.startsWith("image:")) targets.push(page.icon.slice(6));
+      for (const target of targets) {
+        if (isExternalTarget(target)) continue;
+        const key = sourceLinkKeys(page.sourcePath, target).find((path) => filesByKey.has(path));
+        if (!key || pageSources.has(key)) continue;
+        const referencedBy = references.get(key) ?? new Set<ImportPage>();
+        referencedBy.add(page);
+        references.set(key, referencedBy);
+      }
+    }
+  }
   const attachments: ImportAttachment[] = [];
   for (const source of files) {
     if (pageSources.has(sourceKey(source.path))) continue;
     if (pageExtensions.has(source.extension) && basename(source.path).toLocaleLowerCase() === "index.html") continue;
-    const owner = owners.find((page) => sourceKey(source.path).startsWith(`${sourceKey(page.sourceFolderPath)}/`));
-    const folder = owner ? `${owner.targetFolderPath}/Вложенные файлы` : "Вложенные файлы";
-    const originalName = sanitizeAttachmentName(decodeSourceSegment(source.name), format);
-    const used = usedNames.get(folder) ?? new Set<string>();
-    let name = originalName;
-    let suffix = 2;
-    while (used.has(name.toLocaleLowerCase())) name = appendFilenameSuffix(originalName, suffix++);
-    used.add(name.toLocaleLowerCase());
-    usedNames.set(folder, used);
-    attachments.push({ source, sourcePath: source.path, targetPath: normalizeSourcePath(`${folder}/${name}`) });
+    const referencedBy = references.get(sourceKey(source.path));
+    const inferred = owners.find((page) => sourceKey(source.path).startsWith(`${sourceKey(page.sourceFolderPath)}/`));
+    for (const owner of referencedBy ?? [inferred]) {
+      const folder = owner?.filesFolder ?? (owner ? `${owner.targetFolderPath}/Вложенные файлы` : sharedFolder);
+      const originalName = sanitizeAttachmentName(decodeSourceSegment(source.name), format);
+      const used = usedNames.get(folder) ?? new Set<string>();
+      const cover = owner && coverNames.get(owner);
+      let name = cover && cover.source === source ? cover.name : originalName;
+      if (!cover || cover.source !== source) {
+        let suffix = 2;
+        while (used.has(name.toLocaleLowerCase())) name = appendFilenameSuffix(originalName, suffix++);
+      }
+      used.add(name.toLocaleLowerCase());
+      usedNames.set(folder, used);
+      attachments.push({ source, sourcePath: source.path, targetPath: normalizeSourcePath(`${folder}/${name}`), owner });
+    }
   }
   return attachments;
 }
@@ -565,7 +776,8 @@ function countUnresolvedLinks(pages: ImportPage[], attachments: ImportAttachment
   for (const page of pages) {
     const targets = format === "notion-html" ? htmlTargets(page.rawContent) : markdownTargets(page.rawContent);
     for (const rawTarget of targets) {
-      const target = stripQueryAndHash(decodeSourcePath(cleanMarkdownTarget(rawTarget)));
+      const source = format === "notion-html" ? rawTarget : cleanMarkdownTarget(rawTarget);
+      const target = decodeSourcePath(stripQueryAndHash(source));
       const id = knownIdInTarget(target, pageById);
       if (isExternalTarget(target)) {
         if (format === "buildin-md" && /^https?:\/\/(?:www\.)?buildin\.ai\//i.test(target)) {
@@ -575,10 +787,7 @@ function countUnresolvedLinks(pages: ImportPage[], attachments: ImportAttachment
         continue;
       }
       if (target.startsWith("#")) continue;
-      const resolved = target.startsWith("/")
-        ? normalizeSourcePath(target.slice(1))
-        : normalizeSourcePath(`${dirname(page.sourcePath)}/${target}`);
-      if (!knownPaths.has(sourceKey(resolved)) && !id) count += 1;
+      if (!sourceLinkKeys(page.sourcePath, source).some((path) => knownPaths.has(path)) && !id) count += 1;
     }
   }
   return count;
@@ -586,9 +795,12 @@ function countUnresolvedLinks(pages: ImportPage[], attachments: ImportAttachment
 
 function readHtmlMeta(page: ImportPage): void {
   const document = new DOMParser().parseFromString(page.rawContent, "text/html");
+  if (!document.querySelector("div.page-body")) throw new Error(`page-body-missing:${page.sourcePath}`);
   const emoji = document.querySelector<HTMLElement>(".page-header-icon [data-emoji]")?.getAttribute("data-emoji")?.trim();
+  const image = document.querySelector<HTMLImageElement>(".page-header-icon img.icon[src]")?.getAttribute("src")?.trim();
   const cover = document.querySelector<HTMLImageElement>("img.page-cover-image");
-  if (emoji) page.icon = emoji;
+  if (emoji) page.icon = `emoji:${emoji}`;
+  else if (image) page.icon = `image:${image}`;
   if (cover?.src) page.cover = cover.getAttribute("src") ?? cover.src;
   const position = cover?.style.objectPosition ?? "";
   const y = position.match(/(-?\d+(?:\.\d+)?)%\s*$/)?.[1];
@@ -598,10 +810,30 @@ function readHtmlMeta(page: ImportPage): void {
 function markdownTargets(markdown: string): string[] {
   const targets: string[] = [];
   rewriteOutsideFences(markdown, (chunk) => {
-    for (const match of chunk.matchAll(/!?\[[^\]]*\]\(([^)\n]+)\)/g)) targets.push(match[1] ?? "");
+    for (const link of markdownLinks(chunk)) targets.push(link.target);
     return chunk;
   });
   return targets;
+}
+
+function* markdownLinks(markdown: string) {
+  const opening = /(!?)\[([^\]\n]*)\]\([ \t]*/g;
+  for (let match = opening.exec(markdown); match; match = opening.exec(markdown)) {
+    const start = opening.lastIndex;
+    let end = start;
+    let depth = 1;
+    let inAngleDestination = markdown[start] === "<";
+    for (; end < markdown.length && markdown[end] !== "\n"; end++) {
+      const char = markdown[end];
+      if (char === "\\" && /[()<>\\]/.test(markdown[end + 1] ?? "")) end++;
+      else if (inAngleDestination) inAngleDestination = char !== ">";
+      else if (char === "(") depth++;
+      else if (char === ")" && --depth === 0) break;
+    }
+    if (depth !== 0 || end === start) continue;
+    opening.lastIndex = end + 1;
+    yield { from: match.index, to: end + 1, label: match[2]!, target: markdown.slice(start, end), embed: match[1] === "!" };
+  }
 }
 
 function htmlTargets(html: string): string[] {
@@ -610,19 +842,34 @@ function htmlTargets(html: string): string[] {
   if (!body) return [];
   return [
     ...Array.from(body.querySelectorAll<HTMLAnchorElement>("a[href]"), (element) => element.getAttribute("href") ?? ""),
-    ...Array.from(body.querySelectorAll<HTMLImageElement>("img[src]"), (element) => element.getAttribute("src") ?? "")
+    ...Array.from(body.querySelectorAll<HTMLImageElement>("img[src]"))
+      .filter((element) => !element.matches(".link-to-page a[href] img.icon"))
+      .map((element) => element.getAttribute("src") ?? "")
   ];
 }
 
-function renderResolvedLink(target: ResolvedTarget, destination: string, rawLabel: string, embed: boolean): string {
+export function renderImportPageLink(destination: string, targetPath: string, label: string): string {
+  return renderResolvedLink({ kind: "page", targetPath }, destination, label, false, undefined, label.includes("|"));
+}
+
+function renderResolvedLink(
+  target: ResolvedTarget, destination: string, label: string, embed: boolean, filesFolder?: string, useMarkdown = false
+): string {
   const fullPath = normalizePath(`${destination}/${target.targetPath}`);
+  label = label.trim() || target.page?.targetTitle || "";
+  const local = target.kind === "attachment" && filesFolder && target.targetPath.startsWith(`${filesFolder}/`);
+  if (local || useMarkdown || /[#[\]]/.test(fullPath)) {
+    const parent = local ? dirname(dirname(filesFolder)) : "";
+    const path = local ? `./${target.targetPath.slice(parent ? parent.length + 1 : 0)}` : fullPath;
+    const url = path.split("/").map((segment) => encodeURIComponent(segment).replace(/\(/g, "%28").replace(/\)/g, "%29")).join("/");
+    const text = label.replace(/[\\[\]]/g, "\\$&");
+    return `${target.kind === "attachment" && embed ? "!" : ""}[${text || basename(fullPath)}](${url})`;
+  }
   if (target.kind === "attachment") {
-    const label = plainLinkLabel(rawLabel);
     if (embed) return `![[${fullPath}]]`;
     return label ? `[[${fullPath}|${escapeWikiAlias(label)}]]` : `[[${fullPath}]]`;
   }
   const pagePath = fullPath.replace(/\.md$/i, "");
-  const label = plainLinkLabel(rawLabel) || target.page?.targetTitle || "";
   return label ? `[[${pagePath}|${escapeWikiAlias(label)}]]` : `[[${pagePath}]]`;
 }
 
@@ -685,6 +932,13 @@ function buildinId(value: string): string | undefined {
   return value.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:\.[^.]+)?$/i)?.[1]?.toLocaleLowerCase();
 }
 
+function buildinLinkId(target: string): string | undefined {
+  if (isExternalTarget(target) && !/^https?:\/\/(?:www\.)?buildin\.ai\//i.test(target)) return;
+  const name = basename(target.replace(/\/$/, ""));
+  if (!name.includes(".") || /\.md$/i.test(name)) return buildinId(name);
+  return undefined;
+}
+
 function notionId(value: string): string | undefined {
   return value.match(/([0-9a-f]{32})(?:\.[^.]+)?$/i)?.[1]?.toLocaleLowerCase();
 }
@@ -724,7 +978,7 @@ function cleanUnpairedParent(path: string, format: ImportFormat, pageFolders: Ma
   return result.join("/");
 }
 
-function uniqueImportName(app: App, requestedName: string): string {
+export function uniqueImportName(app: App, requestedName: string): string {
   const base = sanitizePageName(requestedName);
   let path = base;
   let suffix = 2;
@@ -739,7 +993,7 @@ function normalizeImportName(value: string): string {
   return trimmed ? sanitizePageName(trimmed) : "";
 }
 
-function sanitizePageName(value: string): string {
+export function sanitizePageName(value: string): string {
   return value.replace(/[\\/:*?"<>|\0]/g, "-").replace(/[. ]+$/g, "").replace(/\s+/g, " ").trim() || "Без названия";
 }
 
@@ -756,14 +1010,24 @@ function appendFilenameSuffix(name: string, suffix: number): string {
 }
 
 function cleanMarkdownTarget(value: string): string {
-  const trimmed = value.trim();
+  const trimmed = value.trim().replace(/\s+["'][^"']*["']\s*$/, "");
   const unwrapped = trimmed.startsWith("<") && trimmed.endsWith(">") ? trimmed.slice(1, -1) : trimmed;
-  return unwrapped.replace(/\s+["'][^"']*["']\s*$/, "");
+  return unwrapped.replace(/\\([()<>])/g, "$1");
 }
 
 function stripQueryAndHash(value: string): string {
   if (value.startsWith("#")) return value;
   return value.replace(/[?#].*$/, "");
+}
+
+function sourceLinkKeys(sourcePath: string, target: string): string[] {
+  const relativeKey = (value: string): string => {
+    const decoded = decodeSourcePath(value);
+    return sourceKey(decoded.startsWith("/") ? decoded : `${dirname(sourcePath)}/${decoded}`);
+  };
+  // Some Notion archives leave literal '#' characters in exported filenames.
+  const clean = stripQueryAndHash(target);
+  return clean === target ? [relativeKey(target)] : [relativeKey(target), relativeKey(clean)];
 }
 
 function isExternalTarget(value: string): boolean {

@@ -2,6 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import type NaitFlowPlugin from "./main";
 import { t } from "./i18n";
 import { NotionImportSettings } from "./notion-import-settings";
+import { BuildinImportModal, BuildinImportState } from "./buildin-import-settings";
 
 export interface NaitFlowSettings {
   assetsFolder: string;
@@ -9,7 +10,9 @@ export interface NaitFlowSettings {
   recentEmoji: string[];
   recentIcons: string[];
   openTreeOnStartup: boolean;
+  pageOrder: string[];
   trashRecords: NaitFlowTrashRecord[];
+  buildinImport?: BuildinImportState;
 }
 
 export interface NaitFlowTrashRecord {
@@ -30,18 +33,20 @@ export const DEFAULT_SETTINGS: NaitFlowSettings = {
   recentEmoji: [],
   recentIcons: [],
   openTreeOnStartup: true,
+  pageOrder: [],
   trashRecords: []
 };
 
 export class NaitFlowSettingTab extends PluginSettingTab {
   private notionImport?: NotionImportSettings;
+  private buildinImport?: BuildinImportModal;
   constructor(app: App, private readonly plugin: NaitFlowPlugin) {
     super(app, plugin);
-    plugin.register(() => this.notionImport?.dispose());
+    plugin.register(() => this.hide());
   }
 
   override display(): void {
-    this.notionImport?.dispose();
+    this.hide();
     this.containerEl.empty();
     this.containerEl.createEl("h2", { text: "NaitFlow" });
     this.containerEl.createEl("p", { cls: "naitflow-settings-intro", text: t("settingsIntro") });
@@ -57,6 +62,21 @@ export class NaitFlowSettingTab extends PluginSettingTab {
 
     this.notionImport = new NotionImportSettings(this.plugin, this.containerEl);
 
+    new Setting(this.containerEl)
+      .setName(t("buildinImport"))
+      .setDesc(t("buildinImportDesc"))
+      .addButton((button) => button.setButtonText(t("importStart")).onClick(() => {
+        if (this.buildinImport) return;
+        const state = this.plugin.settings.buildinImport ??= { log: [] };
+        this.buildinImport = new BuildinImportModal(this.app, this.plugin.manifest.dir, state,
+          () => this.plugin.saveSettings(), () => this.plugin.refreshUi(), () => {
+            this.buildinImport = undefined;
+            if (button.buttonEl.isConnected) button.buttonEl.focus();
+          });
+        this.buildinImport.open();
+      }));
+
+    this.containerEl.createEl("h3", { text: t("otherSettings") });
     new Setting(this.containerEl)
       .setName(t("mediaFolder"))
       .setDesc(t("mediaFolderDesc"))
@@ -87,5 +107,7 @@ export class NaitFlowSettingTab extends PluginSettingTab {
   override hide(): void {
     this.notionImport?.dispose();
     this.notionImport = undefined;
+    this.buildinImport?.close();
   }
 }
+
